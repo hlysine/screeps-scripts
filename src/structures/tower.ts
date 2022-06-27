@@ -1,4 +1,4 @@
-import StructureBrain from "./structureBrain";
+import StructureBrain from "./StructureBrain";
 
 export default {
   run(structure: StructureTower) {

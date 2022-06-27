@@ -1,8 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import builder from "creeps/builder";
-import harvester from "creeps/harvester";
-import tower from "structures/tower";
-import upgrader from "creeps/upgrader";
+import Generic from "creeps/Generic";
+import tower from "structures/Tower";
 
 declare global {
   /*
@@ -45,29 +43,15 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  const harvesters = _.filter(Game.creeps, creep => creep.memory.role === "harvester");
-  const builders = _.filter(Game.creeps, creep => creep.memory.role === "builder");
-  const upgraders = _.filter(Game.creeps, creep => creep.memory.role === "upgrader");
-  console.log(`Harvesters: ${harvesters.length}\nBuilders: ${builders.length}\nUpgraders: ${upgraders.length}`);
+  const generic = _.filter(Game.creeps, creep => creep.memory.role === "generic");
+  console.log(`Generic: ${generic.length}`);
 
-  if (harvesters.length < 2) {
-    const newName = `Harvester${Game.time}`;
+  if (generic.length < 6) {
+    const newName = `Generic${Game.time}`;
     const result = Game.spawns.Spawn1.spawnCreep([WORK, CARRY, MOVE], newName, {
-      memory: { role: "harvester", working: true }
+      memory: { role: "generic", working: true }
     });
-    console.log(`Spawning new harvester: ${newName}\nResult: ${result}`);
-  }
-
-  if (builders.length < 2) {
-    const newName = `Builder${Game.time}`;
-    console.log("Spawning new builder: " + newName);
-    Game.spawns.Spawn1.spawnCreep([WORK, CARRY, MOVE], newName, { memory: { role: "builder", working: true } });
-  }
-
-  if (upgraders.length < 2) {
-    const newName = `Upgrader${Game.time}`;
-    console.log("Spawning new upgrader: " + newName);
-    Game.spawns.Spawn1.spawnCreep([WORK, CARRY, MOVE], newName, { memory: { role: "upgrader", working: true } });
+    console.log(`Spawning new generic creep: ${newName}\nResult: ${result}`);
   }
 
   if (Game.spawns.Spawn1.spawning) {
@@ -89,14 +73,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
 
   for (const name in Game.creeps) {
     const creep = Game.creeps[name];
-    if (creep.memory.role === "harvester") {
-      harvester.run(creep);
-    }
-    if (creep.memory.role === "upgrader") {
-      upgrader.run(creep);
-    }
-    if (creep.memory.role === "builder") {
-      builder.run(creep);
+    if (creep.memory.role === "generic") {
+      Generic.run(creep);
     }
   }
 });
