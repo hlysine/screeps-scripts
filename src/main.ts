@@ -1,5 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import Generic from "creeps/Generic";
+import { Serialized } from "utils/TypeUtils";
 import tower from "structures/Tower";
 
 declare global {
@@ -19,6 +20,7 @@ declare global {
 
   interface CreepMemory {
     role: string;
+    target?: Serialized<RoomPosition>;
     working: boolean;
   }
 

@@ -15,10 +15,6 @@ module.exports = {
     "plugin:import/typescript"
   ],
   parser: "@typescript-eslint/parser",
-  parserOptions: {
-    project: "tsconfig.json",
-    sourceType: "module"
-  },
   plugins: ["@typescript-eslint", "import"],
   settings: {
     "import/parsers": {
@@ -28,6 +24,15 @@ module.exports = {
       typescript: {}
     }
   },
+  overrides: [
+    {
+      files: ["*.ts", "*.tsx"],
+      parserOptions: {
+        project: "tsconfig.json",
+        sourceType: "module"
+      }
+    }
+  ],
   rules: {
     "@typescript-eslint/array-type": "error",
     "@typescript-eslint/consistent-type-assertions": "error",
@@ -86,5 +91,6 @@ module.exports = {
     "sort-imports": "warn",
     "spaced-comment": "error",
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
+    "no-bitwise": "off"
   }
 };

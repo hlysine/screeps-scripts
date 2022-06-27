@@ -1,4 +1,5 @@
 import CreepBrain from "./CreepBrain";
+import { findFreeSpots } from "utils/SourceUtils";
 
 export default {
   run(creep: Creep) {
@@ -12,6 +13,7 @@ export default {
     }
 
     if (creep.memory.working) {
+      creep.memory.target = creep.pos;
       const constructionTargets = creep.room.find(FIND_CONSTRUCTION_SITES);
       if (constructionTargets.length) {
         if (creep.build(constructionTargets[0]) === ERR_NOT_IN_RANGE) {
@@ -41,9 +43,25 @@ export default {
         }
       }
     } else {
+      creep.memory.target = creep.pos;
       const sources = creep.room.find(FIND_SOURCES);
-      if (creep.harvest(sources[0]) === ERR_NOT_IN_RANGE) {
-        creep.moveTo(sources[0], { visualizePathStyle: { stroke: "#ffaa00" } });
+      let done = false;
+      for (const target of sources) {
+        if (creep.harvest(target) === OK) {
+          done = true;
+        }
+      }
+      if (!done) {
+        for (const target of sources) {
+          if (creep.harvest(target) === ERR_NOT_IN_RANGE) {
+            const freeSpots = findFreeSpots(target);
+            if (freeSpots.length) {
+              creep.moveTo(freeSpots[0], { visualizePathStyle: { stroke: "#ffaa00" } });
+              creep.memory.target = freeSpots[0];
+              break;
+            }
+          }
+        }
       }
     }
   }
