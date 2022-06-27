@@ -48,9 +48,9 @@ export const loop = ErrorMapper.wrapLoop(() => {
   const generic = _.filter(Game.creeps, creep => creep.memory.role === "generic");
   console.log(`Generic: ${generic.length}`);
 
-  if (generic.length < 6) {
+  if (generic.length < Number.MAX_SAFE_INTEGER) {
     const newName = `Generic${Game.time}`;
-    const result = Game.spawns.Spawn1.spawnCreep([WORK, CARRY, MOVE], newName, {
+    const result = Game.spawns.Spawn1.spawnCreep([WORK, WORK, CARRY, CARRY, MOVE, MOVE], newName, {
       memory: { role: "generic", working: true }
     });
     console.log(`Spawning new generic creep: ${newName}\nResult: ${result}`);
