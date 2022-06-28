@@ -10,7 +10,7 @@ type ActionMap = {
 };
 
 class CreepActionManager {
-  public actionClasses = [HarvestAction, BuildAction, TransferAction, UpgradeAction, IdleAction];
+  public actionClasses = [HarvestAction, TransferAction, BuildAction, UpgradeAction, IdleAction];
   public actionMap = this.actionClasses.reduce<ActionMap>((map, action) => {
     map[action.type] = action;
     return map;
