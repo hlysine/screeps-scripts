@@ -1,7 +1,10 @@
 import { ErrorMapper } from "utils/ErrorMapper";
-import Generic from "creeps/Generic";
 import { Serialized } from "utils/TypeUtils";
-import tower from "structures/Tower";
+import tower from "structure/Tower";
+import SourceManager from "room/SourceManager";
+import CreepSpawnManager from "room/CreepSpawnManager";
+import { ActionType } from "creep/Action";
+import CreepActionManager from "room/CreepActionManager";
 
 declare global {
   /*
@@ -19,9 +22,8 @@ declare global {
   }
 
   interface CreepMemory {
-    role: string;
+    action: ActionType;
     target?: Serialized<RoomPosition>;
-    working: boolean;
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")
@@ -32,6 +34,8 @@ declare global {
     }
   }
 }
+
+const managers = [SourceManager, CreepSpawnManager, CreepActionManager];
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -45,21 +49,12 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  const generic = _.filter(Game.creeps, creep => creep.memory.role === "generic");
-  console.log(`Generic: ${generic.length}`);
-
-  if (generic.length < 15) {
-    const newName = `Generic${Game.time}`;
-    const result = Game.spawns.Spawn1.spawnCreep([WORK, WORK, WORK, CARRY, CARRY, MOVE, MOVE, MOVE], newName, {
-      memory: { role: "generic", working: true }
-    });
-    console.log(`Spawning new generic creep: ${newName}\nResult: ${result}`);
-  }
+  managers.forEach(manager => manager.loop());
 
   if (Game.spawns.Spawn1.spawning) {
     const spawningCreep = Game.creeps[Game.spawns.Spawn1.spawning.name];
     Game.spawns.Spawn1.room.visual.text(
-      "🛠️" + spawningCreep.memory.role,
+      "🛠️" + spawningCreep.name,
       Game.spawns.Spawn1.pos.x + 1,
       Game.spawns.Spawn1.pos.y,
       { align: "left", opacity: 0.8 }
@@ -70,13 +65,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
     const structure = Game.structures[name];
     if (structure instanceof StructureTower) {
       tower.run(structure);
-    }
-  }
-
-  for (const name in Game.creeps) {
-    const creep = Game.creeps[name];
-    if (creep.memory.role === "generic") {
-      Generic.run(creep);
     }
   }
 });
