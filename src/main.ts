@@ -24,6 +24,12 @@ declare global {
   interface CreepMemory {
     action: ActionType;
     target?: Serialized<RoomPosition>;
+    _move?: {
+      dest: Serialized<RoomPosition>;
+      time: number;
+      path: string;
+      room: string;
+    };
   }
 
   // Syntax for adding proprties to `global` (ex "global.log")

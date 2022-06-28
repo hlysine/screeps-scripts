@@ -1,5 +1,4 @@
 import { requireEnergy } from "creep/SharedSteps";
-import { positionEquals } from "utils/MathUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class TransferAction extends Action {

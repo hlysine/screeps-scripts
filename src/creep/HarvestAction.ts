@@ -1,6 +1,6 @@
 import SourceManager from "room/SourceManager";
 import { requireEnergyCapacity } from "creep/SharedSteps";
-import { positionEquals } from "utils/MathUtils";
+import { getPathLength, positionEquals } from "utils/MoveUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class HarvestAction extends Action {
@@ -31,12 +31,28 @@ export default class HarvestAction extends Action {
         next();
       },
       next => {
-        const target = creep.pos.findClosestByPath(SourceManager.harvestSpots);
-        if (target) {
-          if (creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
-            SourceManager.claimSpot(target);
-            creep.memory.target = target;
+        const freeTarget = creep.pos.findClosestByPath(SourceManager.freeSpots);
+        if (freeTarget) {
+          if (creep.moveTo(freeTarget, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
+            SourceManager.claimFreeSpot(freeTarget);
+            creep.memory.target = freeTarget;
             return;
+          }
+        }
+        const reservedTarget = creep.pos.findClosestByPath(SourceManager.reservedSpots);
+        if (reservedTarget) {
+          if (creep.moveTo(reservedTarget, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
+            if (creep.memory._move) {
+              if (getPathLength(creep.memory._move.path) < reservedTarget.distance) {
+                SourceManager.claimReservedSpot(reservedTarget.pos);
+                creep.memory.target = reservedTarget.pos;
+                return;
+              } else {
+                creep.cancelOrder("move");
+              }
+            } else {
+              creep.cancelOrder("move");
+            }
           }
         }
         next();
