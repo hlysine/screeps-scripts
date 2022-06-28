@@ -41,9 +41,14 @@ export default class HarvestAction extends Action {
         }
         const reservedTarget = creep.pos.findClosestByPath(SourceManager.reservedSpots);
         if (reservedTarget) {
-          if (creep.moveTo(reservedTarget, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
+          if (creep.moveTo(reservedTarget) === OK) {
             if (creep.memory._move) {
-              if (getPathLength(creep.memory._move.path) < reservedTarget.distance) {
+              const path = Room.deserializePath(creep.memory._move.path);
+              if (path.length < reservedTarget.distance) {
+                creep.room.visual.poly(
+                  path.map(s => [s.x, s.y]),
+                  { fill: "transparent", stroke: "#00f", lineStyle: "dashed", strokeWidth: 0.15, opacity: 0.5 }
+                );
                 SourceManager.claimReservedSpot(reservedTarget.pos);
                 creep.memory.target = reservedTarget.pos;
                 return;
