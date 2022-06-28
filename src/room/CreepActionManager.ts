@@ -4,15 +4,18 @@ import HarvestAction from "creep/HarvestAction";
 import IdleAction from "creep/IdleAction";
 import TransferAction from "creep/TransferAction";
 import UpgradeAction from "creep/UpgradeAction";
+import UrgentUpgradeAction from "creep/UrgentUpgradeAction";
+
+const actionClasses = [HarvestAction, UrgentUpgradeAction, TransferAction, BuildAction, UpgradeAction, IdleAction];
 
 type ActionMap = {
-  [key in ActionType]: CreepActionManager["actionClasses"][number];
+  [key in ActionType]: InstanceType<typeof actionClasses[number]>;
 };
 
 class CreepActionManager {
-  public actionClasses = [HarvestAction, TransferAction, BuildAction, UpgradeAction, IdleAction];
-  public actionMap = this.actionClasses.reduce<ActionMap>((map, action) => {
-    map[action.type] = action;
+  public actionMap = actionClasses.reduce<ActionMap>((map, action) => {
+    const instance = new action();
+    map[instance.type] = instance;
     return map;
   }, {} as ActionMap);
   public actions = Object.keys(this.actionMap) as ActionType[];

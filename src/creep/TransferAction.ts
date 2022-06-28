@@ -1,12 +1,12 @@
-import { functionChain, requireEnergy } from "utils/ActionUtils";
+import { requireEnergy } from "creep/SharedSteps";
 import { positionEquals } from "utils/MathUtils";
-import Action, { ActionType } from "./Action";
+import Action, { ActionType, Complete, Step } from "./Action";
 
-class TransferAction implements Action {
-  public type: ActionType = ActionType.Transfer;
+export default class TransferAction extends Action {
+  public override type: ActionType = ActionType.Transfer;
 
-  public loop(creep: Creep, complete: () => void): void {
-    functionChain(
+  public override getSteps(creep: Creep, complete: Complete): Step[] {
+    return [
       requireEnergy(creep, complete),
       next => {
         const targets = creep.room.find(FIND_STRUCTURES, {
@@ -52,8 +52,6 @@ class TransferAction implements Action {
         next();
       },
       complete
-    );
+    ];
   }
 }
-
-export default new TransferAction();

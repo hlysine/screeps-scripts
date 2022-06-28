@@ -1,13 +1,13 @@
 import SourceManager from "room/SourceManager";
-import { functionChain, requireEnergyCapacity } from "utils/ActionUtils";
+import { requireEnergyCapacity } from "creep/SharedSteps";
 import { positionEquals } from "utils/MathUtils";
-import Action, { ActionType } from "./Action";
+import Action, { ActionType, Complete, Step } from "./Action";
 
-class HarvestAction implements Action {
-  public type: ActionType = ActionType.Harvest;
+export default class HarvestAction extends Action {
+  public override type: ActionType = ActionType.Harvest;
 
-  public loop(creep: Creep, complete: () => void): void {
-    functionChain(
+  public override getSteps(creep: Creep, complete: Complete): Step[] {
+    return [
       requireEnergyCapacity(creep, complete),
       next => {
         const sources = creep.room.find(FIND_SOURCES);
@@ -42,8 +42,6 @@ class HarvestAction implements Action {
         next();
       },
       complete
-    );
+    ];
   }
 }
-
-export default new HarvestAction();

@@ -1,11 +1,11 @@
-import { functionChain, requireEnergy } from "utils/ActionUtils";
-import Action, { ActionType } from "./Action";
+import { requireEnergy } from "creep/SharedSteps";
+import Action, { ActionType, Complete, Step } from "./Action";
 
-class UpgradeAction implements Action {
-  public type: ActionType = ActionType.Upgrade;
+export default class UpgradeAction extends Action {
+  public override type: ActionType = ActionType.Upgrade;
 
-  public loop(creep: Creep, complete: () => void): void {
-    functionChain(
+  public override getSteps(creep: Creep, complete: Complete): Step[] {
+    return [
       requireEnergy(creep, complete),
       next => {
         if (creep.room.controller) {
@@ -22,8 +22,6 @@ class UpgradeAction implements Action {
         next();
       },
       complete
-    );
+    ];
   }
 }
-
-export default new UpgradeAction();

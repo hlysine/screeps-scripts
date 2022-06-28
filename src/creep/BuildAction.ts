@@ -1,12 +1,12 @@
-import { functionChain, requireEnergy } from "utils/ActionUtils";
+import { requireEnergy } from "creep/SharedSteps";
 import { positionEquals } from "utils/MathUtils";
-import Action, { ActionType } from "./Action";
+import Action, { ActionType, Complete, Step } from "./Action";
 
-class BuildAction implements Action {
-  public type: ActionType = ActionType.Build;
+export default class BuildAction extends Action {
+  public override type: ActionType = ActionType.Build;
 
-  public loop(creep: Creep, complete: () => void): void {
-    functionChain(
+  public override getSteps(creep: Creep, complete: Complete): Step[] {
+    return [
       requireEnergy(creep, complete),
       next => {
         const sources = creep.room.find(FIND_CONSTRUCTION_SITES);
@@ -40,8 +40,6 @@ class BuildAction implements Action {
         next();
       },
       complete
-    );
+    ];
   }
 }
-
-export default new BuildAction();

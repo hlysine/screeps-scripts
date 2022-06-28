@@ -1,11 +1,11 @@
-import Action, { ActionType } from "./Action";
+import Action, { ActionType, Complete, Step } from "./Action";
 
-class IdleAction implements Action {
-  public type: ActionType = ActionType.Idle;
+export default class IdleAction extends Action {
+  public override type: ActionType = ActionType.Idle;
 
-  public loop(creep: Creep, complete: () => void): void {
-    complete(); // find something to do
+  public override getSteps(creep: Creep, complete: Complete): Step[] {
+    return [
+      complete // find something to do
+    ];
   }
 }
-
-export default new IdleAction();

@@ -1,11 +1,16 @@
 import { Serialized } from "utils/TypeUtils";
 
+export interface Step {
+  (next: () => void): void;
+}
+
 export enum ActionType {
-  Harvest = "harvest",
-  Upgrade = "upgrade",
   Build = "build",
+  Harvest = "harvest",
+  Idle = "idle",
   Transfer = "transfer",
-  Idle = "idle"
+  Upgrade = "upgrade",
+  UrgentUpgrade = "urgent_upgrade"
 }
 
 export interface ActionMenory {
@@ -13,7 +18,24 @@ export interface ActionMenory {
   target?: Serialized<RoomPosition>;
 }
 
-export default interface Action {
-  loop(creep: Creep, complete: () => void): void;
-  type: ActionType;
+/**
+ * This function has no parameters. The optional next parameter is to faciliate implicit typing.
+ */
+export type Complete = (next?: () => void) => void;
+
+export default abstract class Action {
+  abstract type: ActionType;
+
+  abstract getSteps(creep: Creep, complete: Complete): Step[];
+
+  public loop(creep: Creep, complete: Complete): void {
+    const steps = this.getSteps(creep, complete);
+    let index = 0;
+    const next = () => {
+      if (index < steps.length) {
+        steps[index++](next);
+      }
+    };
+    next();
+  }
 }
