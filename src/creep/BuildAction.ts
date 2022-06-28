@@ -1,5 +1,4 @@
 import { requireEnergy } from "creep/SharedSteps";
-import { positionEquals } from "utils/MathUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class BuildAction extends Action {
@@ -20,7 +19,7 @@ export default class BuildAction extends Action {
       },
       next => {
         if (creep.memory.target) {
-          if (positionEquals(creep.memory.target, creep.pos)) {
+          if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 3)) {
             creep.memory.target = undefined;
           } else {
             creep.moveTo(creep.memory.target.x, creep.memory.target.y, { visualizePathStyle: { stroke: "#ffffff" } });

@@ -26,7 +26,7 @@ export default class TransferAction extends Action {
       },
       next => {
         if (creep.memory.target) {
-          if (positionEquals(creep.memory.target, creep.pos)) {
+          if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 1)) {
             creep.memory.target = undefined;
           } else {
             creep.moveTo(creep.memory.target.x, creep.memory.target.y, { visualizePathStyle: { stroke: "#ffffff" } });
