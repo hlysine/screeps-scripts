@@ -29,7 +29,7 @@ function getBodyParts(energyCapacity: number): BodyPartConstant[] {
 function getCreepLimit(room: Room): number {
   let limit = 1;
   if (room.controller) {
-    limit += room.controller.level + 3;
+    limit += room.controller.level;
   }
   limit += Object.values(Game.structures).filter(s => s.pos.roomName === room.name).length;
   return limit;
