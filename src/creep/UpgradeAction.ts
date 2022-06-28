@@ -9,9 +9,13 @@ class UpgradeAction implements Action {
       requireEnergy(creep, complete),
       next => {
         if (creep.room.controller) {
-          if (creep.upgradeController(creep.room.controller) === ERR_NOT_IN_RANGE) {
+          const returnCode = creep.upgradeController(creep.room.controller);
+          if (returnCode === ERR_NOT_IN_RANGE) {
             creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
             creep.memory.target = creep.room.controller.pos;
+            return;
+          } else if (returnCode === OK) {
+            creep.memory.target = creep.pos;
             return;
           }
         }
