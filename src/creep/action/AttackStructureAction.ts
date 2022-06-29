@@ -40,8 +40,7 @@ export default class AttackStructureAction extends Action {
           } else if (
             creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
               visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true,
-              ignoreCreeps: true
+              ignoreDestructibleStructures: true
             }) === ERR_NO_PATH
           ) {
             creep.memory.target = undefined;
@@ -57,8 +56,7 @@ export default class AttackStructureAction extends Action {
           if (
             creep.moveTo(target, {
               visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true,
-              ignoreCreeps: true
+              ignoreDestructibleStructures: true
             }) === OK
           ) {
             creep.memory.target = target.pos;
@@ -75,8 +73,7 @@ export default class AttackStructureAction extends Action {
           if (
             creep.moveTo(target, {
               visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true,
-              ignoreCreeps: true
+              ignoreDestructibleStructures: true
             }) === OK
           ) {
             creep.memory.target = target.pos;
