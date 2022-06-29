@@ -75,8 +75,10 @@ class CreepSpawnManager implements Manager {
         return;
       }
 
+      if (spawn.room.energyAvailable < spawn.room.energyCapacityAvailable) return;
+
       const creepsInSpawn = this.countCreepsByRole(creeps);
-      Roles.forEach(role => {
+      for (const role of Roles) {
         const { limit, bodyParts } = roles[role.type];
         const count = creepsInSpawn[role.type] || 0;
         if (count < limit) {
@@ -85,8 +87,9 @@ class CreepSpawnManager implements Manager {
             memory: { role: role.type, action: role.actions[0] }
           });
           console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
+          break;
         }
-      });
+      }
     });
   }
 }
