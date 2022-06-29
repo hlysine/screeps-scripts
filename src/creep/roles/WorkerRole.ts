@@ -42,7 +42,7 @@ const WorkerRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    if (room.controller) return room.controller.level * 2 + 2;
+    if (room.controller) return room.controller.level * 2;
     return 0;
   }
 };
