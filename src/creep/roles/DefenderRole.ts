@@ -1,8 +1,8 @@
 import { ActionType } from "creep/action/Action";
 import Role, { CreepInfo, RoleType } from "./Role";
 
-const AttackerRole: Role = {
-  type: RoleType.Attacker,
+const DefenderRole: Role = {
+  type: RoleType.Defender,
   actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag, ActionType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
@@ -48,4 +48,4 @@ const AttackerRole: Role = {
   }
 };
 
-export default AttackerRole;
+export default DefenderRole;

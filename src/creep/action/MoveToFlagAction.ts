@@ -20,7 +20,8 @@ export default class MoveToFlagAction extends Action {
           return;
         }
         next();
-      }
+      },
+      complete // move to flag is a low-priority action
     ];
   }
 }

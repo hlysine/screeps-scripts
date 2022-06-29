@@ -77,8 +77,11 @@ class CreepSpawnManager implements Manager {
           opacity: 0.8
         });
         report += `  Spawning ${spawningCreep.name}`;
+        console.log(report);
         return;
       }
+
+      let spawnSuccess = false;
 
       for (const role of Roles) {
         const {
@@ -87,7 +90,7 @@ class CreepSpawnManager implements Manager {
         } = roles[role.type];
         const count = creepsInSpawn[role.type] || 0;
         report += `  ${role.type}: ${count}/${limit} (${energyCost} energy)\n`;
-        if (count < limit && spawn.room.energyAvailable >= energyCost) {
+        if (!spawnSuccess && count < limit && spawn.room.energyAvailable >= energyCost) {
           const newName = `${spawn.name}-${role.type}-${Game.time}`;
           const result = spawn.spawnCreep(bodyParts, newName, {
             memory: { role: role.type, action: role.actions[0] }
@@ -95,7 +98,7 @@ class CreepSpawnManager implements Manager {
           console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
           if (result === OK) {
             creepsInSpawn[role.type] = count + 1;
-            break;
+            spawnSuccess = true;
           }
         }
       }
