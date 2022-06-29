@@ -81,7 +81,7 @@ class CreepSpawnManager implements Manager {
         return;
       }
 
-      let spawnSuccess = false;
+      let blockSpawn = false;
 
       for (const role of Roles) {
         const {
@@ -90,15 +90,19 @@ class CreepSpawnManager implements Manager {
         } = roles[role.type];
         const count = creepsInSpawn[role.type] || 0;
         report += `  ${role.type}: ${count}/${limit} (${energyCost} energy)\n`;
-        if (!spawnSuccess && count < limit && spawn.room.energyAvailable >= energyCost) {
-          const newName = `${spawn.name}-${role.type}-${Game.time}`;
-          const result = spawn.spawnCreep(bodyParts, newName, {
-            memory: { role: role.type, action: role.actions[0] }
-          });
-          console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
-          if (result === OK) {
-            creepsInSpawn[role.type] = count + 1;
-            spawnSuccess = true;
+        if (!blockSpawn && count < limit) {
+          if (spawn.room.energyAvailable >= energyCost) {
+            const newName = `${spawn.name}-${role.type}-${Game.time}`;
+            const result = spawn.spawnCreep(bodyParts, newName, {
+              memory: { role: role.type, action: role.actions[0] }
+            });
+            console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
+            if (result === OK) {
+              creepsInSpawn[role.type] = count + 1;
+              blockSpawn = true;
+            }
+          } else {
+            blockSpawn = true;
           }
         }
       }
