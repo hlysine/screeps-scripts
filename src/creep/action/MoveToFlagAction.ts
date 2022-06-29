@@ -15,10 +15,7 @@ export default class MoveToFlagAction extends Action {
           complete();
           return;
         }
-        if (creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
-          complete();
-          return;
-        }
+        creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 1 });
         next();
       },
       complete // move to flag is a low-priority action

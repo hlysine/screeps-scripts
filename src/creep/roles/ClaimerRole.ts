@@ -3,7 +3,7 @@ import Role, { CreepInfo, RoleType } from "./Role";
 
 const ClaimerRole: Role = {
   type: RoleType.Claimer,
-  actions: [ActionType.Claim, ActionType.MoveToFlag, ActionType.Idle],
+  actions: [ActionType.Claim, ActionType.MoveToFlag],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo

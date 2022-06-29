@@ -3,7 +3,7 @@ import Role, { CreepInfo, RoleType } from "./Role";
 
 const DefenderRole: Role = {
   type: RoleType.Defender,
-  actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag, ActionType.Idle],
+  actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
