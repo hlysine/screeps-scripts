@@ -11,6 +11,10 @@ export default class MoveToFlagAction extends Action {
           complete();
           return;
         }
+        if (creep.pos.inRangeTo(target, 1)) {
+          complete();
+          return;
+        }
         if (creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
           complete();
           return;
