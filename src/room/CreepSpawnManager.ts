@@ -30,7 +30,7 @@ class CreepSpawnManager implements Manager {
   private getRoleInfoMap(spawn: StructureSpawn): RoleInfoMap {
     const effectiveEnergyCapacity = Math.min(
       spawn.room.energyCapacityAvailable,
-      spawn.store.getCapacity(RESOURCE_ENERGY) + this.creeepsCount[RoleType.Worker] * 100
+      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[RoleType.Worker] ?? 0) * 100
     );
     return Roles.reduce((map, role) => {
       map[role.type] = {
