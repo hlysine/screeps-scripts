@@ -1,4 +1,4 @@
-import { requireEnergy } from "creep/SharedSteps";
+import { requireEnergy } from "./SharedSteps";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class BuildAction extends Action {

@@ -1,54 +1,57 @@
 import Manager from "./Manager";
-import { ActionType } from "creep/Action";
+import { RoleType } from "creep/roles/Role";
+import { Roles } from "creep/roles/RoleStore";
+
+interface RoleInfo {
+  limit: number;
+  bodyParts: BodyPartConstant[];
+}
+
+type RoleInfoMap = {
+  [key in RoleType]: RoleInfo;
+};
 
 interface SpawnInfo {
   spawn: StructureSpawn;
-  bodyParts: BodyPartConstant[];
-  creepLimit: number;
+  roles: RoleInfoMap;
 }
 
-function getBodyParts(energyCapacity: number): BodyPartConstant[] {
-  const base = Math.floor(energyCapacity / 200);
-  let remainder = energyCapacity % 200;
-  const bodyParts: BodyPartConstant[] = [];
-  if (remainder >= 100) {
-    bodyParts.push(WORK);
-    remainder -= 100;
-  }
-  if (remainder >= 50) {
-    bodyParts.push(MOVE);
-  }
-  for (let i = 0; i < base; i++) {
-    bodyParts.push(WORK);
-    bodyParts.push(CARRY);
-    bodyParts.push(MOVE);
-  }
-  return bodyParts;
-}
-
-function getCreepLimit(room: Room): number {
-  let limit = 1;
-  if (room.controller) {
-    limit += room.controller.level;
-  }
-  limit += Object.values(Game.structures).filter(s => s.pos.roomName === room.name).length;
-  return limit;
-}
+type RoleCountMap = {
+  [key in RoleType]: number;
+};
 
 class CreepSpawnManager implements Manager {
   public spawns: SpawnInfo[] | undefined;
 
   public spawnRefreshFrequency = 10;
 
+  private getRoleInfoMap(spawn: StructureSpawn): RoleInfoMap {
+    return Roles.reduce((map, role) => {
+      map[role.type] = {
+        limit: role.getCreepLimit(spawn.room),
+        bodyParts: role.getBodyParts(spawn.room.energyCapacityAvailable)
+      };
+      return map;
+    }, {} as RoleInfoMap);
+  }
+
   public getSpawns(): SpawnInfo[] {
     return Object.values(Game.spawns).map(spawn => {
-      const energyAvailable = spawn.room.energyCapacityAvailable;
       return {
         spawn,
-        bodyParts: getBodyParts(energyAvailable),
-        creepLimit: getCreepLimit(spawn.room)
+        roles: this.getRoleInfoMap(spawn)
       };
     });
+  }
+
+  private countCreepsByRole(creeps: Creep[]): RoleCountMap {
+    const creepsByRole: RoleCountMap = {} as RoleCountMap;
+    creeps.forEach(c => {
+      const role = c.memory.role;
+      if (!creepsByRole[role]) creepsByRole[role] = 0;
+      creepsByRole[role]++;
+    });
+    return creepsByRole;
   }
 
   public loop(): void {
@@ -61,15 +64,29 @@ class CreepSpawnManager implements Manager {
     }
 
     this.spawns.forEach(spawnInfo => {
-      const { spawn, bodyParts } = spawnInfo;
-      const creepsInSpawn = creeps.filter(c => c.room.name === spawn.room.name);
-      if (creepsInSpawn.length < spawnInfo.creepLimit) {
-        const newName = `${spawn.room.name}-Creep${Game.time}`;
-        const result = spawn.spawnCreep(bodyParts, newName, {
-          memory: { action: ActionType.Idle }
+      const { spawn, roles } = spawnInfo;
+
+      if (spawn.spawning) {
+        const spawningCreep = Game.creeps[spawn.spawning.name];
+        spawn.room.visual.text("🛠️" + spawningCreep.name, spawn.pos.x + 1, spawn.pos.y, {
+          align: "left",
+          opacity: 0.8
         });
-        console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
+        return;
       }
+
+      const creepsInSpawn = this.countCreepsByRole(creeps);
+      Roles.forEach(role => {
+        const { limit, bodyParts } = roles[role.type];
+        const count = creepsInSpawn[role.type] || 0;
+        if (count < limit) {
+          const newName = `${spawn.room.name}-${role.type}-${Game.time}`;
+          const result = spawn.spawnCreep(bodyParts, newName, {
+            memory: { role: role.type, action: role.actions[0] }
+          });
+          console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
+        }
+      });
     });
   }
 }

@@ -1,6 +1,6 @@
 import SourceManager from "room/SourceManager";
-import { requireEnergyCapacity } from "creep/SharedSteps";
-import { getPathLength, positionEquals } from "utils/MoveUtils";
+import { requireEnergyCapacity } from "./SharedSteps";
+import { positionEquals } from "utils/MoveUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class HarvestAction extends Action {

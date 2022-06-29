@@ -3,8 +3,9 @@ import { Serialized } from "utils/TypeUtils";
 import tower from "structure/Tower";
 import SourceManager from "room/SourceManager";
 import CreepSpawnManager from "room/CreepSpawnManager";
-import { ActionType } from "creep/Action";
+import { ActionMemory } from "creep/action/Action";
 import CreepActionManager from "room/CreepActionManager";
+import { RoleMemory } from "creep/roles/Role";
 
 declare global {
   /*
@@ -21,9 +22,7 @@ declare global {
     log: any;
   }
 
-  interface CreepMemory {
-    action: ActionType;
-    target?: Serialized<RoomPosition>;
+  interface CreepMemory extends ActionMemory, RoleMemory {
     _move?: {
       dest: Serialized<RoomPosition>;
       time: number;
@@ -56,16 +55,6 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   managers.forEach(manager => manager.loop());
-
-  if (Game.spawns.Spawn1.spawning) {
-    const spawningCreep = Game.creeps[Game.spawns.Spawn1.spawning.name];
-    Game.spawns.Spawn1.room.visual.text(
-      "🛠️" + spawningCreep.name,
-      Game.spawns.Spawn1.pos.x + 1,
-      Game.spawns.Spawn1.pos.y,
-      { align: "left", opacity: 0.8 }
-    );
-  }
 
   for (const name in Game.structures) {
     const structure = Game.structures[name];

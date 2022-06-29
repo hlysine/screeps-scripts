@@ -13,7 +13,7 @@ export enum ActionType {
   UrgentUpgrade = "urgent_upgrade"
 }
 
-export interface ActionMenory {
+export interface ActionMemory {
   action: ActionType;
   target?: Serialized<RoomPosition>;
 }
