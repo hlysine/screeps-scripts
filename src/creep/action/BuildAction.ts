@@ -21,8 +21,13 @@ export default class BuildAction extends Action {
         if (creep.memory.target) {
           if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 3)) {
             creep.memory.target = undefined;
+          } else if (
+            creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
+              visualizePathStyle: { stroke: "#ffffff" }
+            }) === ERR_NO_PATH
+          ) {
+            creep.memory.target = undefined;
           } else {
-            creep.moveTo(creep.memory.target.x, creep.memory.target.y, { visualizePathStyle: { stroke: "#ffffff" } });
             return;
           }
         }

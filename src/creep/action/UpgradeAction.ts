@@ -11,7 +11,10 @@ export default class UpgradeAction extends Action {
         if (creep.room.controller) {
           const returnCode = creep.upgradeController(creep.room.controller);
           if (returnCode === ERR_NOT_IN_RANGE) {
-            creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
+            if (creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
+              next();
+              return;
+            }
             creep.memory.target = creep.room.controller.pos;
             return;
           } else if (returnCode === OK) {

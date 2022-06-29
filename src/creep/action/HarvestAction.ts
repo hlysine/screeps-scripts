@@ -23,8 +23,13 @@ export default class HarvestAction extends Action {
         if (creep.memory.target) {
           if (positionEquals(creep.memory.target, creep.pos)) {
             creep.memory.target = undefined;
+          } else if (
+            creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
+              visualizePathStyle: { stroke: "#ffffff" }
+            }) === ERR_NO_PATH
+          ) {
+            creep.memory.target = undefined;
           } else {
-            creep.moveTo(creep.memory.target.x, creep.memory.target.y, { visualizePathStyle: { stroke: "#ffffff" } });
             return;
           }
         }
