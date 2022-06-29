@@ -43,7 +43,8 @@ const AttackerRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    return room.find(FIND_MY_STRUCTURES, { filter: s => s.structureType === STRUCTURE_EXTENSION }).length;
+    if (room.controller) return room.controller.level * 2 - 2;
+    return 0;
   }
 };
 

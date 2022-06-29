@@ -42,12 +42,8 @@ const WorkerRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    let limit = 1;
-    if (room.controller) {
-      limit += room.controller.level;
-    }
-    limit += Object.values(Game.structures).filter(s => s.pos.roomName === room.name).length;
-    return limit;
+    if (room.controller) return room.controller.level * 2 + 2;
+    return 0;
   }
 };
 
