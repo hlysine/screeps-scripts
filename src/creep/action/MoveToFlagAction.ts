@@ -6,7 +6,7 @@ export default class MoveToFlagAction extends Action {
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
-        const target = Object.values(Game.flags).find(f => f.name.startsWith("ATTACK"));
+        const target = Object.values(Game.flags).find(f => f.name.toLowerCase().includes("@" + creep.memory.role));
         if (!target) {
           complete();
           return;
