@@ -10,7 +10,7 @@ export default class HarvestAction extends Action {
     return [
       requireEnergyCapacity(creep, complete),
       next => {
-        const sources = creep.room.find(FIND_SOURCES);
+        const sources = creep.room.find(FIND_SOURCES, { filter: source => source.energy > 0 });
         for (const target of sources) {
           if (creep.harvest(target) === OK) {
             creep.memory.target = creep.pos;

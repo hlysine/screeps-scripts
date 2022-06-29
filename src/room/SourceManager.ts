@@ -17,7 +17,7 @@ class SourceManager implements Manager {
     this.reservedSpots = [];
     const creeps = Object.values(Game.creeps);
     Object.values(Game.rooms).forEach(room => {
-      room.find(FIND_SOURCES).forEach(source => {
+      room.find(FIND_SOURCES, { filter: source => source.energy > 0 }).forEach(source => {
         const terrain = source.room.getTerrain();
         for (let i = -1; i <= 1; i++) {
           for (let j = -1; j <= 1; j++) {

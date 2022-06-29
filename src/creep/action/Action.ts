@@ -5,9 +5,10 @@ export interface Step {
 }
 
 export enum ActionType {
-  AttackFlag = "attack_flag",
+  MoveToFlag = "move_to_flag",
   Build = "build",
-  Defend = "defend",
+  AttackCreep = "attack_creep",
+  AttackStructure = "attack_structure",
   Harvest = "harvest",
   Idle = "idle",
   Transfer = "transfer",

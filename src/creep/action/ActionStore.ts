@@ -1,11 +1,13 @@
 import Action, { ActionType } from "./Action";
 import BuildAction from "./BuildAction";
-import DefendAction from "./DefendAction";
+import AttackCreepAction from "./AttackCreepAction";
+import AttackStructureAction from "./AttackStructureAction";
 import HarvestAction from "./HarvestAction";
 import IdleAction from "./IdleAction";
 import TransferAction from "./TransferAction";
 import UpgradeAction from "./UpgradeAction";
 import UrgentUpgradeAction from "./UrgentUpgradeAction";
+import MoveToFlagAction from "./MoveToFlagAction";
 
 type ActionMap = {
   [key in ActionType]: Action;
@@ -13,9 +15,11 @@ type ActionMap = {
 
 export const Actions = [
   new BuildAction(),
-  new DefendAction(),
   new HarvestAction(),
   new IdleAction(),
+  new MoveToFlagAction(),
+  new AttackCreepAction(),
+  new AttackStructureAction(),
   new TransferAction(),
   new UpgradeAction(),
   new UrgentUpgradeAction()

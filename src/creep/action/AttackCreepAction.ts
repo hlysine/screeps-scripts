@@ -1,7 +1,7 @@
 import Action, { ActionType, Complete, Step } from "./Action";
 
-export default class DefendAction extends Action {
-  public override type: ActionType = ActionType.Defend;
+export default class AttackCreepAction extends Action {
+  public override type: ActionType = ActionType.AttackCreep;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
@@ -31,7 +31,9 @@ export default class DefendAction extends Action {
             creep.memory.creepTarget = undefined;
           } else if (
             creep.moveTo(target.pos, {
-              visualizePathStyle: { stroke: "#ffffff" }
+              visualizePathStyle: { stroke: "#ffffff" },
+              ignoreDestructibleStructures: true,
+              ignoreCreeps: true
             }) === ERR_NO_PATH
           ) {
             creep.memory.target = undefined;
@@ -45,7 +47,13 @@ export default class DefendAction extends Action {
       next => {
         const target = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
         if (target) {
-          if (creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
+          if (
+            creep.moveTo(target, {
+              visualizePathStyle: { stroke: "#ffffff" },
+              ignoreDestructibleStructures: true,
+              ignoreCreeps: true
+            }) === OK
+          ) {
             creep.memory.target = target.pos;
             creep.memory.creepTarget = target.id;
             return;
