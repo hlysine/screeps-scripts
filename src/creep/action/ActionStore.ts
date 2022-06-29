@@ -8,6 +8,7 @@ import TransferAction from "./TransferAction";
 import UpgradeAction from "./UpgradeAction";
 import UrgentUpgradeAction from "./UrgentUpgradeAction";
 import MoveToFlagAction from "./MoveToFlagAction";
+import ClaimAction from "./ClaimAction";
 
 type ActionMap = {
   [key in ActionType]: Action;
@@ -22,7 +23,8 @@ export const Actions = [
   new AttackStructureAction(),
   new TransferAction(),
   new UpgradeAction(),
-  new UrgentUpgradeAction()
+  new UrgentUpgradeAction(),
+  new ClaimAction()
 ];
 
 export const ActionMap = Actions.reduce<ActionMap>((map, action) => {

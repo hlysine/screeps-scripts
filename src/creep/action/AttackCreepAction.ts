@@ -24,6 +24,27 @@ export default class AttackCreepAction extends Action {
         next();
       },
       next => {
+        // Only destroy walls if this room is not mine
+        if (creep.room.find(FIND_MY_SPAWNS).length === 0) {
+          const targets = creep.room.find(FIND_STRUCTURES, {
+            filter: structure => structure.structureType === STRUCTURE_WALL
+          });
+          for (const target of targets) {
+            if (creep.rangedAttack(target) === OK) {
+              creep.memory.target = creep.pos;
+              break;
+            }
+          }
+          for (const target of targets) {
+            if (creep.attack(target) === OK) {
+              creep.memory.target = creep.pos;
+              break;
+            }
+          }
+        }
+        next();
+      },
+      next => {
         if (creep.memory.creepTarget) {
           const target = Game.getObjectById(creep.memory.creepTarget);
           if (!target) {

@@ -68,16 +68,17 @@ class CreepSpawnManager implements Manager {
     this.spawns.forEach(spawnInfo => {
       const { spawn, roles } = spawnInfo;
 
+      let report = `Spawn info: ${spawn.name}\n`;
+
       if (spawn.spawning) {
         const spawningCreep = Game.creeps[spawn.spawning.name];
         spawn.room.visual.text("🛠️" + spawningCreep.name, spawn.pos.x + 1, spawn.pos.y, {
           align: "left",
           opacity: 0.8
         });
+        report += `  Spawning ${spawningCreep.name}`;
         return;
       }
-
-      let report = `${spawn.name}\n`;
 
       for (const role of Roles) {
         const {

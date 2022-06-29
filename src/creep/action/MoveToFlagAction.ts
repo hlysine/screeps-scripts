@@ -6,12 +6,8 @@ export default class MoveToFlagAction extends Action {
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
-        const target = creep.pos.findClosestByPath(FIND_FLAGS, { filter: flag => flag.name.startsWith("ATTACK") });
+        const target = Object.values(Game.flags).find(f => f.name.startsWith("ATTACK"));
         if (!target) {
-          complete();
-          return;
-        }
-        if (creep.room.name === target.pos.roomName) {
           complete();
           return;
         }

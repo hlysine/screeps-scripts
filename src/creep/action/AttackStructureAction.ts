@@ -9,7 +9,9 @@ export default class AttackStructureAction extends Action {
       next => {
         const targets: AnyStructure[] = [
           ...creep.room.find(FIND_HOSTILE_SPAWNS),
-          ...creep.room.find(FIND_HOSTILE_STRUCTURES)
+          ...creep.room.find(FIND_HOSTILE_STRUCTURES, {
+            filter: structure => structure.structureType !== STRUCTURE_CONTROLLER
+          })
         ];
         // Only destroy walls if this room is not mine
         if (creep.room.find(FIND_MY_SPAWNS).length === 0) {
@@ -66,7 +68,9 @@ export default class AttackStructureAction extends Action {
         next();
       },
       next => {
-        const target = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES);
+        const target = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
+          filter: structure => structure.structureType !== STRUCTURE_CONTROLLER
+        });
         if (target) {
           if (
             creep.moveTo(target, {

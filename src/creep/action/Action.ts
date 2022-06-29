@@ -13,7 +13,8 @@ export enum ActionType {
   Idle = "idle",
   Transfer = "transfer",
   Upgrade = "upgrade",
-  UrgentUpgrade = "urgent_upgrade"
+  UrgentUpgrade = "urgent_upgrade",
+  Claim = "claim"
 }
 
 export interface ActionMemory {
