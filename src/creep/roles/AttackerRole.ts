@@ -1,11 +1,11 @@
 import { ActionType } from "creep/action/Action";
-import Role, { RoleType } from "./Role";
+import Role, { CreepInfo, RoleType } from "./Role";
 
 const AttackerRole: Role = {
   type: RoleType.Attacker,
   actions: [ActionType.Defend, ActionType.Idle],
 
-  getBodyParts(energyCapacity: number): BodyPartConstant[] {
+  getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE] combo
     const base = Math.floor(energyCapacity / 130);
     let remainder = energyCapacity % 130;
@@ -17,6 +17,7 @@ const AttackerRole: Role = {
     remainder = remainder % 50;
     // remaining TOUGH
     const remainingTough = Math.floor(remainder / 10);
+    remainder = remainder % 10;
 
     const bodyParts: BodyPartConstant[] = [];
     for (let i = 0; i < remainingTough; i++) {
@@ -33,7 +34,10 @@ const AttackerRole: Role = {
       bodyParts.push(ATTACK);
       bodyParts.push(MOVE);
     }
-    return bodyParts;
+    return {
+      bodyParts,
+      energyCost: energyCapacity - remainder
+    };
   },
 
   getCreepLimit(room: Room): number {

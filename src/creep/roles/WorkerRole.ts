@@ -1,5 +1,5 @@
 import { ActionType } from "creep/action/Action";
-import Role, { RoleType } from "./Role";
+import Role, { CreepInfo, RoleType } from "./Role";
 
 const WorkerRole: Role = {
   type: RoleType.Worker,
@@ -12,7 +12,7 @@ const WorkerRole: Role = {
     ActionType.Idle
   ],
 
-  getBodyParts(energyCapacity: number): BodyPartConstant[] {
+  getCreepInfo(energyCapacity: number): CreepInfo {
     // [WORK, CARRY, MOVE] combo
     const base = Math.floor(energyCapacity / 200);
     let remainder = energyCapacity % 200;
@@ -21,6 +21,7 @@ const WorkerRole: Role = {
     remainder = remainder % 100;
     // remaining MOVE
     const remainingMove = Math.floor(remainder / 50);
+    remainder = remainder % 50;
 
     const bodyParts: BodyPartConstant[] = [];
     for (let i = 0; i < remainingWork; i++) {
@@ -34,7 +35,10 @@ const WorkerRole: Role = {
       bodyParts.push(CARRY);
       bodyParts.push(MOVE);
     }
-    return bodyParts;
+    return {
+      bodyParts,
+      energyCost: energyCapacity - remainder
+    };
   },
 
   getCreepLimit(room: Room): number {

@@ -1,10 +1,10 @@
 import Manager from "./Manager";
-import { RoleType } from "creep/roles/Role";
+import { CreepInfo, RoleType } from "creep/roles/Role";
 import { Roles } from "creep/roles/RoleStore";
 
 interface RoleInfo {
   limit: number;
-  bodyParts: BodyPartConstant[];
+  creepInfo: CreepInfo;
 }
 
 type RoleInfoMap = {
@@ -29,7 +29,7 @@ class CreepSpawnManager implements Manager {
     return Roles.reduce((map, role) => {
       map[role.type] = {
         limit: role.getCreepLimit(spawn.room),
-        bodyParts: role.getBodyParts(spawn.room.energyCapacityAvailable)
+        creepInfo: role.getCreepInfo(spawn.room.energyCapacityAvailable)
       };
       return map;
     }, {} as RoleInfoMap);
@@ -75,13 +75,14 @@ class CreepSpawnManager implements Manager {
         return;
       }
 
-      if (spawn.room.energyAvailable < spawn.room.energyCapacityAvailable) return;
-
       const creepsInSpawn = this.countCreepsByRole(creeps);
       for (const role of Roles) {
-        const { limit, bodyParts } = roles[role.type];
+        const {
+          limit,
+          creepInfo: { bodyParts, energyCost }
+        } = roles[role.type];
         const count = creepsInSpawn[role.type] || 0;
-        if (count < limit) {
+        if (count < limit && spawn.room.energyAvailable >= energyCost) {
           const newName = `${spawn.room.name}-${role.type}-${Game.time}`;
           const result = spawn.spawnCreep(bodyParts, newName, {
             memory: { role: role.type, action: role.actions[0] }
