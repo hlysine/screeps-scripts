@@ -6,12 +6,12 @@ const AttackerRole: Role = {
   actions: [ActionType.Defend, ActionType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
+    // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
+    const base = Math.floor(energyCapacity / 330);
+    let remainder = energyCapacity % 330;
     // [ATTACK, MOVE] combo
-    const base = Math.floor(energyCapacity / 130);
-    let remainder = energyCapacity % 130;
-    // [TOUGH, MOVE] combo
-    const defenseBase = Math.floor(remainder / 60);
-    remainder = remainder % 60;
+    const meleeBase = Math.floor(remainder / 130);
+    remainder = remainder % 130;
     // remaining MOVE
     const remainingMove = Math.floor(remainder / 50);
     remainder = remainder % 50;
@@ -26,12 +26,14 @@ const AttackerRole: Role = {
     for (let i = 0; i < remainingMove; i++) {
       bodyParts.push(MOVE);
     }
-    for (let i = 0; i < defenseBase; i++) {
-      bodyParts.push(TOUGH);
+    for (let i = 0; i < meleeBase; i++) {
+      bodyParts.push(ATTACK);
       bodyParts.push(MOVE);
     }
     for (let i = 0; i < base; i++) {
       bodyParts.push(ATTACK);
+      bodyParts.push(MOVE);
+      bodyParts.push(RANGED_ATTACK);
       bodyParts.push(MOVE);
     }
     return {

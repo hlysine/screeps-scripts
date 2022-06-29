@@ -8,10 +8,17 @@ export default class DefendAction extends Action {
       next => {
         const targets = creep.room.find(FIND_HOSTILE_CREEPS);
         for (const target of targets) {
+          if (creep.rangedAttack(target) === OK) {
+            creep.memory.target = creep.pos;
+            creep.memory.creepTarget = target.id;
+            break;
+          }
+        }
+        for (const target of targets) {
           if (creep.attack(target) === OK) {
             creep.memory.target = creep.pos;
             creep.memory.creepTarget = target.id;
-            return;
+            break;
           }
         }
         next();
