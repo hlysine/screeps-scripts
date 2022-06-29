@@ -13,14 +13,20 @@ const WorkerRole: Role = {
   ],
 
   getBodyParts(energyCapacity: number): BodyPartConstant[] {
+    // [WORK, CARRY, MOVE] combo
     const base = Math.floor(energyCapacity / 200);
     let remainder = energyCapacity % 200;
+    // remaining WORK
+    const remainingWork = Math.floor(remainder / 100);
+    remainder = remainder % 100;
+    // remaining MOVE
+    const remainingMove = Math.floor(remainder / 50);
+
     const bodyParts: BodyPartConstant[] = [];
-    if (remainder >= 100) {
+    for (let i = 0; i < remainingWork; i++) {
       bodyParts.push(WORK);
-      remainder -= 100;
     }
-    if (remainder >= 50) {
+    for (let i = 0; i < remainingMove; i++) {
       bodyParts.push(MOVE);
     }
     for (let i = 0; i < base; i++) {

@@ -87,7 +87,7 @@ class CreepSpawnManager implements Manager {
             memory: { role: role.type, action: role.actions[0] }
           });
           console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
-          break;
+          if (result === OK) break;
         }
       }
     });

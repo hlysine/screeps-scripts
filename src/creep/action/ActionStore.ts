@@ -1,5 +1,6 @@
 import Action, { ActionType } from "./Action";
 import BuildAction from "./BuildAction";
+import DefendAction from "./DefendAction";
 import HarvestAction from "./HarvestAction";
 import IdleAction from "./IdleAction";
 import TransferAction from "./TransferAction";
@@ -11,12 +12,13 @@ type ActionMap = {
 };
 
 export const Actions = [
-  new HarvestAction(),
-  new UrgentUpgradeAction(),
-  new TransferAction(),
   new BuildAction(),
+  new DefendAction(),
+  new HarvestAction(),
+  new IdleAction(),
+  new TransferAction(),
   new UpgradeAction(),
-  new IdleAction()
+  new UrgentUpgradeAction()
 ];
 
 export const ActionMap = Actions.reduce<ActionMap>((map, action) => {

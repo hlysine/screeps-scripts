@@ -5,7 +5,9 @@ export interface Step {
 }
 
 export enum ActionType {
+  AttackFlag = "attack_flag",
   Build = "build",
+  Defend = "defend",
   Harvest = "harvest",
   Idle = "idle",
   Transfer = "transfer",
@@ -16,6 +18,7 @@ export enum ActionType {
 export interface ActionMemory {
   action: ActionType;
   target?: Serialized<RoomPosition>;
+  creepTarget?: Id<Creep>;
 }
 
 /**
