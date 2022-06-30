@@ -104,10 +104,13 @@ class SourceManager implements Manager {
           !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + RoleType.Worker))
         ) {
           delete this.roomCache[roomName];
+        } else if (room && room.controller && !room.controller.my) {
+          delete this.roomCache[roomName];
         }
       }
     }
 
+    this.freeSpots = [];
     const lastReservations = this.reservedSpots;
     this.reservedSpots = [];
 
@@ -156,6 +159,7 @@ class SourceManager implements Manager {
     if (reservation) {
       this.reservedSpots = this.reservedSpots.filter(r => r !== reservation);
       reservation.creep.memory.target = undefined;
+      reservation.creep.memory.sourceTarget = undefined;
     }
   }
 }
