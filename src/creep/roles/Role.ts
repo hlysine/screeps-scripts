@@ -24,4 +24,5 @@ export default interface Role {
   actions: ActionType[];
   getCreepInfo(energyCapacity: number): CreepInfo;
   getCreepLimit(room: Room): number;
+  getSpawnPriority(room: Room): number;
 }

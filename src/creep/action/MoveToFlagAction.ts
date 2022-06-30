@@ -16,9 +16,12 @@ export default class MoveToFlagAction extends Action {
           return;
         }
         creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 1 });
+        if (creep.pos.roomName === target.pos.roomName) {
+          complete();
+          return;
+        }
         next();
-      },
-      complete // move to flag is a low-priority action
+      }
     ];
   }
 }

@@ -5,6 +5,7 @@ import { Roles } from "creep/roles/RoleStore";
 interface RoleInfo {
   limit: number;
   creepInfo: CreepInfo;
+  spawnPriority: number;
 }
 
 type RoleInfoMap = {
@@ -25,17 +26,21 @@ class CreepSpawnManager implements Manager {
 
   public spawnRefreshFrequency = 10;
 
-  private creeepsCount: RoleCountMap = {} as RoleCountMap;
+  public creeepsCount: RoleCountMap = {} as RoleCountMap;
 
   private getRoleInfoMap(spawn: StructureSpawn): RoleInfoMap {
     const effectiveEnergyCapacity = Math.min(
       spawn.room.energyCapacityAvailable,
-      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[RoleType.Worker] ?? 0) * 100
+      // we can't use capacity from extensions if there are no creeps filling them
+      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[RoleType.Worker] ?? 0) * 100,
+      // creeps too large may deplete energy too quickly
+      (spawn.room.controller?.level ?? 0) * 250
     );
     return Roles.reduce((map, role) => {
       map[role.type] = {
         limit: role.getCreepLimit(spawn.room),
-        creepInfo: role.getCreepInfo(effectiveEnergyCapacity)
+        creepInfo: role.getCreepInfo(effectiveEnergyCapacity),
+        spawnPriority: role.getSpawnPriority(spawn.room)
       };
       return map;
     }, {} as RoleInfoMap);
@@ -87,13 +92,14 @@ class CreepSpawnManager implements Manager {
 
       let blockSpawn = false;
 
-      for (const role of Roles) {
+      for (const role of Roles.slice().sort((a, b) => roles[b.type].spawnPriority - roles[a.type].spawnPriority)) {
         const {
           limit,
-          creepInfo: { bodyParts, energyCost }
+          creepInfo: { bodyParts, energyCost },
+          spawnPriority
         } = roles[role.type];
         const count = this.creeepsCount[role.type] || 0;
-        report += `  ${role.type}: ${count}/${limit} (${energyCost} energy)\n`;
+        report += `  ${role.type}: ${count}/${limit} (${energyCost} energy ${spawnPriority} priority)\n`;
         if (!blockSpawn && count < limit) {
           if (spawn.room.energyAvailable >= energyCost) {
             const newName = `${spawn.name}-${role.type}-${Game.time}`;

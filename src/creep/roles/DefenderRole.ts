@@ -3,7 +3,7 @@ import Role, { CreepInfo, RoleType } from "./Role";
 
 const DefenderRole: Role = {
   type: RoleType.Defender,
-  actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag],
+  actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag, ActionType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
@@ -43,7 +43,18 @@ const DefenderRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    if (room.controller) return room.controller.level - 1;
+    if (room.controller) {
+      if (
+        Object.keys(Game.flags).find(f => f.includes("@" + this.type)) !== undefined ||
+        room.find(FIND_HOSTILE_CREEPS).length > 0
+      )
+        return room.controller.level - 1;
+    }
+    return 1;
+  },
+
+  getSpawnPriority(room: Room): number {
+    if (room.find(FIND_HOSTILE_CREEPS).length > 0) return 50;
     return 0;
   }
 };

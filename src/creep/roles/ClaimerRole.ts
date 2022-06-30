@@ -3,7 +3,7 @@ import Role, { CreepInfo, RoleType } from "./Role";
 
 const ClaimerRole: Role = {
   type: RoleType.Claimer,
-  actions: [ActionType.Claim, ActionType.MoveToFlag],
+  actions: [ActionType.Claim, ActionType.MoveToFlag, ActionType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo
@@ -30,8 +30,12 @@ const ClaimerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      if (Object.values(Game.flags).length > 0) return 2;
+      if (Object.keys(Game.flags).find(f => f.includes("@" + this.type)) !== undefined) return 2;
     }
+    return 0;
+  },
+
+  getSpawnPriority(_room: Room): number {
     return 0;
   }
 };

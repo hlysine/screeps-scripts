@@ -1,4 +1,5 @@
 import { ActionType } from "creep/action/Action";
+import CreepSpawnManager from "room/CreepSpawnManager";
 import Role, { CreepInfo, RoleType } from "./Role";
 
 const WorkerRole: Role = {
@@ -42,8 +43,13 @@ const WorkerRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    if (room.controller) return room.controller.level * 2;
+    if (room.controller) return room.controller.level * 2 - 1;
     return 0;
+  },
+
+  getSpawnPriority(room: Room): number {
+    if (CreepSpawnManager.creeepsCount[RoleType.Worker] >= this.getCreepLimit(room) / 2) return 0;
+    return 99;
   }
 };
 
