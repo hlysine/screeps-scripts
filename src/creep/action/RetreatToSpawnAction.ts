@@ -1,3 +1,4 @@
+import { findClosestAcrossRooms } from "utils/MoveUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
 export default class RetreatToSpawnAction extends Action {
@@ -21,7 +22,7 @@ export default class RetreatToSpawnAction extends Action {
         next();
       },
       _next => {
-        const closestSpawn = creep.pos.findClosestByPath(Object.values(Game.spawns));
+        const closestSpawn = findClosestAcrossRooms(creep.pos, Object.values(Game.spawns));
         if (!closestSpawn) {
           creep.memory.target = undefined;
           creep.memory.spawnTarget = undefined;

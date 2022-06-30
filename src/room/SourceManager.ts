@@ -2,7 +2,7 @@ import Manager from "./Manager";
 import { getInterRoomDistance, positionEquals } from "utils/MoveUtils";
 import { RoleType } from "creep/roles/Role";
 
-interface MiningSpot {
+export interface MiningSpot {
   pos: RoomPosition;
   sourceId?: Id<Source>;
 }
@@ -14,7 +14,7 @@ interface RoomHarvestCache {
   };
 }
 
-interface Reservation {
+export interface Reservation {
   spot: MiningSpot;
   creep: Creep;
   distance: number;
@@ -134,7 +134,9 @@ class SourceManager implements Manager {
             this.reservedSpots.push({
               spot,
               creep,
-              distance: spot.pos.findPathTo(creep.pos).length + getInterRoomDistance(spot.pos, creep.pos),
+              distance: Game.rooms[spot.pos.roomName]
+                ? spot.pos.findPathTo(creep.pos).length
+                : getInterRoomDistance(spot.pos, creep.pos),
               get pos(): RoomPosition {
                 return spot.pos;
               }
