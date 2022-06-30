@@ -113,6 +113,33 @@ class CreepSpawnManager implements Manager {
         }
       }
 
+      if (!blockSpawn) {
+        const nearbyCreeps = spawn.room.lookForAtArea(
+          LOOK_CREEPS,
+          spawn.pos.y - 1,
+          spawn.pos.x - 1,
+          spawn.pos.y + 1,
+          spawn.pos.x + 1,
+          true
+        );
+        // find creep with min lifetime
+        let creepWithMinLifetime: Creep | undefined;
+        for (const creep of nearbyCreeps) {
+          if (!creep.creep.ticksToLive) break;
+          if (creep.creep.ticksToLive < (creepWithMinLifetime?.ticksToLive ?? Number.POSITIVE_INFINITY)) {
+            creepWithMinLifetime = creep.creep;
+          }
+        }
+        if (creepWithMinLifetime && creepWithMinLifetime.ticksToLive && creepWithMinLifetime.ticksToLive < 1000) {
+          spawn.room.visual.text("🔨" + creepWithMinLifetime.name, spawn.pos.x + 1, spawn.pos.y, {
+            align: "left",
+            opacity: 0.8
+          });
+          spawn.renewCreep(creepWithMinLifetime);
+          console.log(`Renewing ${creepWithMinLifetime.name}`);
+        }
+      }
+
       console.log(report);
     });
   }
