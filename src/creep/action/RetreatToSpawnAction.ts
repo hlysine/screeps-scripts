@@ -1,7 +1,7 @@
 import Action, { ActionType, Complete, Step } from "./Action";
 
-export default class RetreatToBaseAction extends Action {
-  public override type: ActionType = ActionType.RetreatToBase;
+export default class RetreatToSpawnAction extends Action {
+  public override type: ActionType = ActionType.RetreatToSpawn;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
@@ -29,6 +29,15 @@ export default class RetreatToBaseAction extends Action {
           return;
         }
         if (creep.pos.inRangeTo(closestSpawn, 15)) {
+          creep.memory.target = undefined;
+          creep.memory.spawnTarget = undefined;
+          complete();
+          return;
+        }
+        if (
+          creep.room.find(FIND_FLAGS, { filter: f => f.name.toLowerCase().includes("@" + creep.memory.role) }).length >
+          0
+        ) {
           creep.memory.target = undefined;
           creep.memory.spawnTarget = undefined;
           complete();

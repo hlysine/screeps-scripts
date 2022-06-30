@@ -15,7 +15,7 @@ export enum ActionType {
   Upgrade = "upgrade",
   UrgentUpgrade = "urgent_upgrade",
   Claim = "claim",
-  RetreatToBase = "retreat_to_base"
+  RetreatToSpawn = "retreat_to_spawn"
 }
 
 export interface ActionMemory {

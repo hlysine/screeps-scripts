@@ -9,7 +9,7 @@ import UpgradeAction from "./UpgradeAction";
 import UrgentUpgradeAction from "./UrgentUpgradeAction";
 import MoveToFlagAction from "./MoveToFlagAction";
 import ClaimAction from "./ClaimAction";
-import RetreatToBaseAction from "./RetreatToBaseAction";
+import RetreatToSpawnAction from "./RetreatToSpawnAction";
 
 type ActionMap = {
   [key in ActionType]: Action;
@@ -26,7 +26,7 @@ export const Actions = [
   new UpgradeAction(),
   new UrgentUpgradeAction(),
   new ClaimAction(),
-  new RetreatToBaseAction()
+  new RetreatToSpawnAction()
 ];
 
 export const ActionMap = Actions.reduce<ActionMap>((map, action) => {

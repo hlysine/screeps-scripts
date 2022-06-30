@@ -7,7 +7,7 @@ const AttackerRole: Role = {
     ActionType.AttackCreep,
     ActionType.AttackStructure,
     ActionType.MoveToFlag,
-    ActionType.RetreatToBase,
+    ActionType.RetreatToSpawn,
     ActionType.Idle
   ],
 
