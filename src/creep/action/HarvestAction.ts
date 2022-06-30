@@ -46,7 +46,10 @@ export default class HarvestAction extends Action {
         next();
       },
       next => {
-        const freeTarget = findClosestAcrossRooms(creep.pos, SourceManager.freeSpots);
+        const freeTarget =
+          (creep.ticksToLive ?? Number.POSITIVE_INFINITY) >= 400
+            ? findClosestAcrossRooms(creep.pos, SourceManager.freeSpots)
+            : creep.pos.findClosestByPath(SourceManager.freeSpots);
         if (freeTarget) {
           if (creep.moveTo(freeTarget, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
             SourceManager.claimFreeSpot(freeTarget);
@@ -55,7 +58,10 @@ export default class HarvestAction extends Action {
             return;
           }
         }
-        const reservedTarget = findClosestAcrossRooms(creep.pos, SourceManager.reservedSpots);
+        const reservedTarget =
+          (creep.ticksToLive ?? Number.POSITIVE_INFINITY) >= 400
+            ? findClosestAcrossRooms(creep.pos, SourceManager.reservedSpots)
+            : creep.pos.findClosestByPath(SourceManager.reservedSpots);
         if (reservedTarget) {
           if (creep.moveTo(reservedTarget) === OK) {
             if (creep.memory._move) {
