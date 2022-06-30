@@ -1,5 +1,6 @@
 import Manager from "./Manager";
 import { getInterRoomDistance, positionEquals } from "utils/MoveUtils";
+import { RoleType } from "creep/roles/Role";
 
 interface MiningSpot {
   pos: RoomPosition;
@@ -68,6 +69,8 @@ class SourceManager implements Manager {
       };
     });
     Object.values(Game.flags).forEach(flag => {
+      if (!flag.name.toLowerCase().includes("@" + RoleType.Worker)) return;
+
       const cache = newCache[flag.pos.roomName];
       if (!cache) {
         newCache[flag.pos.roomName] = {
@@ -83,6 +86,8 @@ class SourceManager implements Manager {
 
   public loop(): void {
     if (!this.roomCache) this.roomCache = this.computeCache();
+    const creeps = Object.values(Game.creeps);
+    const flags = Object.values(Game.flags);
 
     for (const roomName in Game.rooms) {
       const cache = this.roomCache[roomName];
@@ -93,11 +98,18 @@ class SourceManager implements Manager {
           availableSpots: this.getAvailableSpots(room)
         };
       }
+      if (cache) {
+        if (
+          !room &&
+          !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + RoleType.Worker))
+        ) {
+          delete this.roomCache[roomName];
+        }
+      }
     }
 
     const lastReservations = this.reservedSpots;
     this.reservedSpots = [];
-    const creeps = Object.values(Game.creeps);
 
     for (const roomName in this.roomCache) {
       const cache = this.roomCache[roomName];
