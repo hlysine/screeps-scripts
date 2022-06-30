@@ -22,6 +22,8 @@ export interface ActionMemory {
   action: ActionType;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;
+  sourceTarget?: Id<Source>;
+  spawnTarget?: Id<StructureSpawn>;
 }
 
 /**

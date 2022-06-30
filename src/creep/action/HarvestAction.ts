@@ -14,6 +14,7 @@ export default class HarvestAction extends Action {
         for (const target of sources) {
           if (creep.harvest(target) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.sourceTarget = target.id;
             return;
           }
         }
@@ -21,6 +22,15 @@ export default class HarvestAction extends Action {
       },
       next => {
         if (creep.memory.target) {
+          if (creep.memory.sourceTarget) {
+            const source = Game.getObjectById(creep.memory.sourceTarget);
+            if (source && source.energy <= 0) {
+              creep.memory.target = undefined;
+              creep.memory.sourceTarget = undefined;
+              next();
+              return;
+            }
+          }
           if (positionEquals(creep.memory.target, creep.pos)) {
             creep.memory.target = undefined;
           } else if (
@@ -40,7 +50,8 @@ export default class HarvestAction extends Action {
         if (freeTarget) {
           if (creep.moveTo(freeTarget, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
             SourceManager.claimFreeSpot(freeTarget);
-            creep.memory.target = freeTarget;
+            creep.memory.target = freeTarget.pos;
+            creep.memory.sourceTarget = freeTarget.sourceId;
             return;
           }
         }
@@ -54,8 +65,9 @@ export default class HarvestAction extends Action {
                   path.map(s => [s.x, s.y]),
                   { fill: "transparent", stroke: "#00f", lineStyle: "dashed", strokeWidth: 0.15, opacity: 0.5 }
                 );
-                SourceManager.claimReservedSpot(reservedTarget.pos);
+                SourceManager.claimReservedSpot(reservedTarget.spot);
                 creep.memory.target = reservedTarget.pos;
+                creep.memory.sourceTarget = reservedTarget.spot.sourceId;
                 return;
               } else {
                 creep.cancelOrder("move");
