@@ -9,7 +9,7 @@ export default class RetreatToSpawnAction extends Action {
         if (creep.memory.spawnTarget) {
           const spawn = Game.getObjectById(creep.memory.spawnTarget);
           if (spawn) {
-            if (creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 1 }) === ERR_NO_PATH) {
+            if (creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 }) === ERR_NO_PATH) {
               creep.memory.target = undefined;
               creep.memory.spawnTarget = undefined;
             } else {
@@ -43,7 +43,7 @@ export default class RetreatToSpawnAction extends Action {
           complete();
           return;
         }
-        creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 1 });
+        creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
         creep.memory.target = closestSpawn.pos;
         creep.memory.spawnTarget = closestSpawn.id;
         complete();
