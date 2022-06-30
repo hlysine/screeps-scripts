@@ -9,6 +9,7 @@ const WorkerRole: Role = {
     ActionType.Transfer,
     ActionType.Build,
     ActionType.Upgrade,
+    ActionType.RetreatToSpawn,
     ActionType.Idle
   ],
 

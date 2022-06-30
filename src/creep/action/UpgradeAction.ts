@@ -8,7 +8,7 @@ export default class UpgradeAction extends Action {
     return [
       requireEnergy(creep, complete),
       next => {
-        if (creep.room.controller) {
+        if (creep.room.controller && creep.room.controller.my) {
           const returnCode = creep.upgradeController(creep.room.controller);
           if (returnCode === ERR_NOT_IN_RANGE) {
             if (creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {

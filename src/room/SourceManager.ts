@@ -104,7 +104,7 @@ class SourceManager implements Manager {
           !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + RoleType.Worker))
         ) {
           delete this.roomCache[roomName];
-        } else if (room && room.controller && !room.controller.my) {
+        } else if (room && room.controller && !room.controller.my && room.controller.level > 0) {
           delete this.roomCache[roomName];
         }
       }

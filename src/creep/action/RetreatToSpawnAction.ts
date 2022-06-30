@@ -1,3 +1,4 @@
+import { RoleType } from "creep/roles/Role";
 import { findClosestAcrossRooms } from "utils/MoveUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
 
@@ -35,9 +36,13 @@ export default class RetreatToSpawnAction extends Action {
           complete();
           return;
         }
+        // these roles prioritize idling at the flag instead of going back to spawn
         if (
+          (creep.memory.role === RoleType.Defender ||
+            creep.memory.role === RoleType.Attacker ||
+            creep.memory.role === RoleType.Claimer) &&
           creep.room.find(FIND_FLAGS, { filter: f => f.name.toLowerCase().includes("@" + creep.memory.role) }).length >
-          0
+            0
         ) {
           creep.memory.target = undefined;
           creep.memory.spawnTarget = undefined;
