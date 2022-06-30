@@ -1,9 +1,9 @@
 import { ActionType } from "creep/action/Action";
-import Role, { CreepInfo, RoleType } from "./Role";
+import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const ClaimerRole: Role = {
   type: RoleType.Claimer,
-  actions: [ActionType.Claim, ActionType.MoveToFlag, ActionType.Idle],
+  actions: [ActionType.Claim, ActionType.MoveToFlag, ActionType.RetreatToBase, ActionType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo
@@ -35,7 +35,7 @@ const ClaimerRole: Role = {
     return 0;
   },
 
-  getSpawnPriority(_room: Room): number {
+  getSpawnPriority(_room: Room, _roleCount: RoleCountMap): number {
     return 0;
   }
 };

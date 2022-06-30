@@ -1,9 +1,15 @@
 import { ActionType } from "creep/action/Action";
-import Role, { CreepInfo, RoleType } from "./Role";
+import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const AttackerRole: Role = {
   type: RoleType.Attacker,
-  actions: [ActionType.AttackCreep, ActionType.AttackStructure, ActionType.MoveToFlag, ActionType.Idle],
+  actions: [
+    ActionType.AttackCreep,
+    ActionType.AttackStructure,
+    ActionType.MoveToFlag,
+    ActionType.RetreatToBase,
+    ActionType.Idle
+  ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
@@ -53,7 +59,7 @@ const AttackerRole: Role = {
     return 0;
   },
 
-  getSpawnPriority(room: Room): number {
+  getSpawnPriority(room: Room, _roleCount: RoleCountMap): number {
     if (room.find(FIND_HOSTILE_CREEPS).length > 0) return 50;
     return 0;
   }

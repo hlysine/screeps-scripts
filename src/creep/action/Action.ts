@@ -14,7 +14,8 @@ export enum ActionType {
   Transfer = "transfer",
   Upgrade = "upgrade",
   UrgentUpgrade = "urgent_upgrade",
-  Claim = "claim"
+  Claim = "claim",
+  RetreatToBase = "retreat_to_base"
 }
 
 export interface ActionMemory {

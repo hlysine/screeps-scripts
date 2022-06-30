@@ -1,6 +1,5 @@
 import { ActionType } from "creep/action/Action";
-import CreepSpawnManager from "room/CreepSpawnManager";
-import Role, { CreepInfo, RoleType } from "./Role";
+import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const WorkerRole: Role = {
   type: RoleType.Worker,
@@ -47,8 +46,8 @@ const WorkerRole: Role = {
     return 0;
   },
 
-  getSpawnPriority(room: Room): number {
-    if (CreepSpawnManager.creeepsCount[RoleType.Worker] >= this.getCreepLimit(room) / 2) return 0;
+  getSpawnPriority(room: Room, roleCount: RoleCountMap): number {
+    if (roleCount[RoleType.Worker] >= this.getCreepLimit(room) / 2) return 0;
     return 99;
   }
 };

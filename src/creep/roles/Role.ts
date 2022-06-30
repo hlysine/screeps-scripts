@@ -19,10 +19,14 @@ export interface CreepInfo {
   energyCost: number;
 }
 
+export type RoleCountMap = {
+  [key in RoleType]: number;
+};
+
 export default interface Role {
   type: RoleType;
   actions: ActionType[];
   getCreepInfo(energyCapacity: number): CreepInfo;
   getCreepLimit(room: Room): number;
-  getSpawnPriority(room: Room): number;
+  getSpawnPriority(room: Room, roleCount: RoleCountMap): number;
 }

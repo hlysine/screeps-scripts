@@ -1,5 +1,5 @@
 import Manager from "./Manager";
-import { CreepInfo, RoleType } from "creep/roles/Role";
+import { CreepInfo, RoleCountMap, RoleType } from "creep/roles/Role";
 import { Roles } from "creep/roles/RoleStore";
 
 interface RoleInfo {
@@ -16,10 +16,6 @@ interface SpawnInfo {
   spawn: StructureSpawn;
   roles: RoleInfoMap;
 }
-
-type RoleCountMap = {
-  [key in RoleType]: number;
-};
 
 class CreepSpawnManager implements Manager {
   public spawns: SpawnInfo[] | undefined;
@@ -40,7 +36,7 @@ class CreepSpawnManager implements Manager {
       map[role.type] = {
         limit: role.getCreepLimit(spawn.room),
         creepInfo: role.getCreepInfo(effectiveEnergyCapacity),
-        spawnPriority: role.getSpawnPriority(spawn.room)
+        spawnPriority: role.getSpawnPriority(spawn.room, this.creeepsCount)
       };
       return map;
     }, {} as RoleInfoMap);
