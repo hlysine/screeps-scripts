@@ -11,7 +11,7 @@ export default class MoveToFlagAction extends Action {
           complete();
           return;
         }
-        if (creep.pos.inRangeTo(target, 1)) {
+        if (creep.pos.roomName === target.pos.roomName && creep.pos.inRangeTo(target, 1)) {
           complete();
           return;
         }

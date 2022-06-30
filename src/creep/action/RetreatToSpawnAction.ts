@@ -21,14 +21,14 @@ export default class RetreatToSpawnAction extends Action {
         next();
       },
       _next => {
-        const closestSpawn = creep.pos.findClosestByPath(FIND_MY_SPAWNS);
+        const closestSpawn = creep.pos.findClosestByPath(Object.values(Game.spawns));
         if (!closestSpawn) {
           creep.memory.target = undefined;
           creep.memory.spawnTarget = undefined;
           complete();
           return;
         }
-        if (creep.pos.inRangeTo(closestSpawn, 15)) {
+        if (creep.pos.roomName === closestSpawn.pos.roomName && creep.pos.inRangeTo(closestSpawn, 15)) {
           creep.memory.target = undefined;
           creep.memory.spawnTarget = undefined;
           complete();
