@@ -36,6 +36,9 @@ const WorkerRole: Role = {
       bodyParts.push(CARRY);
       bodyParts.push(MOVE);
     }
+    if (bodyParts.length > 50) {
+      bodyParts.splice(0, bodyParts.length - 50);
+    }
     return {
       bodyParts,
       energyCost: energyCapacity - remainder
