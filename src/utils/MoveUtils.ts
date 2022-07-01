@@ -1,4 +1,5 @@
 import { Serialized } from "./TypeUtils";
+import WorldPosition from "./WorldPosition";
 
 export function positionEquals(a: Serialized<RoomPosition>, b: Serialized<RoomPosition>): boolean {
   return a.x === b.x && a.y === b.y && a.roomName === b.roomName;
@@ -23,10 +24,11 @@ export function findClosestAcrossRooms<T extends _HasRoomPosition>(pos: RoomPosi
   if (roomTarget) {
     return roomTarget;
   }
+  const origin = new WorldPosition(pos);
   let closestTarget = targets[0];
-  let closestDistance = getInterRoomDistance(pos, closestTarget.pos);
+  let closestDistance = origin.getRangeTo(targets[0].pos);
   for (const target of targets) {
-    const distance = getInterRoomDistance(pos, target.pos);
+    const distance = origin.getRangeTo(target.pos);
     if (distance < closestDistance) {
       closestTarget = target;
       closestDistance = distance;
