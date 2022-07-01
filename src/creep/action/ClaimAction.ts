@@ -6,7 +6,7 @@ export default class ClaimAction extends Action {
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
-        if (creep.room.controller && !creep.room.controller.my) {
+        if (creep.room.controller && !creep.room.controller.my && creep.room.controller.upgradeBlocked === 0) {
           const returnCode = creep.attackController(creep.room.controller);
           if (returnCode === ERR_NOT_IN_RANGE) {
             if (creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
