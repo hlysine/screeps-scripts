@@ -1,6 +1,7 @@
 import Manager from "./Manager";
 import { getInterRoomDistance, positionEquals } from "utils/MoveUtils";
 import { RoleType } from "creep/roles/Role";
+import { isRoomRestricted } from "utils/StructureUtils";
 
 export interface MiningSpot {
   pos: RoomPosition;
@@ -121,6 +122,7 @@ class SourceManager implements Manager {
           const source = Game.getObjectById(spot.sourceId);
           if (source) {
             if (source.energy <= 0) return;
+            if (isRoomRestricted(source.room)) return;
           }
         }
 

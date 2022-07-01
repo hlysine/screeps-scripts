@@ -2,6 +2,7 @@ import SourceManager from "room/SourceManager";
 import { requireEnergyCapacity } from "./SharedSteps";
 import { positionEquals, getInterRoomDistance, findClosestAcrossRooms } from "utils/MoveUtils";
 import Action, { ActionType, Complete, Step } from "./Action";
+import { isRoomRestricted } from "utils/StructureUtils";
 
 export default class HarvestAction extends Action {
   public override type: ActionType = ActionType.Harvest;
@@ -10,7 +11,9 @@ export default class HarvestAction extends Action {
     return [
       requireEnergyCapacity(creep, complete),
       next => {
-        const sources = creep.room.find(FIND_SOURCES_ACTIVE);
+        const sources = creep.room.find(FIND_SOURCES_ACTIVE, {
+          filter: source => !isRoomRestricted(source.room)
+        });
         for (const target of sources) {
           if (creep.harvest(target) === OK) {
             creep.memory.target = creep.pos;
