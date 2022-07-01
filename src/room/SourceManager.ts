@@ -82,6 +82,13 @@ class SourceManager implements Manager {
         cache.availableSpots.push(...this.getAvailableSpotsInvisible(flag.pos));
       }
     });
+    // only allow 1 creep to go to invisible rooms
+    for (const roomName in newCache) {
+      const cache = newCache[roomName];
+      if (!cache.visible) {
+        cache.availableSpots.splice(1, cache.availableSpots.length - 1);
+      }
+    }
     return newCache;
   }
 
