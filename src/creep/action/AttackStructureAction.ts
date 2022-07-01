@@ -19,17 +19,36 @@ export default class AttackStructureAction extends Action {
             ...creep.room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_WALL })
           );
         }
-        for (const target of targets) {
-          if (creep.rangedAttack(target) === OK) {
-            creep.memory.target = creep.pos;
-            break;
+
+        if (targets.length === 0) {
+          next();
+          return;
+        }
+
+        let rangedTarget = targets[0];
+        let lowestHitsRanged = rangedTarget.hits;
+        for (const t of targets) {
+          if (!creep.pos.inRangeTo(t, 3)) continue;
+          if (t.hits < lowestHitsRanged) {
+            rangedTarget = t;
+            lowestHitsRanged = t.hits;
           }
         }
-        for (const target of targets) {
-          if (creep.attack(target) === OK) {
-            creep.memory.target = creep.pos;
-            break;
+        if (creep.rangedAttack(rangedTarget) === OK) {
+          creep.memory.target = creep.pos;
+        }
+
+        let meleeTarget = targets[0];
+        let lowestHits = meleeTarget.hits;
+        for (const t of targets) {
+          if (!creep.pos.inRangeTo(t, 1)) continue;
+          if (t.hits < lowestHits) {
+            meleeTarget = t;
+            lowestHits = t.hits;
           }
+        }
+        if (creep.attack(meleeTarget) === OK) {
+          creep.memory.target = creep.pos;
         }
         next();
       },
