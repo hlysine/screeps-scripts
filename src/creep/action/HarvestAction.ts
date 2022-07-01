@@ -27,7 +27,7 @@ export default class HarvestAction extends Action {
         if (creep.memory.target) {
           if (creep.memory.sourceTarget) {
             const source = Game.getObjectById(creep.memory.sourceTarget);
-            if (source && source.energy <= 0) {
+            if (source && (source.energy <= 0 || isRoomRestricted(source.room))) {
               creep.memory.target = undefined;
               creep.memory.sourceTarget = undefined;
               next();
