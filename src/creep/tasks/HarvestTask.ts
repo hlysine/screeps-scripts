@@ -7,7 +7,7 @@ import { isRoomRestricted } from "utils/StructureUtils";
 export default class HarvestTask extends Task {
   public override type: TaskType = TaskType.Harvest;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       requireEnergyCapacity(creep, complete),
       next => {

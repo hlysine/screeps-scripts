@@ -4,7 +4,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class BuildTask extends Task {
   public override type: TaskType = TaskType.Build;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       requireEnergy(creep, complete),
       next => {

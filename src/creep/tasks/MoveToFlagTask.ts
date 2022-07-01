@@ -3,7 +3,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class MoveToFlagTask extends Task {
   public override type: TaskType = TaskType.MoveToFlag;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         const target = Object.values(Game.flags).find(f => f.name.toLowerCase().includes("@" + creep.memory.role));

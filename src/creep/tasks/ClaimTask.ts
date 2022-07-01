@@ -3,7 +3,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class ClaimTask extends Task {
   public override type: TaskType = TaskType.Claim;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         if (creep.room.controller && !creep.room.controller.my && creep.room.controller.upgradeBlocked === 0) {

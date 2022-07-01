@@ -3,7 +3,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class AttackCreepTask extends Task {
   public override type: TaskType = TaskType.AttackCreep;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         const targets = creep.room.find(FIND_HOSTILE_CREEPS);

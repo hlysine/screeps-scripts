@@ -33,9 +33,9 @@ export interface TaskMemory {
 export type Complete = (next?: () => void) => void;
 
 export default abstract class Task {
-  abstract type: TaskType;
+  public abstract type: TaskType;
 
-  abstract getSteps(creep: Creep, complete: Complete): Step[];
+  protected abstract getSteps(creep: Creep, complete: Complete): Step[];
 
   public loop(creep: Creep, complete: Complete): void {
     const steps = this.getSteps(creep, complete);

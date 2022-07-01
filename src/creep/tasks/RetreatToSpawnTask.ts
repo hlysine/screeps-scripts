@@ -5,7 +5,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class RetreatToSpawnTask extends Task {
   public override type: TaskType = TaskType.RetreatToSpawn;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         if (creep.memory.spawnTarget) {

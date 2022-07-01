@@ -4,7 +4,7 @@ import Task, { TaskType, Complete, Step } from "./Task";
 export default class AttackStructureTask extends Task {
   public override type: TaskType = TaskType.AttackStructure;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         const targets: AnyStructure[] = [

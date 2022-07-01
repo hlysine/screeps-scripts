@@ -4,7 +4,7 @@ import UpgradeTask from "./UpgradeTask";
 export default class UrgentUpgradeTask extends UpgradeTask {
   public override type: TaskType = TaskType.UrgentUpgrade;
 
-  public override getSteps(creep: Creep, complete: Complete): Step[] {
+  protected override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
       next => {
         if (creep.room.controller) {
