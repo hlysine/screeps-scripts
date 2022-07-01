@@ -1,4 +1,4 @@
-import { ActionType } from "creep/action/Action";
+import { TaskType } from "creep/tasks/Task";
 
 export enum RoleType {
   Worker = "worker",
@@ -26,7 +26,7 @@ export type RoleCountMap = {
 
 export default interface Role {
   type: RoleType;
-  actions: ActionType[];
+  tasks: TaskType[];
   getCreepInfo(energyCapacity: number): CreepInfo;
   getCreepLimit(room: Room): number;
   getSpawnPriority(room: Room, roleCount: RoleCountMap): number;

@@ -1,13 +1,15 @@
-import Action, { ActionType, Complete, Step } from "./Action";
+import { requireEnergy } from "./SharedSteps";
+import Task, { TaskType, Complete, Step } from "./Task";
 
-export default class ClaimAction extends Action {
-  public override type: ActionType = ActionType.Claim;
+export default class UpgradeTask extends Task {
+  public override type: TaskType = TaskType.Upgrade;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [
+      requireEnergy(creep, complete),
       next => {
-        if (creep.room.controller && !creep.room.controller.my && creep.room.controller.upgradeBlocked === 0) {
-          const returnCode = creep.attackController(creep.room.controller);
+        if (creep.room.controller && creep.room.controller.my) {
+          const returnCode = creep.upgradeController(creep.room.controller);
           if (returnCode === ERR_NOT_IN_RANGE) {
             if (creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
               next();

@@ -1,8 +1,8 @@
-import { ActionType, Complete, Step } from "./Action";
-import UpgradeAction from "./UpgradeAction";
+import { TaskType, Complete, Step } from "./Task";
+import UpgradeTask from "./UpgradeTask";
 
-export default class UrgentUpgradeAction extends UpgradeAction {
-  public override type: ActionType = ActionType.UrgentUpgrade;
+export default class UrgentUpgradeTask extends UpgradeTask {
+  public override type: TaskType = TaskType.UrgentUpgrade;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

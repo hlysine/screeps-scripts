@@ -1,11 +1,11 @@
 import SourceManager from "room/SourceManager";
 import { requireEnergyCapacity } from "./SharedSteps";
 import { positionEquals, getInterRoomDistance, findClosestAcrossRooms } from "utils/MoveUtils";
-import Action, { ActionType, Complete, Step } from "./Action";
+import Task, { TaskType, Complete, Step } from "./Task";
 import { isRoomRestricted } from "utils/StructureUtils";
 
-export default class HarvestAction extends Action {
-  public override type: ActionType = ActionType.Harvest;
+export default class HarvestTask extends Task {
+  public override type: TaskType = TaskType.Harvest;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

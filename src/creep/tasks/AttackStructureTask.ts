@@ -1,8 +1,8 @@
 import { positionEquals } from "utils/MoveUtils";
-import Action, { ActionType, Complete, Step } from "./Action";
+import Task, { TaskType, Complete, Step } from "./Task";
 
-export default class AttackStructureAction extends Action {
-  public override type: ActionType = ActionType.AttackStructure;
+export default class AttackStructureTask extends Task {
+  public override type: TaskType = TaskType.AttackStructure;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

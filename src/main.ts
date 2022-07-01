@@ -3,8 +3,8 @@ import { Serialized } from "utils/TypeUtils";
 import tower from "structure/Tower";
 import SourceManager from "room/SourceManager";
 import CreepSpawnManager from "room/CreepSpawnManager";
-import { ActionMemory } from "creep/action/Action";
-import CreepActionManager from "room/CreepActionManager";
+import { TaskMemory } from "creep/tasks/Task";
+import CreepTaskManager from "room/CreepTaskManager";
 import { RoleMemory } from "creep/roles/Role";
 
 declare global {
@@ -22,7 +22,7 @@ declare global {
     log: any;
   }
 
-  interface CreepMemory extends ActionMemory, RoleMemory {
+  interface CreepMemory extends TaskMemory, RoleMemory {
     _move?: {
       dest: Serialized<RoomPosition>;
       time: number;
@@ -40,7 +40,7 @@ declare global {
   }
 }
 
-const managers = [SourceManager, CreepSpawnManager, CreepActionManager];
+const managers = [SourceManager, CreepSpawnManager, CreepTaskManager];
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code

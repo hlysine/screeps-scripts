@@ -1,15 +1,9 @@
-import { ActionType } from "creep/action/Action";
+import { TaskType } from "creep/tasks/Task";
 import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const DefenderRole: Role = {
   type: RoleType.Defender,
-  actions: [
-    ActionType.AttackCreep,
-    ActionType.AttackStructure,
-    ActionType.MoveToFlag,
-    ActionType.RetreatToSpawn,
-    ActionType.Idle
-  ],
+  tasks: [TaskType.AttackCreep, TaskType.AttackStructure, TaskType.MoveToFlag, TaskType.RetreatToSpawn, TaskType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo

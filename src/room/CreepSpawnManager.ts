@@ -100,7 +100,7 @@ class CreepSpawnManager implements Manager {
           if (spawn.room.energyAvailable >= energyCost) {
             const newName = `${spawn.name}-${role.type}-${Game.time}`;
             const result = spawn.spawnCreep(bodyParts, newName, {
-              memory: { role: role.type, action: role.actions[0] }
+              memory: { role: role.type, task: role.tasks[0] }
             });
             console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
             if (result === OK) {

@@ -1,9 +1,9 @@
 import { RoleType } from "creep/roles/Role";
 import { findClosestAcrossRooms } from "utils/MoveUtils";
-import Action, { ActionType, Complete, Step } from "./Action";
+import Task, { TaskType, Complete, Step } from "./Task";
 
-export default class RetreatToSpawnAction extends Action {
-  public override type: ActionType = ActionType.RetreatToSpawn;
+export default class RetreatToSpawnTask extends Task {
+  public override type: TaskType = TaskType.RetreatToSpawn;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

@@ -1,7 +1,7 @@
-import Action, { ActionType, Complete, Step } from "./Action";
+import Task, { TaskType, Complete, Step } from "./Task";
 
-export default class MoveToFlagAction extends Action {
-  public override type: ActionType = ActionType.MoveToFlag;
+export default class MoveToFlagTask extends Task {
+  public override type: TaskType = TaskType.MoveToFlag;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

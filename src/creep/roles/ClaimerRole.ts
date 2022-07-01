@@ -1,9 +1,9 @@
-import { ActionType } from "creep/action/Action";
+import { TaskType } from "creep/tasks/Task";
 import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const ClaimerRole: Role = {
   type: RoleType.Claimer,
-  actions: [ActionType.Claim, ActionType.MoveToFlag, ActionType.RetreatToSpawn, ActionType.Idle],
+  tasks: [TaskType.Claim, TaskType.MoveToFlag, TaskType.RetreatToSpawn, TaskType.Idle],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo

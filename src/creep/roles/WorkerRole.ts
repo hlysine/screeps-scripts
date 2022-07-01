@@ -1,16 +1,16 @@
-import { ActionType } from "creep/action/Action";
+import { TaskType } from "creep/tasks/Task";
 import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
 
 const WorkerRole: Role = {
   type: RoleType.Worker,
-  actions: [
-    ActionType.Harvest,
-    ActionType.UrgentUpgrade,
-    ActionType.Transfer,
-    ActionType.Build,
-    ActionType.Upgrade,
-    ActionType.RetreatToSpawn,
-    ActionType.Idle
+  tasks: [
+    TaskType.Harvest,
+    TaskType.UrgentUpgrade,
+    TaskType.Transfer,
+    TaskType.Build,
+    TaskType.Upgrade,
+    TaskType.RetreatToSpawn,
+    TaskType.Idle
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {

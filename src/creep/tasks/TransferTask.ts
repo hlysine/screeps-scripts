@@ -1,8 +1,8 @@
 import { requireEnergy } from "./SharedSteps";
-import Action, { ActionType, Complete, Step } from "./Action";
+import Task, { TaskType, Complete, Step } from "./Task";
 
-export default class TransferAction extends Action {
-  public override type: ActionType = ActionType.Transfer;
+export default class TransferTask extends Task {
+  public override type: TaskType = TaskType.Transfer;
 
   public override getSteps(creep: Creep, complete: Complete): Step[] {
     return [

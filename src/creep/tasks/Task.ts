@@ -4,7 +4,7 @@ export interface Step {
   (next: () => void): void;
 }
 
-export enum ActionType {
+export enum TaskType {
   MoveToFlag = "move_to_flag",
   Build = "build",
   AttackCreep = "attack_creep",
@@ -19,8 +19,8 @@ export enum ActionType {
   RetreatToSpawn = "retreat_to_spawn"
 }
 
-export interface ActionMemory {
-  action: ActionType;
+export interface TaskMemory {
+  task: TaskType;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;
   sourceTarget?: Id<Source>;
@@ -32,8 +32,8 @@ export interface ActionMemory {
  */
 export type Complete = (next?: () => void) => void;
 
-export default abstract class Action {
-  abstract type: ActionType;
+export default abstract class Task {
+  abstract type: TaskType;
 
   abstract getSteps(creep: Creep, complete: Complete): Step[];
 

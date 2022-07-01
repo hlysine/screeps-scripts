@@ -1,4 +1,4 @@
-import { Step } from "creep/action/Action";
+import { Step } from "creep/tasks/Task";
 
 export function requireEnergy(creep: Creep, complete: () => void): Step {
   return next => {
