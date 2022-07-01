@@ -28,7 +28,7 @@ export default class WorldPosition {
     }
   }
 
-  public static deserialize(json: number) {
+  public static deserialize(json: number): WorldPosition {
     return new WorldPosition(Math.floor(json / (WORLD_SIZE * 2 * 50)), json % (WORLD_SIZE * 2 * 50));
   }
 
@@ -70,7 +70,7 @@ export default class WorldPosition {
   /**
    * Return a new WorldPosition in the direction request
    */
-  public getPositionInDirection(direction: DirectionConstant) {
+  public getPositionInDirection(direction: DirectionConstant): WorldPosition {
     switch (direction) {
       case TOP:
         return new WorldPosition(this.x, this.y - 1);

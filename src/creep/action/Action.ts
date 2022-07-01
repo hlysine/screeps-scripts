@@ -12,6 +12,7 @@ export enum ActionType {
   Harvest = "harvest",
   Idle = "idle",
   Transfer = "transfer",
+  TransferToCreep = "transfer_to_creep",
   Upgrade = "upgrade",
   UrgentUpgrade = "urgent_upgrade",
   Claim = "claim",

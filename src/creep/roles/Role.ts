@@ -2,6 +2,7 @@ import { ActionType } from "creep/action/Action";
 
 export enum RoleType {
   Worker = "worker",
+  Helper = "helper",
   Attacker = "attacker",
   /**
    * Defenders have the same logic as Attacker, but are controlled with a different flag

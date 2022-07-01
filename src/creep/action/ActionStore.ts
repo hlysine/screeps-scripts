@@ -10,6 +10,7 @@ import UrgentUpgradeAction from "./UrgentUpgradeAction";
 import MoveToFlagAction from "./MoveToFlagAction";
 import ClaimAction from "./ClaimAction";
 import RetreatToSpawnAction from "./RetreatToSpawnAction";
+import TransferToCreepAction from "./TransferToCreepAction";
 
 type ActionMap = {
   [key in ActionType]: Action;
@@ -23,6 +24,7 @@ export const Actions = [
   new AttackCreepAction(),
   new AttackStructureAction(),
   new TransferAction(),
+  new TransferToCreepAction(),
   new UpgradeAction(),
   new UrgentUpgradeAction(),
   new ClaimAction(),
