@@ -8,6 +8,17 @@ const AttackStructureTask: Task = {
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.structureTarget) {
+        const memoizedTarget = Game.getObjectById(creep.memory.structureTarget);
+        if (memoizedTarget) {
+          if (creep.attack(memoizedTarget) === OK) {
+            creep.memory.target = creep.pos;
+            next();
+            return;
+          }
+        }
+      }
+
       const targets: AnyStructure[] = [
         ...creep.room.find(FIND_HOSTILE_SPAWNS),
         ...creep.room.find(FIND_HOSTILE_STRUCTURES, {
@@ -43,17 +54,34 @@ const AttackStructureTask: Task = {
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       if (creep.memory.target) {
         if (positionEquals(creep.memory.target, creep.pos)) {
+          // something is probably wrong if the creep reaches its position but fails the steps above
           creep.memory.target = undefined;
+          creep.memory.structureTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
+        }
+      }
+      if (creep.memory.structureTarget) {
+        const target = Game.getObjectById(creep.memory.structureTarget);
+        if (!target || target.hits === 0) {
+          creep.memory.target = undefined;
+          creep.memory.structureTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else if (
           !isMoveSuccess(
-            creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
+            creep.moveTo(target.pos, {
               visualizePathStyle: { stroke: "#ffffff" },
               ignoreDestructibleStructures: true
             })
           )
         ) {
           creep.memory.target = undefined;
+          creep.memory.structureTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else {
+          creep.memory.target = target.pos;
           ctx.status = TaskStatus.InProgress;
           return;
         }

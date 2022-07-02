@@ -23,6 +23,17 @@ const AttackCreepTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.creepTarget) {
+        const memoizedTarget = Game.getObjectById(creep.memory.creepTarget);
+        if (memoizedTarget) {
+          if (creep.attack(memoizedTarget) === OK) {
+            creep.memory.target = creep.pos;
+            next();
+            return;
+          }
+        }
+      }
+
       const targets = creep.room
         .lookForAtArea(LOOK_CREEPS, creep.pos.y - 1, creep.pos.x - 1, creep.pos.y + 1, creep.pos.x + 1, true)
         .filter(r => !r.creep.my);
@@ -39,9 +50,11 @@ const AttackCreepTask: Task = {
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       if (creep.memory.creepTarget) {
         const target = Game.getObjectById(creep.memory.creepTarget);
-        if (!target) {
+        if (!target || target.hits === 0) {
           creep.memory.target = undefined;
           creep.memory.creepTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else if (
           !isMoveSuccess(
             creep.moveTo(target.pos, {
@@ -52,7 +65,10 @@ const AttackCreepTask: Task = {
         ) {
           creep.memory.target = undefined;
           creep.memory.creepTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else {
+          creep.memory.target = target.pos;
           ctx.status = TaskStatus.InProgress;
           return;
         }
