@@ -4,22 +4,17 @@ import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 const AttackCreepTask: Task = {
   id: "attack_creep" as Id<Task>,
-  displayName: "Attack Creep",
+  displayName: "Attack creep",
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       // Only destroy walls if this room is not mine
       if (creep.room.find(FIND_MY_SPAWNS).length === 0) {
-        const targets = creep.room.find(FIND_STRUCTURES, {
-          filter: structure => structure.structureType === STRUCTURE_WALL
-        });
+        const targets = creep.room
+          .lookForAtArea(LOOK_STRUCTURES, creep.pos.y - 1, creep.pos.x - 1, creep.pos.y + 1, creep.pos.x + 1, true)
+          .filter(r => r.structure.structureType === STRUCTURE_WALL);
+
         for (const target of targets) {
-          if (creep.rangedAttack(target) === OK) {
-            creep.memory.target = creep.pos;
-            break;
-          }
-        }
-        for (const target of targets) {
-          if (creep.attack(target) === OK) {
+          if (creep.attack(target.structure) === OK) {
             creep.memory.target = creep.pos;
             break;
           }
@@ -28,18 +23,14 @@ const AttackCreepTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const targets = creep.room.find(FIND_HOSTILE_CREEPS);
+      const targets = creep.room
+        .lookForAtArea(LOOK_CREEPS, creep.pos.y - 1, creep.pos.x - 1, creep.pos.y + 1, creep.pos.x + 1, true)
+        .filter(r => !r.creep.my);
+
       for (const target of targets) {
-        if (creep.rangedAttack(target) === OK) {
+        if (creep.attack(target.creep) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.creepTarget = target.id;
-          break;
-        }
-      }
-      for (const target of targets) {
-        if (creep.attack(target) === OK) {
-          creep.memory.target = creep.pos;
-          creep.memory.creepTarget = target.id;
+          creep.memory.creepTarget = target.creep.id;
           break;
         }
       }

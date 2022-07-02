@@ -7,6 +7,7 @@ import ClaimTask from "./ClaimTask";
 import HarvestTask from "./HarvestTask";
 import IdleTask from "./IdleTask";
 import MoveToFlagTask from "./MoveToFlagTask";
+import RangedAttackAutoTask from "./RangedAttackAutoTask";
 import RetreatToSpawnTask from "./RetreatToSpawnTask";
 import TransferTask from "./TransferTask";
 import TransferToCreepTask from "./TransferToCreepTask";
@@ -25,6 +26,7 @@ export const Tasks = [
   HarvestTask,
   IdleTask,
   MoveToFlagTask,
+  RangedAttackAutoTask,
   RetreatToSpawnTask,
   TransferTask,
   TransferToCreepTask,

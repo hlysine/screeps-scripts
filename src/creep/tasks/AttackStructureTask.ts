@@ -4,7 +4,7 @@ import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 const AttackStructureTask: Task = {
   id: "attack_structure" as Id<Task>,
-  displayName: "Attack Structure",
+  displayName: "Attack structure",
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
@@ -26,29 +26,16 @@ const AttackStructureTask: Task = {
         return;
       }
 
-      let rangedTarget = targets[0];
-      let lowestHitsRanged = rangedTarget.hits;
-      for (const t of targets) {
-        if (!creep.pos.inRangeTo(t, 3)) continue;
-        if (t.hits < lowestHitsRanged) {
-          rangedTarget = t;
-          lowestHitsRanged = t.hits;
-        }
-      }
-      if (creep.rangedAttack(rangedTarget) === OK) {
-        creep.memory.target = creep.pos;
-      }
-
-      let meleeTarget = targets[0];
-      let lowestHits = meleeTarget.hits;
+      let target = targets[0];
+      let lowestHits = target.hits;
       for (const t of targets) {
         if (!creep.pos.inRangeTo(t, 1)) continue;
         if (t.hits < lowestHits) {
-          meleeTarget = t;
+          target = t;
           lowestHits = t.hits;
         }
       }
-      if (creep.attack(meleeTarget) === OK) {
+      if (creep.attack(target) === OK) {
         creep.memory.target = creep.pos;
       }
       next();

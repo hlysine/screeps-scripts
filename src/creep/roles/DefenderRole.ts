@@ -2,12 +2,16 @@ import AttackCreepTask from "creep/tasks/AttackCreepTask";
 import AttackStructureTask from "creep/tasks/AttackStructureTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
+import RangedAttackAutoTask from "creep/tasks/RangedAttackAutoTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const DefenderRole: Role = {
   id: "defender" as Id<Role>,
-  tasks: [[AttackCreepTask.id, AttackStructureTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
+  tasks: [
+    [RangedAttackAutoTask.id],
+    [AttackCreepTask.id, AttackStructureTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]
+  ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
