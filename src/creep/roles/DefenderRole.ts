@@ -54,10 +54,13 @@ const DefenderRole: Role = {
       if (
         Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined ||
         room.find(FIND_HOSTILE_CREEPS).length > 0
-      )
+      ) {
         return room.controller.level - 1;
+      } else {
+        return Math.max(0, Math.min(room.controller.level - 1, 1));
+      }
     }
-    return 1;
+    return 0;
   },
 
   getSpawnPriority(room: Room, _roleCount: RoleCountMap): number {
