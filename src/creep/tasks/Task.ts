@@ -1,50 +1,43 @@
 import { Serialized } from "utils/TypeUtils";
 
-export interface Step {
-  (next: () => void): void;
+export enum TaskStatus {
+  /**
+   * The task is currently running. No more tasks will be executed in the same tick.
+   * This task will be prioritized over other tasks of the same tier in the next tick.
+   */
+  InProgress = "in_progress",
+  /**
+   * The task is currently running with a low priority. No more tasks will be executed in the same tick,
+   * but it does not get priority over other tasks of the same tier in the next tick.
+   */
+  Background = "background",
+  /**
+   * The task is complete or cannot be executed. The next task in queue will be executed in the same tick.
+   */
+  Complete = "complete"
 }
 
-export enum TaskType {
-  MoveToFlag = "move_to_flag",
-  Build = "build",
-  AttackCreep = "attack_creep",
-  AttackStructure = "attack_structure",
-  Harvest = "harvest",
-  Idle = "idle",
-  Transfer = "transfer",
-  TransferToCreep = "transfer_to_creep",
-  Upgrade = "upgrade",
-  UrgentUpgrade = "urgent_upgrade",
-  Claim = "claim",
-  RetreatToSpawn = "retreat_to_spawn"
+export interface TaskContext {
+  status: TaskStatus;
+  [key: string]: any;
+}
+
+export type Next = () => void;
+
+export interface Step {
+  (creep: Creep, ctx: TaskContext, next: Next): void;
 }
 
 export interface TaskMemory {
-  task: TaskType;
+  task?: Id<Task>;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;
   sourceTarget?: Id<Source>;
   spawnTarget?: Id<StructureSpawn>;
 }
 
-/**
- * This function has no parameters. The optional next parameter is to faciliate implicit typing.
- */
-export type Complete = (next?: () => void) => void;
-
-export default abstract class Task {
-  public abstract type: TaskType;
-
-  protected abstract getSteps(creep: Creep, complete: Complete): Step[];
-
-  public loop(creep: Creep, complete: Complete): void {
-    const steps = this.getSteps(creep, complete);
-    let index = 0;
-    const next = () => {
-      if (index < steps.length) {
-        steps[index++](next);
-      }
-    };
-    next();
-  }
+export default interface Task {
+  id: Id<this>;
+  displayName: string;
+  steps: Step[];
 }

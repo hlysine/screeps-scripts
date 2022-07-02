@@ -1,28 +1,35 @@
-import Task, { TaskType, Complete, Step } from "./Task";
+import { isMoveSuccess } from "utils/MoveUtils";
+import { completeTask } from "./SharedSteps";
+import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-export default class ClaimTask extends Task {
-  public override type: TaskType = TaskType.Claim;
+const ClaimTask: Task = {
+  id: "claim" as Id<Task>,
+  displayName: "Claim",
 
-  protected override getSteps(creep: Creep, complete: Complete): Step[] {
-    return [
-      next => {
-        if (creep.room.controller && !creep.room.controller.my && creep.room.controller.upgradeBlocked === 0) {
-          const returnCode = creep.attackController(creep.room.controller);
-          if (returnCode === ERR_NOT_IN_RANGE) {
-            if (creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }) === ERR_NO_PATH) {
-              next();
-              return;
-            }
-            creep.memory.target = creep.room.controller.pos;
+  steps: [
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.room.controller && !creep.room.controller.my && creep.room.controller.upgradeBlocked === 0) {
+        const returnCode = creep.attackController(creep.room.controller);
+        if (returnCode === ERR_NOT_IN_RANGE) {
+          if (!isMoveSuccess(creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+            next();
             return;
-          } else if (returnCode === OK) {
-            creep.memory.target = creep.pos;
+          } else {
+            creep.memory.target = creep.room.controller.pos;
+            ctx.status = TaskStatus.InProgress;
             return;
           }
+        } else if (returnCode === OK) {
+          creep.memory.target = creep.pos;
+          // claim is instant, but we need to wait 1 tick to avoid other tasks overriding the claim intent
+          ctx.status = TaskStatus.InProgress;
+          return;
         }
-        next();
-      },
-      complete
-    ];
-  }
-}
+      }
+      next();
+    },
+    completeTask
+  ]
+};
+
+export default ClaimTask;

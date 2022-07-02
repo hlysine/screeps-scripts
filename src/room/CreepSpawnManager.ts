@@ -1,6 +1,7 @@
 import Manager from "./Manager";
-import { CreepInfo, RoleCountMap, RoleType } from "creep/roles/Role";
+import Role, { CreepInfo, RoleCountMap } from "creep/roles/Role";
 import { Roles } from "creep/roles/RoleStore";
+import WorkerRole from "creep/roles/WorkerRole";
 
 interface RoleInfo {
   limit: number;
@@ -8,9 +9,9 @@ interface RoleInfo {
   spawnPriority: number;
 }
 
-type RoleInfoMap = {
-  [key in RoleType]: RoleInfo;
-};
+interface RoleInfoMap {
+  [key: Id<Role>]: RoleInfo;
+}
 
 interface SpawnInfo {
   spawn: StructureSpawn;
@@ -28,12 +29,12 @@ class CreepSpawnManager implements Manager {
     const effectiveEnergyCapacity = Math.min(
       spawn.room.energyCapacityAvailable,
       // we can't use capacity from extensions if there are no creeps filling them
-      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[RoleType.Worker] ?? 0) * 100,
+      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[WorkerRole.id] ?? 0) * 100,
       // creeps too large may deplete energy too quickly
       (spawn.room.controller?.level ?? 0) * 250
     );
     return Roles.reduce((map, role) => {
-      map[role.type] = {
+      map[role.id] = {
         limit: role.getCreepLimit(spawn.room),
         creepInfo: role.getCreepInfo(effectiveEnergyCapacity),
         spawnPriority: role.getSpawnPriority(spawn.room, this.creeepsCount)
@@ -88,23 +89,23 @@ class CreepSpawnManager implements Manager {
 
       let blockSpawn = false;
 
-      for (const role of Roles.slice().sort((a, b) => roles[b.type].spawnPriority - roles[a.type].spawnPriority)) {
+      for (const role of Roles.slice().sort((a, b) => roles[b.id].spawnPriority - roles[a.id].spawnPriority)) {
         const {
           limit,
           creepInfo: { bodyParts, energyCost },
           spawnPriority
-        } = roles[role.type];
-        const count = this.creeepsCount[role.type] || 0;
-        report += `  ${role.type}: ${count}/${limit} (${energyCost} energy ${spawnPriority} priority)\n`;
+        } = roles[role.id];
+        const count = this.creeepsCount[role.id] || 0;
+        report += `  ${role.id}: ${count}/${limit} (${energyCost} energy ${spawnPriority} priority)\n`;
         if (!blockSpawn && count < limit) {
           if (spawn.room.energyAvailable >= energyCost) {
-            const newName = `${spawn.name}-${role.type}-${Game.time}`;
+            const newName = `${spawn.name}-${role.id}-${Game.time}`;
             const result = spawn.spawnCreep(bodyParts, newName, {
-              memory: { role: role.type, task: role.tasks[0] }
+              memory: { role: role.id, task: role.tasks[0][0] }
             });
             console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
             if (result === OK) {
-              this.creeepsCount[role.type] = count + 1;
+              this.creeepsCount[role.id] = count + 1;
               blockSpawn = true;
             }
           } else {

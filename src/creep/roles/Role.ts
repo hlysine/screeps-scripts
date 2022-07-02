@@ -1,18 +1,7 @@
-import { TaskType } from "creep/tasks/Task";
-
-export enum RoleType {
-  Worker = "worker",
-  Helper = "helper",
-  Attacker = "attacker",
-  /**
-   * Defenders have the same logic as Attacker, but are controlled with a different flag
-   */
-  Defender = "defender",
-  Claimer = "claimer"
-}
+import Task from "creep/tasks/Task";
 
 export interface RoleMemory {
-  role: RoleType;
+  role: Id<Role>;
 }
 
 export interface CreepInfo {
@@ -20,13 +9,15 @@ export interface CreepInfo {
   energyCost: number;
 }
 
-export type RoleCountMap = {
-  [key in RoleType]: number;
-};
+export interface RoleCountMap {
+  [key: Id<Role>]: number;
+}
+
+export type TaskTiers = Id<Task>[][];
 
 export default interface Role {
-  type: RoleType;
-  tasks: TaskType[];
+  id: Id<this>;
+  tasks: TaskTiers;
   getCreepInfo(energyCapacity: number): CreepInfo;
   getCreepLimit(room: Room): number;
   getSpawnPriority(room: Room, roleCount: RoleCountMap): number;

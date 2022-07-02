@@ -13,6 +13,14 @@ export function getInterRoomDistance(pos1: RoomPosition, pos2: RoomPosition): nu
   return Game.map.getRoomLinearDistance(pos1.roomName, pos2.roomName) * 50;
 }
 
+export function getWorldPathDistance(pos1: RoomPosition, pos2: RoomPosition): number {
+  if (pos1.roomName === pos2.roomName) {
+    return pos1.findPathTo(pos2).length;
+  } else {
+    return getInterRoomDistance(pos1, pos2) + pos1.findPathTo(pos2).length + pos2.findPathTo(pos1).length;
+  }
+}
+
 /**
  * This should not exist, but findClosestByPath doesn't work with positions in other rooms.
  * @param pos The starting position.
@@ -35,4 +43,8 @@ export function findClosestAcrossRooms<T extends _HasRoomPosition>(pos: RoomPosi
     }
   }
   return closestTarget;
+}
+
+export function isMoveSuccess(moveResult: number): boolean {
+  return moveResult === OK || moveResult === ERR_TIRED;
 }

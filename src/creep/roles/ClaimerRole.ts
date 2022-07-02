@@ -1,9 +1,12 @@
-import { TaskType } from "creep/tasks/Task";
-import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
+import ClaimTask from "creep/tasks/ClaimTask";
+import IdleTask from "creep/tasks/IdleTask";
+import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
+import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
+import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const ClaimerRole: Role = {
-  type: RoleType.Claimer,
-  tasks: [TaskType.Claim, TaskType.MoveToFlag, TaskType.RetreatToSpawn, TaskType.Idle],
+  id: "claimer" as Id<Role>,
+  tasks: [[ClaimTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo
@@ -33,7 +36,7 @@ const ClaimerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      if (Object.keys(Game.flags).find(f => f.includes("@" + this.type)) !== undefined) return 2;
+      if (Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined) return 2;
     }
     return 0;
   },

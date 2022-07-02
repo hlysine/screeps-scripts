@@ -1,9 +1,13 @@
-import { TaskType } from "creep/tasks/Task";
-import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
+import AttackCreepTask from "creep/tasks/AttackCreepTask";
+import AttackStructureTask from "creep/tasks/AttackStructureTask";
+import IdleTask from "creep/tasks/IdleTask";
+import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
+import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
+import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const DefenderRole: Role = {
-  type: RoleType.Defender,
-  tasks: [TaskType.AttackCreep, TaskType.AttackStructure, TaskType.MoveToFlag, TaskType.RetreatToSpawn, TaskType.Idle],
+  id: "defender" as Id<Role>,
+  tasks: [[AttackCreepTask.id, AttackStructureTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [ATTACK, MOVE, RANGED_ATTACK, MOVE] combo
@@ -48,7 +52,7 @@ const DefenderRole: Role = {
   getCreepLimit(room: Room): number {
     if (room.controller) {
       if (
-        Object.keys(Game.flags).find(f => f.includes("@" + this.type)) !== undefined ||
+        Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined ||
         room.find(FIND_HOSTILE_CREEPS).length > 0
       )
         return room.controller.level - 1;

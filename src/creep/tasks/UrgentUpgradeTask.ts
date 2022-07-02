@@ -1,21 +1,22 @@
-import { TaskType, Complete, Step } from "./Task";
+import Task, { TaskContext, Next, TaskStatus } from "./Task";
 import UpgradeTask from "./UpgradeTask";
 
-export default class UrgentUpgradeTask extends UpgradeTask {
-  public override type: TaskType = TaskType.UrgentUpgrade;
+const UrgentUpgradeTask: Task = {
+  id: "urgentUpgrade" as Id<Task>,
+  displayName: "Urgent Upgrade",
 
-  protected override getSteps(creep: Creep, complete: Complete): Step[] {
-    return [
-      next => {
-        if (creep.room.controller) {
-          if (creep.room.controller.ticksToDowngrade < 1000) {
-            next();
-            return;
-          }
+  steps: [
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.room.controller && creep.room.controller.my) {
+        if (creep.room.controller.ticksToDowngrade < 1000) {
+          next();
+          return;
         }
-        complete();
-      },
-      ...super.getSteps(creep, complete)
-    ];
-  }
-}
+      }
+      ctx.status = TaskStatus.Complete;
+    },
+    ...UpgradeTask.steps
+  ]
+};
+
+export default UrgentUpgradeTask;

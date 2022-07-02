@@ -1,21 +1,22 @@
-import { Step } from "creep/tasks/Task";
+import { Step, TaskContext, TaskStatus } from "creep/tasks/Task";
 
-export function requireEnergy(creep: Creep, complete: () => void): Step {
-  return next => {
-    if (creep.store[RESOURCE_ENERGY] === 0) {
-      complete();
-      return;
-    }
-    next();
-  };
-}
+export const requireEnergy: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
+  if (creep.store[RESOURCE_ENERGY] === 0) {
+    ctx.status = TaskStatus.Complete;
+    return;
+  }
+  next();
+};
 
-export function requireEnergyCapacity(creep: Creep, complete: () => void): Step {
-  return next => {
-    if (creep.store.getFreeCapacity() === 0) {
-      complete();
-      return;
-    }
-    next();
-  };
-}
+export const requireEnergyCapacity: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
+  if (creep.store.getFreeCapacity() === 0) {
+    ctx.status = TaskStatus.Complete;
+    return;
+  }
+  next();
+};
+
+export const completeTask: Step = (_creep: Creep, ctx: TaskContext, next: () => void): void => {
+  ctx.status = TaskStatus.Complete;
+  next();
+};

@@ -1,11 +1,15 @@
-import Task, { TaskType, Complete, Step } from "./Task";
+import Task, { Next, TaskContext, TaskStatus } from "./Task";
 
-export default class IdleTask extends Task {
-  public override type: TaskType = TaskType.Idle;
+const IdleTask: Task = {
+  id: "idle" as Id<Task>,
+  displayName: "Idle",
 
-  protected override getSteps(creep: Creep, complete: Complete): Step[] {
-    return [
-      complete // find something to do
-    ];
-  }
-}
+  steps: [
+    (_creep: Creep, ctx: TaskContext, next: Next): void => {
+      ctx.status = TaskStatus.Background;
+      next();
+    }
+  ]
+};
+
+export default IdleTask;

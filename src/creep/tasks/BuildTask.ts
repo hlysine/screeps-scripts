@@ -1,49 +1,56 @@
-import { requireEnergy } from "./SharedSteps";
-import Task, { TaskType, Complete, Step } from "./Task";
+import { isMoveSuccess } from "utils/MoveUtils";
+import { completeTask, requireEnergy } from "./SharedSteps";
+import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-export default class BuildTask extends Task {
-  public override type: TaskType = TaskType.Build;
+const BuildTask: Task = {
+  id: "build" as Id<Task>,
+  displayName: "Build",
 
-  protected override getSteps(creep: Creep, complete: Complete): Step[] {
-    return [
-      requireEnergy(creep, complete),
-      next => {
-        const sources = creep.room.find(FIND_CONSTRUCTION_SITES);
-        for (const target of sources) {
-          if (creep.build(target) === OK) {
-            creep.memory.target = creep.pos;
-            return;
-          }
+  steps: [
+    requireEnergy,
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      const sources = creep.room.find(FIND_CONSTRUCTION_SITES);
+      for (const target of sources) {
+        if (creep.build(target) === OK) {
+          creep.memory.target = creep.pos;
+          ctx.status = TaskStatus.InProgress;
+          return;
         }
-        next();
-      },
-      next => {
-        if (creep.memory.target) {
-          if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 3)) {
-            creep.memory.target = undefined;
-          } else if (
+      }
+      next();
+    },
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.target) {
+        if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 3)) {
+          creep.memory.target = undefined;
+        } else if (
+          !isMoveSuccess(
             creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
               visualizePathStyle: { stroke: "#ffffff" }
-            }) === ERR_NO_PATH
-          ) {
-            creep.memory.target = undefined;
-          } else {
-            return;
-          }
+            })
+          )
+        ) {
+          creep.memory.target = undefined;
+        } else {
+          ctx.status = TaskStatus.InProgress;
+          return;
         }
-        next();
-      },
-      next => {
-        const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
-        if (target) {
-          if (creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }) === OK) {
-            creep.memory.target = target.pos;
-            return;
-          }
+      }
+      next();
+    },
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+      if (target) {
+        if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          creep.memory.target = target.pos;
+          ctx.status = TaskStatus.InProgress;
+          return;
         }
-        next();
-      },
-      complete
-    ];
-  }
-}
+      }
+      next();
+    },
+    completeTask
+  ]
+};
+
+export default BuildTask;

@@ -1,16 +1,24 @@
-import { TaskType } from "creep/tasks/Task";
-import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
+import BuildTask from "creep/tasks/BuildTask";
+import HarvestTask from "creep/tasks/HarvestTask";
+import IdleTask from "creep/tasks/IdleTask";
+import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
+import TransferTask from "creep/tasks/TransferTask";
+import UpgradeTask from "creep/tasks/UpgradeTask";
+import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
+import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const WorkerRole: Role = {
-  type: RoleType.Worker,
+  id: "worker" as Id<Role>,
   tasks: [
-    TaskType.Harvest,
-    TaskType.UrgentUpgrade,
-    TaskType.Transfer,
-    TaskType.Build,
-    TaskType.Upgrade,
-    TaskType.RetreatToSpawn,
-    TaskType.Idle
+    [
+      HarvestTask.id,
+      UrgentUpgradeTask.id,
+      TransferTask.id,
+      BuildTask.id,
+      UpgradeTask.id,
+      RetreatToSpawnTask.id,
+      IdleTask.id
+    ]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
@@ -51,7 +59,7 @@ const WorkerRole: Role = {
   },
 
   getSpawnPriority(room: Room, roleCount: RoleCountMap): number {
-    if (roleCount[RoleType.Worker] >= this.getCreepLimit(room) / 2) return 0;
+    if (roleCount[WorkerRole.id] >= this.getCreepLimit(room) / 2) return 0;
     return 99;
   }
 };

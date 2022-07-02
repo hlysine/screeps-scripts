@@ -1,59 +1,48 @@
-import { RoleType } from "creep/roles/Role";
-import { findClosestAcrossRooms } from "utils/MoveUtils";
-import Task, { TaskType, Complete, Step } from "./Task";
+import { findClosestAcrossRooms, isMoveSuccess } from "utils/MoveUtils";
+import { completeTask } from "./SharedSteps";
+import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-export default class RetreatToSpawnTask extends Task {
-  public override type: TaskType = TaskType.RetreatToSpawn;
+const RetreatToSpawnTask: Task = {
+  id: "retreatToSpawn" as Id<Task>,
+  displayName: "Retreat to spawn",
 
-  protected override getSteps(creep: Creep, complete: Complete): Step[] {
-    return [
-      next => {
-        if (creep.memory.spawnTarget) {
-          const spawn = Game.getObjectById(creep.memory.spawnTarget);
-          if (spawn) {
-            if (creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 }) === ERR_NO_PATH) {
-              creep.memory.target = undefined;
-              creep.memory.spawnTarget = undefined;
-            } else {
-              complete();
-              return;
-            }
+  steps: [
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.spawnTarget) {
+        const spawn = Game.getObjectById(creep.memory.spawnTarget);
+        if (spawn) {
+          if (!isMoveSuccess(creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 }))) {
+            creep.memory.target = undefined;
+            creep.memory.spawnTarget = undefined;
+          } else {
+            ctx.status = TaskStatus.Background;
+            return;
           }
         }
-        next();
-      },
-      _next => {
-        const closestSpawn = findClosestAcrossRooms(creep.pos, Object.values(Game.spawns));
-        if (!closestSpawn) {
-          creep.memory.target = undefined;
-          creep.memory.spawnTarget = undefined;
-          complete();
-          return;
-        }
-        if (creep.pos.roomName === closestSpawn.pos.roomName && creep.pos.inRangeTo(closestSpawn, 15)) {
-          creep.memory.target = undefined;
-          creep.memory.spawnTarget = undefined;
-          complete();
-          return;
-        }
-        // these roles prioritize idling at the flag instead of going back to spawn
-        if (
-          (creep.memory.role === RoleType.Defender ||
-            creep.memory.role === RoleType.Attacker ||
-            creep.memory.role === RoleType.Claimer) &&
-          creep.room.find(FIND_FLAGS, { filter: f => f.name.toLowerCase().includes("@" + creep.memory.role) }).length >
-            0
-        ) {
-          creep.memory.target = undefined;
-          creep.memory.spawnTarget = undefined;
-          complete();
-          return;
-        }
-        creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
-        creep.memory.target = closestSpawn.pos;
-        creep.memory.spawnTarget = closestSpawn.id;
-        complete();
       }
-    ];
-  }
-}
+      next();
+    },
+    (creep: Creep, ctx: TaskContext, next: Next): void => {
+      const closestSpawn = findClosestAcrossRooms(creep.pos, Object.values(Game.spawns));
+      if (!closestSpawn) {
+        creep.memory.target = undefined;
+        creep.memory.spawnTarget = undefined;
+        next();
+        return;
+      }
+      if (creep.pos.roomName === closestSpawn.pos.roomName && creep.pos.inRangeTo(closestSpawn, 15)) {
+        creep.memory.target = undefined;
+        creep.memory.spawnTarget = undefined;
+        next();
+        return;
+      }
+      creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
+      creep.memory.target = closestSpawn.pos;
+      creep.memory.spawnTarget = closestSpawn.id;
+      ctx.status = TaskStatus.Background;
+    },
+    completeTask
+  ]
+};
+
+export default RetreatToSpawnTask;

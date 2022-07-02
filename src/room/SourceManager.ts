@@ -1,7 +1,7 @@
 import Manager from "./Manager";
-import { getInterRoomDistance, positionEquals } from "utils/MoveUtils";
-import { RoleType } from "creep/roles/Role";
+import { getWorldPathDistance, positionEquals } from "utils/MoveUtils";
 import { isRoomRestricted } from "utils/StructureUtils";
+import WorkerRole from "creep/roles/WorkerRole";
 
 export interface MiningSpot {
   pos: RoomPosition;
@@ -70,7 +70,7 @@ class SourceManager implements Manager {
       };
     });
     Object.values(Game.flags).forEach(flag => {
-      if (!flag.name.toLowerCase().includes("@" + RoleType.Worker)) return;
+      if (!flag.name.toLowerCase().includes("@" + WorkerRole.id)) return;
 
       const cache = newCache[flag.pos.roomName];
       if (!cache) {
@@ -109,7 +109,7 @@ class SourceManager implements Manager {
       if (cache) {
         if (
           !room &&
-          !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + RoleType.Worker))
+          !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + WorkerRole.id))
         ) {
           delete this.roomCache[roomName];
         } else if (room && room.controller && !room.controller.my && room.controller.level > 0) {
@@ -146,9 +146,7 @@ class SourceManager implements Manager {
             this.reservedSpots.push({
               spot,
               creep,
-              distance: Game.rooms[spot.pos.roomName]
-                ? spot.pos.findPathTo(creep.pos).length
-                : getInterRoomDistance(spot.pos, creep.pos),
+              distance: getWorldPathDistance(creep.pos, spot.pos),
               get pos(): RoomPosition {
                 return spot.pos;
               }

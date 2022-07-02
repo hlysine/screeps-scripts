@@ -1,37 +1,38 @@
-import Task, { TaskType } from "./Task";
-import BuildTask from "./BuildTask";
+import Task from "./Task";
+
 import AttackCreepTask from "./AttackCreepTask";
 import AttackStructureTask from "./AttackStructureTask";
+import BuildTask from "./BuildTask";
+import ClaimTask from "./ClaimTask";
 import HarvestTask from "./HarvestTask";
 import IdleTask from "./IdleTask";
+import MoveToFlagTask from "./MoveToFlagTask";
+import RetreatToSpawnTask from "./RetreatToSpawnTask";
 import TransferTask from "./TransferTask";
+import TransferToCreepTask from "./TransferToCreepTask";
 import UpgradeTask from "./UpgradeTask";
 import UrgentUpgradeTask from "./UrgentUpgradeTask";
-import MoveToFlagTask from "./MoveToFlagTask";
-import ClaimTask from "./ClaimTask";
-import RetreatToSpawnTask from "./RetreatToSpawnTask";
-import TransferToCreepTask from "./TransferToCreepTask";
 
-type TaskMap = {
-  [key in TaskType]: Task;
-};
+interface TaskMap {
+  [key: string]: Task;
+}
 
 export const Tasks = [
-  new BuildTask(),
-  new HarvestTask(),
-  new IdleTask(),
-  new MoveToFlagTask(),
-  new AttackCreepTask(),
-  new AttackStructureTask(),
-  new TransferTask(),
-  new TransferToCreepTask(),
-  new UpgradeTask(),
-  new UrgentUpgradeTask(),
-  new ClaimTask(),
-  new RetreatToSpawnTask()
+  AttackCreepTask,
+  AttackStructureTask,
+  BuildTask,
+  ClaimTask,
+  HarvestTask,
+  IdleTask,
+  MoveToFlagTask,
+  RetreatToSpawnTask,
+  TransferTask,
+  TransferToCreepTask,
+  UpgradeTask,
+  UrgentUpgradeTask
 ];
 
 export const TaskMap = Tasks.reduce<TaskMap>((map, task) => {
-  map[task.type] = task;
+  map[task.id] = task;
   return map;
 }, {} as TaskMap);

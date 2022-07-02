@@ -1,16 +1,14 @@
-import { TaskType } from "creep/tasks/Task";
-import Role, { CreepInfo, RoleCountMap, RoleType } from "./Role";
+import BuildTask from "creep/tasks/BuildTask";
+import HarvestTask from "creep/tasks/HarvestTask";
+import IdleTask from "creep/tasks/IdleTask";
+import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
+import TransferTask from "creep/tasks/TransferTask";
+import TransferToCreepTask from "creep/tasks/TransferToCreepTask";
+import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const HelperRole: Role = {
-  type: RoleType.Helper,
-  tasks: [
-    TaskType.Harvest,
-    TaskType.MoveToFlag,
-    TaskType.Build,
-    TaskType.Transfer,
-    TaskType.TransferToCreep,
-    TaskType.Idle
-  ],
+  id: "helper" as Id<Role>,
+  tasks: [[HarvestTask.id, MoveToFlagTask.id, BuildTask.id, TransferTask.id, TransferToCreepTask.id, IdleTask.id]],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [WORK, CARRY, MOVE] combo
@@ -47,7 +45,7 @@ const HelperRole: Role = {
   getCreepLimit(room: Room): number {
     if (room.controller) {
       if (
-        Object.keys(Game.flags).find(f => f.includes("@" + this.type)) !== undefined &&
+        Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined &&
         room.find(FIND_HOSTILE_CREEPS).length === 0
       )
         return 2;
