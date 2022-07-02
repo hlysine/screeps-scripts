@@ -79,6 +79,7 @@ class CreepTaskManager {
             stopExecution = true;
             break;
           } else if (ctx.status === TaskStatus.Background) {
+            if (task === creep.memory.task) creep.memory.task = undefined;
             creep.say(TaskMap[task].displayName);
             stopExecution = true;
             break;
