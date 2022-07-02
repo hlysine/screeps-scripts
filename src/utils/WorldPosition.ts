@@ -159,6 +159,15 @@ export default class WorldPosition {
   }
 
   /**
+   * Estimate the path distance to another position.
+   * This is different fron getRangeTo because this tries to compensate for room borders.
+   */
+  public estimatePathDistanceTo(pos: WorldPosition | RoomPosition): number {
+    if (!(pos instanceof WorldPosition)) pos = new WorldPosition(pos);
+    return Math.abs(this.x - pos.x) + Math.abs(this.y - pos.y);
+  }
+
+  /**
    * Is this position next to another position
    */
   public isNearTo(pos: WorldPosition | RoomPosition): boolean {

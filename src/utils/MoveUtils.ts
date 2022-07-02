@@ -17,7 +17,18 @@ export function getWorldPathDistance(pos1: RoomPosition, pos2: RoomPosition): nu
   if (pos1.roomName === pos2.roomName) {
     return pos1.findPathTo(pos2).length;
   } else {
-    return getInterRoomDistance(pos1, pos2) + pos1.findPathTo(pos2).length + pos2.findPathTo(pos1).length;
+    let distance = getInterRoomDistance(pos1, pos2);
+    if (Game.rooms[pos1.roomName]) {
+      distance += pos1.findPathTo(pos2).length;
+    } else {
+      distance += 50;
+    }
+    if (Game.rooms[pos2.roomName]) {
+      distance += pos2.findPathTo(pos1).length;
+    } else {
+      distance += 50;
+    }
+    return distance;
   }
 }
 
@@ -34,9 +45,9 @@ export function findClosestAcrossRooms<T extends _HasRoomPosition>(pos: RoomPosi
   }
   const origin = new WorldPosition(pos);
   let closestTarget = targets[0];
-  let closestDistance = origin.getRangeTo(targets[0].pos);
+  let closestDistance = origin.estimatePathDistanceTo(targets[0].pos);
   for (const target of targets) {
-    const distance = origin.getRangeTo(target.pos);
+    const distance = origin.estimatePathDistanceTo(target.pos);
     if (distance < closestDistance) {
       closestTarget = target;
       closestDistance = distance;
