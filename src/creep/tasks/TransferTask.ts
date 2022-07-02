@@ -31,7 +31,7 @@ const TransferTask: Task = {
           creep.memory.target = undefined;
         } else if (
           !isMoveSuccess(
-            creep.moveTo(creep.memory.target.x, creep.memory.target.y, {
+            creep.moveTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName), {
               visualizePathStyle: { stroke: "#ffffff" }
             })
           )
