@@ -1,4 +1,4 @@
-import { isMoveSuccess, positionEquals } from "utils/MoveUtils";
+import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
@@ -13,7 +13,7 @@ const AttackStructureTask: Task = {
         if (memoizedTarget) {
           if (creep.attack(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
-            next();
+            ctx.status = TaskStatus.Background;
             return;
           }
         }
@@ -48,19 +48,13 @@ const AttackStructureTask: Task = {
       }
       if (creep.attack(target) === OK) {
         creep.memory.target = creep.pos;
+        creep.memory.structureTarget = target.id;
+        ctx.status = TaskStatus.Background;
+        return;
       }
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.target) {
-        if (positionEquals(creep.memory.target, creep.pos)) {
-          // something is probably wrong if the creep reaches its position but fails the steps above
-          creep.memory.target = undefined;
-          creep.memory.structureTarget = undefined;
-          ctx.status = TaskStatus.Complete;
-          return;
-        }
-      }
       if (creep.memory.structureTarget) {
         const target = Game.getObjectById(creep.memory.structureTarget);
         if (!target || target.hits === 0) {

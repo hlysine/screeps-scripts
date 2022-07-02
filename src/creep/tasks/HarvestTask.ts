@@ -1,6 +1,12 @@
 import SourceManager from "room/SourceManager";
 import { completeTask, requireEnergyCapacity } from "./SharedSteps";
-import { positionEquals, getInterRoomDistance, findClosestAcrossRooms, isMoveSuccess } from "utils/MoveUtils";
+import {
+  getInterRoomDistance,
+  findClosestAcrossRooms,
+  isMoveSuccess,
+  deserialize,
+  positionEquals
+} from "utils/MoveUtils";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 import { isRoomRestricted } from "utils/StructureUtils";
 
@@ -11,6 +17,17 @@ const HarvestTask: Task = {
   steps: [
     requireEnergyCapacity,
     (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.sourceTarget) {
+        const memoizedTarget = Game.getObjectById(creep.memory.sourceTarget);
+        if (memoizedTarget) {
+          if (creep.harvest(memoizedTarget) === OK) {
+            creep.memory.target = creep.pos;
+            ctx.status = TaskStatus.InProgress;
+            return;
+          }
+        }
+      }
+
       const sources = creep.room.find(FIND_SOURCES_ACTIVE, {
         filter: source => !isRoomRestricted(source.room)
       });
@@ -25,27 +42,61 @@ const HarvestTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
+      // cannot check sourceTarget here because it can be undefined when mining in another room without visibility
       if (creep.memory.target) {
+        if (positionEquals(creep.memory.target, creep.pos)) {
+          creep.memory.target = undefined;
+          creep.memory.sourceTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
+        }
+        if (!SourceManager.isRoomAvailable(creep.memory.target.roomName)) {
+          creep.memory.target = undefined;
+          creep.memory.sourceTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
+        }
         if (creep.memory.sourceTarget) {
-          const source = Game.getObjectById(creep.memory.sourceTarget);
-          if (source && (source.energy <= 0 || isRoomRestricted(source.room))) {
+          const target = Game.getObjectById(creep.memory.sourceTarget);
+          if (!target || target.energy <= 0 || isRoomRestricted(target.room)) {
             creep.memory.target = undefined;
             creep.memory.sourceTarget = undefined;
-            next();
+            ctx.status = TaskStatus.Complete;
             return;
           }
         }
-        if (positionEquals(creep.memory.target, creep.pos)) {
-          creep.memory.target = undefined;
-        } else if (
+        if (
           !isMoveSuccess(
-            creep.moveTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName), {
+            creep.moveTo(deserialize(creep.memory.target), {
               visualizePathStyle: { stroke: "#ffffff" }
             })
           )
         ) {
           creep.memory.target = undefined;
+          creep.memory.sourceTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else {
+          const room = Game.rooms[creep.memory.target.roomName];
+          if (room && !creep.memory.sourceTarget) {
+            const source = room.lookForAtArea(
+              LOOK_SOURCES,
+              creep.memory.target.y - 1,
+              creep.memory.target.x - 1,
+              creep.memory.target.y + 1,
+              creep.memory.target.x + 1,
+              true
+            )[0];
+            if (source) {
+              creep.memory.sourceTarget = source.source.id;
+            } else {
+              // there isn't a source?!
+              creep.memory.target = undefined;
+              creep.memory.sourceTarget = undefined;
+              ctx.status = TaskStatus.Complete;
+              return;
+            }
+          }
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -63,7 +114,7 @@ const HarvestTask: Task = {
           return;
         }
       }
-      const reservedTarget = findClosestAcrossRooms(creep.pos, SourceManager.reservedSpots);
+      const reservedTarget = creep.pos.findClosestByPath(SourceManager.reservedSpots);
       if (reservedTarget) {
         if (isMoveSuccess(creep.moveTo(reservedTarget))) {
           if (creep.memory._move) {

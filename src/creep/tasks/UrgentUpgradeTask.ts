@@ -2,7 +2,7 @@ import Task, { TaskContext, Next, TaskStatus } from "./Task";
 import UpgradeTask from "./UpgradeTask";
 
 const UrgentUpgradeTask: Task = {
-  id: "urgentUpgrade" as Id<Task>,
+  id: "urgent_upgrade" as Id<Task>,
   displayName: "Urgent Upgrade",
 
   steps: [

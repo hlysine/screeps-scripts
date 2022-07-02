@@ -1,6 +1,10 @@
 import { Serialized } from "./TypeUtils";
 import WorldPosition from "./WorldPosition";
 
+export function deserialize(pos: Serialized<RoomPosition>): RoomPosition {
+  return new RoomPosition(pos.x, pos.y, pos.roomName);
+}
+
 export function positionEquals(a: Serialized<RoomPosition>, b: Serialized<RoomPosition>): boolean {
   return a.x === b.x && a.y === b.y && a.roomName === b.roomName;
 }

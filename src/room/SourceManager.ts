@@ -8,11 +8,17 @@ export interface MiningSpot {
   sourceId?: Id<Source>;
 }
 
+interface CachedRoom {
+  visible: boolean;
+  /**
+   * A room may be ignored if there are no flags there or if it is restricted due to controller level.
+   */
+  ignored: boolean;
+  availableSpots: MiningSpot[];
+}
+
 interface RoomHarvestCache {
-  [roomName: string]: {
-    visible: boolean;
-    availableSpots: MiningSpot[];
-  };
+  [roomName: string]: CachedRoom;
 }
 
 export interface Reservation {
@@ -26,6 +32,29 @@ class SourceManager implements Manager {
   private roomCache?: RoomHarvestCache;
   public freeSpots: MiningSpot[] = [];
   public reservedSpots: Reservation[] = [];
+
+  private isRoomIgnored(roomName: string): boolean {
+    const room = Game.rooms[roomName];
+    if (room) {
+      if (room.controller && room.controller.my) return false;
+      if (isRoomRestricted(room)) return true;
+      if (
+        Object.values(Game.flags).find(
+          flag => flag.pos.roomName === room.name && flag.name.toLowerCase().includes("@" + WorkerRole.id)
+        )
+      )
+        return false;
+      return true;
+    } else {
+      if (
+        Object.values(Game.flags).find(
+          flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + WorkerRole.id)
+        )
+      )
+        return false;
+      return true;
+    }
+  }
 
   private getAvailableSpots(room: Room): MiningSpot[] {
     const ret: MiningSpot[] = [];
@@ -66,6 +95,7 @@ class SourceManager implements Manager {
     Object.values(Game.rooms).forEach(room => {
       newCache[room.name] = {
         visible: true,
+        ignored: this.isRoomIgnored(room.name),
         availableSpots: this.getAvailableSpots(room)
       };
     });
@@ -76,6 +106,7 @@ class SourceManager implements Manager {
       if (!cache) {
         newCache[flag.pos.roomName] = {
           visible: false,
+          ignored: this.isRoomIgnored(flag.pos.roomName),
           availableSpots: this.getAvailableSpotsInvisible(flag.pos)
         };
       } else if (!cache.visible) {
@@ -83,6 +114,7 @@ class SourceManager implements Manager {
       }
     });
     // only allow 1 creep to go to invisible rooms
+    // to avoid a hoard of creeps going there just to discover that they can't harvest
     for (const roomName in newCache) {
       const cache = newCache[roomName];
       if (!cache.visible) {
@@ -92,10 +124,16 @@ class SourceManager implements Manager {
     return newCache;
   }
 
+  public isRoomAvailable(roomName: string): boolean {
+    if (!this.roomCache) this.roomCache = this.computeCache();
+    const cache = this.roomCache[roomName];
+    if (!cache) return false;
+    return !cache.ignored && cache.availableSpots.length > 0;
+  }
+
   public loop(): void {
     if (!this.roomCache) this.roomCache = this.computeCache();
     const creeps = Object.values(Game.creeps);
-    const flags = Object.values(Game.flags);
 
     for (const roomName in Game.rooms) {
       const cache = this.roomCache[roomName];
@@ -103,19 +141,13 @@ class SourceManager implements Manager {
       if (!cache || !cache.visible) {
         this.roomCache[roomName] = {
           visible: true,
+          ignored: this.isRoomIgnored(roomName),
           availableSpots: this.getAvailableSpots(room)
         };
       }
-      if (cache) {
-        if (
-          !room &&
-          !flags.find(flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + WorkerRole.id))
-        ) {
-          delete this.roomCache[roomName];
-        } else if (room && room.controller && !room.controller.my && room.controller.level > 0) {
-          delete this.roomCache[roomName];
-        }
-      }
+    }
+    for (const roomName in this.roomCache) {
+      this.roomCache[roomName].ignored = this.isRoomIgnored(roomName);
     }
 
     this.freeSpots = [];
@@ -124,6 +156,7 @@ class SourceManager implements Manager {
 
     for (const roomName in this.roomCache) {
       const cache = this.roomCache[roomName];
+      if (cache.ignored) continue;
       cache.availableSpots.forEach(spot => {
         if (spot.sourceId) {
           const source = Game.getObjectById(spot.sourceId);

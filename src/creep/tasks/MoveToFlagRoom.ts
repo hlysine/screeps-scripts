@@ -2,9 +2,9 @@ import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-const MoveToFlagTask: Task = {
-  id: "move_to_flag" as Id<Task>,
-  displayName: "Move to flag",
+const MoveToFlagRoomTask: Task = {
+  id: "move_to_flag_room" as Id<Task>,
+  displayName: "Move to flag room",
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
@@ -13,18 +13,13 @@ const MoveToFlagTask: Task = {
         next();
         return;
       }
-      if (creep.pos.roomName === target.pos.roomName && creep.pos.inRangeTo(target, 1)) {
+      if (creep.pos.roomName === target.pos.roomName) {
         next();
         return;
       }
       if (isMoveSuccess(creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 1 }))) {
-        if (creep.pos.roomName === target.pos.roomName) {
-          ctx.status = TaskStatus.Background;
-          return;
-        } else {
-          ctx.status = TaskStatus.InProgress;
-          return;
-        }
+        ctx.status = TaskStatus.InProgress;
+        return;
       }
       next();
     },
@@ -32,4 +27,4 @@ const MoveToFlagTask: Task = {
   ]
 };
 
-export default MoveToFlagTask;
+export default MoveToFlagRoomTask;

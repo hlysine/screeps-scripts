@@ -48,6 +48,15 @@ class CreepTaskManager {
     return creep.memory.role;
   }
 
+  private clearMemoryTargets(creep: Creep): void {
+    creep.memory.target = undefined;
+    creep.memory.creepTarget = undefined;
+    creep.memory.structureTarget = undefined;
+    creep.memory.constructionTarget = undefined;
+    creep.memory.sourceTarget = undefined;
+    creep.memory.spawnTarget = undefined;
+  }
+
   public loop(): void {
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
@@ -70,7 +79,10 @@ class CreepTaskManager {
         for (const task of tasks) {
           this.executeTask(creep, task, ctx);
           if (ctx.status === TaskStatus.Complete) {
-            if (task === creep.memory.task) creep.memory.task = undefined;
+            if (task === creep.memory.task) {
+              creep.memory.task = undefined;
+              this.clearMemoryTargets(creep);
+            }
           } else if (ctx.status === TaskStatus.InProgress) {
             if (creep.memory.task !== task) {
               creep.memory.task = task;

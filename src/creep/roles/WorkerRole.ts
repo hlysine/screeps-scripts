@@ -1,8 +1,8 @@
-import BuildTask from "creep/tasks/BuildTask";
+import BuildOwnedTask from "creep/tasks/BuildOwnedTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
-import TransferTask from "creep/tasks/TransferTask";
+import TransferOwnedTask from "creep/tasks/TransferOwnedTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
@@ -13,8 +13,8 @@ const WorkerRole: Role = {
     [
       HarvestTask.id,
       UrgentUpgradeTask.id,
-      TransferTask.id,
-      BuildTask.id,
+      TransferOwnedTask.id,
+      BuildOwnedTask.id,
       UpgradeTask.id,
       RetreatToSpawnTask.id,
       IdleTask.id

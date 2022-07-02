@@ -3,7 +3,7 @@ import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 const RetreatToSpawnTask: Task = {
-  id: "retreatToSpawn" as Id<Task>,
+  id: "retreat_to_spawn" as Id<Task>,
   displayName: "Retreat to spawn",
 
   steps: [
