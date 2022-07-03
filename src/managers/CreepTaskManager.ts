@@ -75,7 +75,10 @@ class CreepTaskManager {
       creep.memory.taskId = undefined;
       return undefined;
     }
-    if (RoleMap[creep.memory.role].tasks[task.tier][task.priority].id !== creep.memory.taskId) {
+    if (
+      !creep.memory.taskId ||
+      RoleMap[creep.memory.role].tasks[task.tier]?.[task.priority]?.id !== creep.memory.taskId
+    ) {
       console.log(
         `${creep.name} has task and taskId mismatch ${creep.memory.task ?? "undefined"} ${
           creep.memory.taskId ?? "undefined"
