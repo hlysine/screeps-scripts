@@ -1,4 +1,4 @@
-import SourceManager from "room/SourceManager";
+import SourceManager from "managers/SourceManager";
 import { completeTask, requireEnergyCapacity } from "./SharedSteps";
 import {
   getInterRoomDistance,

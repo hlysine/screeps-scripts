@@ -1,10 +1,10 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Serialized } from "utils/TypeUtils";
 import tower from "structure/Tower";
-import SourceManager from "room/SourceManager";
-import CreepSpawnManager from "room/CreepSpawnManager";
+import SourceManager from "managers/SourceManager";
+import CreepSpawnManager from "managers/CreepSpawnManager";
 import { TaskMemory } from "creep/tasks/Task";
-import CreepTaskManager from "room/CreepTaskManager";
+import CreepTaskManager from "managers/CreepTaskManager";
 import { RoleMemory } from "creep/roles/Role";
 
 declare global {

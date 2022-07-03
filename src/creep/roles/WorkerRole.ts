@@ -1,8 +1,8 @@
-import BuildOwnedTask from "creep/tasks/BuildOwnedTask";
+import BuildOwnedTask from "creep/tasks/build/BuildOwnedTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
-import TransferOwnedTask from "creep/tasks/TransferOwnedTask";
+import TransferOwnedTask from "creep/tasks/transfer/TransferOwnedTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";

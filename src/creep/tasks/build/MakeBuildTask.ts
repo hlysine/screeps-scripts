@@ -1,12 +1,9 @@
 import { isMoveSuccess } from "utils/MoveUtils";
-import { completeTask, requireEnergy } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import { completeTask, requireEnergy } from "../SharedSteps";
+import { TaskContext, Next, TaskStatus, Step } from "../Task";
 
-const BuildTask: Task = {
-  id: "build" as Id<Task>,
-  displayName: "Build",
-
-  steps: [
+export default function makeBuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>["filter"]): Step[] {
+  return [
     requireEnergy,
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       if (creep.memory.constructionTarget) {
@@ -20,7 +17,7 @@ const BuildTask: Task = {
         }
       }
 
-      const sources = creep.room.find(FIND_CONSTRUCTION_SITES);
+      const sources = creep.room.find(FIND_CONSTRUCTION_SITES, { filter });
       for (const target of sources) {
         if (creep.build(target) === OK) {
           creep.memory.target = creep.pos;
@@ -59,7 +56,7 @@ const BuildTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES);
+      const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES, { filter });
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
@@ -71,7 +68,5 @@ const BuildTask: Task = {
       next();
     },
     completeTask
-  ]
-};
-
-export default BuildTask;
+  ];
+}
