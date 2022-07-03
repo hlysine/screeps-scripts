@@ -8,16 +8,19 @@ import { requireEnergy } from "creep/tasks/SharedSteps";
 import TransferTask from "creep/tasks/TransferTask";
 import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
+import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
+import SalvageTombstoneTask from "creep/tasks/SalvageTombstoneTask";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
   tasks: [
-    [RetreatWhenNoFlagTask],
+    [RetreatWhenNoFlagTask, PickUpResourceTask],
     [
       PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
       BuildTask(() => true),
       TransferTask(() => true),
       TransferToCreepTask,
+      SalvageTombstoneTask,
       HarvestTask,
       IdleTask
     ]
