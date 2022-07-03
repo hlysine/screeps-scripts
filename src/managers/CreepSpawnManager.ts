@@ -1,7 +1,6 @@
 import Manager from "./Manager";
 import Role, { CreepInfo, RoleCountMap } from "creep/roles/Role";
 import { Roles } from "creep/roles/RoleStore";
-import WorkerRole from "creep/roles/WorkerRole";
 
 interface RoleInfo {
   limit: number;
