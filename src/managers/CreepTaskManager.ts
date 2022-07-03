@@ -92,6 +92,7 @@ class CreepTaskManager {
       );
       creep.memory.task = undefined;
       creep.memory.taskId = undefined;
+      this.clearMemoryTargets(creep);
       return undefined;
     }
     return task;
