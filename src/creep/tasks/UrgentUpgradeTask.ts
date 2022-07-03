@@ -3,7 +3,7 @@ import UpgradeTask from "./UpgradeTask";
 
 const UrgentUpgradeTask: Task = {
   id: "urgent_upgrade" as Id<Task>,
-  displayName: "Urgent Upgrade",
+  displayName: "Urgent upgrade",
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {

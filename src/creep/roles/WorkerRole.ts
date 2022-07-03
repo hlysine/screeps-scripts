@@ -2,6 +2,7 @@ import BuildTask from "creep/tasks/BuildTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
+import RepairTask from "creep/tasks/RepairTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import SalvageTask from "creep/tasks/SalvageTask";
 import TransferTask from "creep/tasks/TransferTask";
@@ -14,8 +15,18 @@ const WorkerRole: Role = {
   tasks: [
     [UrgentUpgradeTask, PickUpResourceTask],
     [
+      RepairTask(structure => structure.hits < 100 && !!structure.room.controller && structure.room.controller.my),
       TransferTask(structure => structure.my),
       BuildTask(site => site.my),
+      RepairTask(
+        structure =>
+          !!structure.room.controller &&
+          structure.room.controller.my &&
+          ((structure.structureType !== STRUCTURE_WALL &&
+            structure.structureType !== STRUCTURE_RAMPART &&
+            structure.hits < structure.hitsMax * 0.5) ||
+            structure.hits < 1000000)
+      ),
       UpgradeTask,
       SalvageTask,
       HarvestTask,
