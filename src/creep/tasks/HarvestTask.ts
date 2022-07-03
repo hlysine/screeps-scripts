@@ -23,6 +23,7 @@ const HarvestTask: Task = {
           if (creep.harvest(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
             ctx.status = TaskStatus.InProgress;
+            ctx.note = "harvesting memory target";
             return;
           }
         }
@@ -40,6 +41,7 @@ const HarvestTask: Task = {
             SourceManager.claimReservedSpot(reservation.spot);
           }
           ctx.status = TaskStatus.InProgress;
+          ctx.note = "harvesting nearby target";
           return;
         }
       }
@@ -52,12 +54,14 @@ const HarvestTask: Task = {
           creep.memory.target = undefined;
           creep.memory.sourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
+          ctx.note = "stuck at memory target position";
           return;
         }
         if (!SourceManager.isRoomAvailable(creep.memory.target.roomName)) {
           creep.memory.target = undefined;
           creep.memory.sourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
+          ctx.note = "memory target room is not available";
           return;
         }
         if (creep.memory.sourceTarget) {
@@ -66,6 +70,7 @@ const HarvestTask: Task = {
             creep.memory.target = undefined;
             creep.memory.sourceTarget = undefined;
             ctx.status = TaskStatus.Complete;
+            ctx.note = "memory target is no longer valid";
             return;
           }
         }
@@ -79,6 +84,7 @@ const HarvestTask: Task = {
           creep.memory.target = undefined;
           creep.memory.sourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
+          ctx.note = "failed to path find to memory target";
           return;
         } else {
           const room = Game.rooms[creep.memory.target.roomName];
@@ -99,10 +105,12 @@ const HarvestTask: Task = {
               creep.memory.target = undefined;
               creep.memory.sourceTarget = undefined;
               ctx.status = TaskStatus.Complete;
+              ctx.note = "no source near memory target (!)";
               return;
             }
           }
           ctx.status = TaskStatus.InProgress;
+          ctx.note = "moving to memory target";
           return;
         }
       }
@@ -116,6 +124,7 @@ const HarvestTask: Task = {
           creep.memory.target = freeTarget.pos;
           creep.memory.sourceTarget = freeTarget.sourceId;
           ctx.status = TaskStatus.InProgress;
+          ctx.note = "moving to free target";
           return;
         }
       }
@@ -133,6 +142,7 @@ const HarvestTask: Task = {
               creep.memory.target = reservedTarget.pos;
               creep.memory.sourceTarget = reservedTarget.spot.sourceId;
               ctx.status = TaskStatus.InProgress;
+              ctx.note = "moving to reserved target";
               return;
             } else {
               creep.cancelOrder("move");

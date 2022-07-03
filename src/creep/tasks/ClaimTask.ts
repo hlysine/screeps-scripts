@@ -1,5 +1,5 @@
 import { isMoveSuccess } from "utils/MoveUtils";
-import { completeTask, completeWithNote } from "./SharedSteps";
+import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 const ClaimTask: Task = {
@@ -32,7 +32,7 @@ const ClaimTask: Task = {
       }
       next();
     },
-    completeWithNote("completing at end of task")
+    completeTask
   ]
 };
 
