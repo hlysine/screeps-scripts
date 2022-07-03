@@ -59,15 +59,27 @@ const AttackCreepTask: Task = {
         } else if (
           !isMoveSuccess(
             creep.moveTo(target.pos, {
-              visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true
+              visualizePathStyle: { stroke: "#ffffff" }
             })
           )
         ) {
-          creep.memory.target = undefined;
-          creep.memory.creepTarget = undefined;
-          ctx.status = TaskStatus.Complete;
-          return;
+          if (
+            !isMoveSuccess(
+              creep.moveTo(target.pos, {
+                visualizePathStyle: { stroke: "#ffffff" },
+                ignoreDestructibleStructures: true
+              })
+            )
+          ) {
+            creep.memory.target = undefined;
+            creep.memory.creepTarget = undefined;
+            ctx.status = TaskStatus.Complete;
+            return;
+          } else {
+            creep.memory.target = target.pos;
+            ctx.status = TaskStatus.InProgress;
+            return;
+          }
         } else {
           creep.memory.target = target.pos;
           ctx.status = TaskStatus.InProgress;
@@ -80,6 +92,17 @@ const AttackCreepTask: Task = {
       const target = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
       if (target) {
         if (
+          isMoveSuccess(
+            creep.moveTo(target, {
+              visualizePathStyle: { stroke: "#ffffff" }
+            })
+          )
+        ) {
+          creep.memory.target = target.pos;
+          creep.memory.creepTarget = target.id;
+          ctx.status = TaskStatus.InProgress;
+          return;
+        } else if (
           isMoveSuccess(
             creep.moveTo(target, {
               visualizePathStyle: { stroke: "#ffffff" },

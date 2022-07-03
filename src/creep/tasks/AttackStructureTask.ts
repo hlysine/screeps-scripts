@@ -65,15 +65,27 @@ const AttackStructureTask: Task = {
         } else if (
           !isMoveSuccess(
             creep.moveTo(target.pos, {
-              visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true
+              visualizePathStyle: { stroke: "#ffffff" }
             })
           )
         ) {
-          creep.memory.target = undefined;
-          creep.memory.structureTarget = undefined;
-          ctx.status = TaskStatus.Complete;
-          return;
+          if (
+            !isMoveSuccess(
+              creep.moveTo(target.pos, {
+                visualizePathStyle: { stroke: "#ffffff" },
+                ignoreDestructibleStructures: true
+              })
+            )
+          ) {
+            creep.memory.target = undefined;
+            creep.memory.structureTarget = undefined;
+            ctx.status = TaskStatus.Complete;
+            return;
+          } else {
+            creep.memory.target = target.pos;
+            ctx.status = TaskStatus.InProgress;
+            return;
+          }
         } else {
           creep.memory.target = target.pos;
           ctx.status = TaskStatus.InProgress;
@@ -86,6 +98,16 @@ const AttackStructureTask: Task = {
       const target = creep.pos.findClosestByPath(FIND_HOSTILE_SPAWNS);
       if (target) {
         if (
+          isMoveSuccess(
+            creep.moveTo(target, {
+              visualizePathStyle: { stroke: "#ffffff" }
+            })
+          )
+        ) {
+          creep.memory.target = target.pos;
+          ctx.status = TaskStatus.InProgress;
+          return;
+        } else if (
           isMoveSuccess(
             creep.moveTo(target, {
               visualizePathStyle: { stroke: "#ffffff" },
@@ -106,6 +128,16 @@ const AttackStructureTask: Task = {
       });
       if (target) {
         if (
+          isMoveSuccess(
+            creep.moveTo(target, {
+              visualizePathStyle: { stroke: "#ffffff" }
+            })
+          )
+        ) {
+          creep.memory.target = target.pos;
+          ctx.status = TaskStatus.InProgress;
+          return;
+        } else if (
           isMoveSuccess(
             creep.moveTo(target, {
               visualizePathStyle: { stroke: "#ffffff" },
