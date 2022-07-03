@@ -3,7 +3,7 @@ import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagRoomTask from "creep/tasks/MoveToFlagRoomTask";
 import TransferTask from "creep/tasks/TransferTask";
-import TransferToCreepTask from "creep/tasks/TransferToCreepTask";
+import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const HelperRole: Role = {

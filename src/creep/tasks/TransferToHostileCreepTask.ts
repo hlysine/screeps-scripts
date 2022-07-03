@@ -2,9 +2,9 @@ import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-const TransferToCreepTask: Task = {
-  id: "transfer_creep" as Id<Task>,
-  displayName: "Transfer to creep",
+const TransferToHostileCreepTask: Task = {
+  id: "transfer_hostile_creep" as Id<Task>,
+  displayName: "Transfer to hostile creep",
 
   steps: [
     requireEnergy,
@@ -20,7 +20,7 @@ const TransferToCreepTask: Task = {
         }
       }
 
-      const targets = creep.room.find(FIND_CREEPS, { filter: c => c.store.getFreeCapacity() > 0 });
+      const targets = creep.room.find(FIND_HOSTILE_CREEPS, { filter: c => c.store.getFreeCapacity() > 0 });
       for (const target of targets) {
         if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
@@ -60,7 +60,7 @@ const TransferToCreepTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_CREEPS, { filter: c => c.store.getFreeCapacity() > 0 });
+      const target = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS, { filter: c => c.store.getFreeCapacity() > 0 });
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
@@ -75,4 +75,4 @@ const TransferToCreepTask: Task = {
   ]
 };
 
-export default TransferToCreepTask;
+export default TransferToHostileCreepTask;

@@ -13,7 +13,7 @@ import RangedAttackAutoTask from "./RangedAttackAutoTask";
 import RetreatToSpawnTask from "./RetreatToSpawnTask";
 import TransferOwnedTask from "./TransferOwnedTask";
 import TransferTask from "./TransferTask";
-import TransferToCreepTask from "./TransferToCreepTask";
+import TransferToHostileCreepTask from "./TransferToHostileCreepTask";
 import UpgradeTask from "./UpgradeTask";
 import UrgentUpgradeTask from "./UrgentUpgradeTask";
 
@@ -35,7 +35,7 @@ export const Tasks = [
   RetreatToSpawnTask,
   TransferOwnedTask,
   TransferTask,
-  TransferToCreepTask,
+  TransferToHostileCreepTask,
   UpgradeTask,
   UrgentUpgradeTask
 ];
