@@ -64,7 +64,7 @@ const HarvestTask: Task = {
           ctx.note = "memory target room is not available";
           return;
         }
-        if (creep.memory.sourceTarget) {
+        if (creep.memory.sourceTarget && Game.rooms[creep.memory.target.roomName]) {
           const target = Game.getObjectById(creep.memory.sourceTarget);
           if (!target || target.energy <= 0 || isRoomRestricted(target.room)) {
             creep.memory.target = undefined;
