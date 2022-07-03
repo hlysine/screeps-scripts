@@ -35,6 +35,10 @@ const HarvestTask: Task = {
         if (creep.harvest(target) === OK) {
           creep.memory.target = creep.pos;
           creep.memory.sourceTarget = target.id;
+          const reservation = SourceManager.reservedSpots.find(s => positionEquals(s.pos, creep.pos));
+          if (reservation) {
+            SourceManager.claimReservedSpot(reservation.spot);
+          }
           ctx.status = TaskStatus.InProgress;
           return;
         }
