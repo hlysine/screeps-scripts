@@ -11,6 +11,7 @@ import MoveToFlagRoomTask from "./MoveToFlagRoomTask";
 import MoveToFlagTask from "./MoveToFlagTask";
 import RangedAttackAutoTask from "./RangedAttackAutoTask";
 import RetreatToSpawnTask from "./RetreatToSpawnTask";
+import RetreatWhenNoFlagTask from "./RetreatWhenNoFlagTask";
 import TransferOwnedTask from "./TransferOwnedTask";
 import TransferTask from "./TransferTask";
 import TransferToHostileCreepTask from "./TransferToHostileCreepTask";
@@ -33,6 +34,7 @@ export const Tasks = [
   MoveToFlagTask,
   RangedAttackAutoTask,
   RetreatToSpawnTask,
+  RetreatWhenNoFlagTask,
   TransferOwnedTask,
   TransferTask,
   TransferToHostileCreepTask,

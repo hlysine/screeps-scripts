@@ -20,3 +20,11 @@ export const completeTask: Step = (_creep: Creep, ctx: TaskContext, next: () => 
   ctx.status = TaskStatus.Complete;
   next();
 };
+
+export function completeWithNote(note: string): Step {
+  return (_creep: Creep, ctx: TaskContext, next: () => void): void => {
+    ctx.status = TaskStatus.Complete;
+    ctx.note ??= note;
+    next();
+  };
+}

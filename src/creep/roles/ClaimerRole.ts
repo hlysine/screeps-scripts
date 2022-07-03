@@ -2,11 +2,12 @@ import ClaimTask from "creep/tasks/ClaimTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
+import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const ClaimerRole: Role = {
   id: "claimer" as Id<Role>,
-  tasks: [[ClaimTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
+  tasks: [[RetreatWhenNoFlagTask.id], [ClaimTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo

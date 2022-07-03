@@ -5,6 +5,9 @@ import ClaimerRole from "creep/roles/ClaimerRole";
 import DefenderRole from "creep/roles/DefenderRole";
 import WorkerRole from "creep/roles/WorkerRole";
 import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
+import Logger from "utils/Logger";
+
+const logger = new Logger("CreepTaskManager");
 
 class CreepTaskManager {
   private determineRole(creep: Creep): Id<Role> {
@@ -19,6 +22,7 @@ class CreepTaskManager {
 
   private executeTask(creep: Creep, task: Id<Task>, ctx: TaskContext): void {
     ctx.status = TaskStatus.InProgress;
+    ctx.note = undefined;
     let idx = 0;
 
     const executeStep = () => {
@@ -66,6 +70,7 @@ class CreepTaskManager {
       };
 
       let stopExecution = false;
+      let debugReport = `${creep.name} is ${role}\n`;
 
       for (const tier of RoleMap[role].tasks) {
         const tasks = tier.slice();
@@ -78,6 +83,10 @@ class CreepTaskManager {
         }
         for (const task of tasks) {
           this.executeTask(creep, task, ctx);
+          if (creep.memory.debug) {
+            if (ctx.note) debugReport += `  ${task}: ${ctx.status} (${ctx.note})\n`;
+            else debugReport += `  ${task}: ${ctx.status}\n`;
+          }
           if (ctx.status === TaskStatus.Complete) {
             if (task === creep.memory.task) {
               creep.memory.task = undefined;
@@ -98,6 +107,15 @@ class CreepTaskManager {
           }
         }
         if (stopExecution) break;
+      }
+
+      if (creep.memory.debug) {
+        logger.log(debugReport);
+        creep.room.visual.circle(creep.pos, {
+          radius: 0.5,
+          stroke: "red",
+          strokeWidth: 0.1
+        });
       }
     }
   }

@@ -19,6 +19,10 @@ export enum TaskStatus {
 
 export interface TaskContext {
   status: TaskStatus;
+  /**
+   * Debug print explaining the status of the current task.
+   */
+  note?: string;
   [key: string]: any;
 }
 
@@ -30,6 +34,7 @@ export interface Step {
 
 export interface TaskMemory {
   task?: Id<Task>;
+  debug: boolean;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;
   structureTarget?: Id<AnyStructure>;
