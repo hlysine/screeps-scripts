@@ -11,11 +11,11 @@ const WorkerRole: Role = {
   id: "worker" as Id<Role>,
   tasks: [
     [
-      HarvestTask.id,
       UrgentUpgradeTask.id,
       TransferOwnedTask.id,
       BuildOwnedTask.id,
       UpgradeTask.id,
+      HarvestTask.id,
       RetreatToSpawnTask.id,
       IdleTask.id
     ]
