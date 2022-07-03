@@ -76,8 +76,8 @@ class CreepTaskManager {
         const tasks = tier.slice();
         if (creep.memory.task) {
           if (tasks.includes(creep.memory.task)) {
-            // move the in-progress task to the front
-            tasks.splice(tasks.indexOf(creep.memory.task), 1);
+            // add the in-progress task to the front
+            // tasks.splice(tasks.indexOf(creep.memory.task), 1);
             tasks.unshift(creep.memory.task);
           }
         }
