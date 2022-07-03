@@ -25,13 +25,19 @@ class CreepSpawnManager implements Manager {
 
   public creeepsCount: RoleCountMap = {} as RoleCountMap;
 
+  private countCreepCapacity(): number {
+    return Object.values(Game.creeps).reduce((sum, creep) => {
+      return sum + creep.store.getCapacity(RESOURCE_ENERGY);
+    }, 0);
+  }
+
   private getRoleInfoMap(spawn: StructureSpawn): RoleInfoMap {
     const effectiveEnergyCapacity = Math.min(
       spawn.room.energyCapacityAvailable,
       // we can't use capacity from extensions if there are no creeps filling them
-      spawn.store.getCapacity(RESOURCE_ENERGY) + (this.creeepsCount[WorkerRole.id] ?? 0) * 100,
+      spawn.store.getCapacity(RESOURCE_ENERGY) + this.countCreepCapacity() * 3,
       // creeps too large may deplete energy too quickly
-      (spawn.room.controller?.level ?? 0) * 250
+      (spawn.room.controller?.level ?? 0) * 300
     );
     return Roles.reduce((map, role) => {
       map[role.id] = {
