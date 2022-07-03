@@ -2,15 +2,15 @@ import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireCapacity } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-const SalvageTombstoneTask: Task = {
-  id: "salvage_tombstone" as Id<Task>,
-  displayName: "Salvage tombstone",
+const SalvageTask: Task = {
+  id: "salvage" as Id<Task>,
+  displayName: "Salvage",
 
   steps: [
     requireCapacity,
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.tombstoneTarget) {
-        const memoizedTarget = Game.getObjectById(creep.memory.tombstoneTarget);
+      if (creep.memory.salvageTarget) {
+        const memoizedTarget = Game.getObjectById(creep.memory.salvageTarget);
         if (memoizedTarget) {
           if (creep.withdraw(memoizedTarget, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
@@ -20,11 +20,14 @@ const SalvageTombstoneTask: Task = {
         }
       }
 
-      const sources = creep.room.find(FIND_TOMBSTONES, { filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0 });
+      const sources = [
+        ...creep.room.find(FIND_TOMBSTONES, { filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0 }),
+        ...creep.room.find(FIND_RUINS, { filter: ruin => ruin.store[RESOURCE_ENERGY] > 0 })
+      ];
       for (const target of sources) {
         if (creep.withdraw(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.tombstoneTarget = target.id;
+          creep.memory.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -32,11 +35,11 @@ const SalvageTombstoneTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.tombstoneTarget) {
-        const target = Game.getObjectById(creep.memory.tombstoneTarget);
+      if (creep.memory.salvageTarget) {
+        const target = Game.getObjectById(creep.memory.salvageTarget);
         if (!target || target.store[RESOURCE_ENERGY] === 0) {
           creep.memory.target = undefined;
-          creep.memory.tombstoneTarget = undefined;
+          creep.memory.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -47,7 +50,7 @@ const SalvageTombstoneTask: Task = {
           )
         ) {
           creep.memory.target = undefined;
-          creep.memory.tombstoneTarget = undefined;
+          creep.memory.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else {
@@ -59,13 +62,21 @@ const SalvageTombstoneTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_TOMBSTONES, {
+      const tombstoneTarget = creep.pos.findClosestByPath(FIND_TOMBSTONES, {
         filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0
       });
+      const ruinTarget = creep.pos.findClosestByPath(FIND_RUINS, {
+        filter: ruin => ruin.store[RESOURCE_ENERGY] > 0
+      });
+
+      let target: Tombstone | Ruin | null = tombstoneTarget;
+      if (!tombstoneTarget && ruinTarget) target = ruinTarget;
+      else if (tombstoneTarget && ruinTarget) target = creep.pos.findClosestByPath([tombstoneTarget, ruinTarget]);
+
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
-          creep.memory.tombstoneTarget = target.id;
+          creep.memory.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -76,4 +87,4 @@ const SalvageTombstoneTask: Task = {
   ]
 };
 
-export default SalvageTombstoneTask;
+export default SalvageTask;

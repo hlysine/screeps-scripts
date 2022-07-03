@@ -9,7 +9,7 @@ import TransferTask from "creep/tasks/TransferTask";
 import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
-import SalvageTombstoneTask from "creep/tasks/SalvageTombstoneTask";
+import SalvageTask from "creep/tasks/SalvageTask";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
@@ -20,7 +20,7 @@ const HelperRole: Role = {
       BuildTask(() => true),
       TransferTask(() => true),
       TransferToCreepTask,
-      SalvageTombstoneTask,
+      SalvageTask,
       HarvestTask,
       IdleTask
     ]
