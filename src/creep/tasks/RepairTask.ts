@@ -18,7 +18,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         if (creep.memory.structureTarget) {
           const memoizedTarget = Game.getObjectById(creep.memory.structureTarget);
           if (memoizedTarget) {
-            if (creep.repair(memoizedTarget) === OK) {
+            if (isStructureValid(memoizedTarget) && creep.repair(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
               ctx.status = TaskStatus.InProgress;
               return;
