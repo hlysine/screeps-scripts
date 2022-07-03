@@ -12,12 +12,11 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const WorkerRole: Role = {
   id: "worker" as Id<Role>,
   tasks: [
+    [UrgentUpgradeTask, PickUpResourceTask],
     [
-      UrgentUpgradeTask,
       TransferTask(structure => structure.my),
       BuildTask(site => site.my),
       UpgradeTask,
-      PickUpResourceTask,
       SalvageTombstoneTask,
       HarvestTask,
       RetreatToSpawnTask,
