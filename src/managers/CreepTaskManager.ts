@@ -3,7 +3,7 @@ import Role from "creep/roles/Role";
 import ClaimerRole from "creep/roles/ClaimerRole";
 import DefenderRole from "creep/roles/DefenderRole";
 import WorkerRole from "creep/roles/WorkerRole";
-import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
+import Task, { clearTaskTargets, TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
 
 const logger = new Logger("CreepTaskManager");
@@ -22,15 +22,6 @@ class CreepTaskManager {
       return DefenderRole.id;
     }
     return WorkerRole.id;
-  }
-
-  private clearMemoryTargets(creep: Creep): void {
-    creep.memory.target = undefined;
-    creep.memory.creepTarget = undefined;
-    creep.memory.structureTarget = undefined;
-    creep.memory.constructionTarget = undefined;
-    creep.memory.sourceTarget = undefined;
-    creep.memory.spawnTarget = undefined;
   }
 
   private parseTaskCoordinate(coordinate: string): Coordinate | undefined {
@@ -92,7 +83,7 @@ class CreepTaskManager {
       );
       creep.memory.task = undefined;
       creep.memory.taskId = undefined;
-      this.clearMemoryTargets(creep);
+      clearTaskTargets(creep);
       return undefined;
     }
     return task;
@@ -131,7 +122,7 @@ class CreepTaskManager {
             if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
               creep.memory.task = undefined;
               creep.memory.taskId = undefined;
-              this.clearMemoryTargets(creep);
+              clearTaskTargets(creep);
             }
           } else if (ctx.status === TaskStatus.InProgress) {
             if (!this.isCoordinateEqual(lastTask, { tier: i, priority })) {

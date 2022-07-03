@@ -1,7 +1,9 @@
 import BuildTask from "creep/tasks/BuildTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
+import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
+import SalvageTombstoneTask from "creep/tasks/SalvageTombstoneTask";
 import TransferTask from "creep/tasks/TransferTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
@@ -15,6 +17,8 @@ const WorkerRole: Role = {
       TransferTask(structure => structure.my),
       BuildTask(site => site.my),
       UpgradeTask,
+      PickUpResourceTask,
+      SalvageTombstoneTask,
       HarvestTask,
       RetreatToSpawnTask,
       IdleTask

@@ -1,8 +1,10 @@
 import BuildTask from "creep/tasks/BuildTask";
+import PrependTask from "creep/tasks/PrependTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
-import MoveToFlagRoomTask from "creep/tasks/MoveToFlagRoomTask";
+import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
+import { requireEnergy } from "creep/tasks/SharedSteps";
 import TransferTask from "creep/tasks/TransferTask";
 import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
@@ -11,7 +13,14 @@ const HelperRole: Role = {
   id: "helper" as Id<Role>,
   tasks: [
     [RetreatWhenNoFlagTask],
-    [HarvestTask, MoveToFlagRoomTask, BuildTask(() => true), TransferTask(() => true), TransferToCreepTask, IdleTask]
+    [
+      PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
+      BuildTask(() => true),
+      TransferTask(() => true),
+      TransferToCreepTask,
+      HarvestTask,
+      IdleTask
+    ]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {

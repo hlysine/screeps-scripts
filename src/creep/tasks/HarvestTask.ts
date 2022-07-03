@@ -1,5 +1,5 @@
 import SourceManager from "managers/SourceManager";
-import { completeTask, requireEnergyCapacity } from "./SharedSteps";
+import { completeTask, requireCapacity } from "./SharedSteps";
 import {
   getInterRoomDistance,
   findClosestAcrossRooms,
@@ -15,7 +15,7 @@ const HarvestTask: Task = {
   displayName: "Harvest",
 
   steps: [
-    requireEnergyCapacity,
+    requireCapacity,
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       if (creep.memory.sourceTarget) {
         const memoizedTarget = Game.getObjectById(creep.memory.sourceTarget);

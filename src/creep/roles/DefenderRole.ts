@@ -1,7 +1,7 @@
 import AttackCreepTask from "creep/tasks/AttackCreepTask";
 import AttackStructureTask from "creep/tasks/AttackStructureTask";
 import IdleTask from "creep/tasks/IdleTask";
-import MoveToFlagTask from "creep/tasks/MoveToFlagTask";
+import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RangedAttackAutoTask from "creep/tasks/RangedAttackAutoTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
@@ -11,7 +11,13 @@ const DefenderRole: Role = {
   id: "defender" as Id<Role>,
   tasks: [
     [RangedAttackAutoTask, RetreatWhenNoFlagTask],
-    [AttackCreepTask, AttackStructureTask, MoveToFlagTask, RetreatToSpawnTask, IdleTask]
+    [
+      AttackCreepTask,
+      AttackStructureTask,
+      MoveToFlagTask(MoveToFlagMode.LowPriorityInRoom, 1),
+      RetreatToSpawnTask,
+      IdleTask
+    ]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {

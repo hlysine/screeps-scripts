@@ -44,6 +44,19 @@ export interface TaskMemory {
   constructionTarget?: Id<ConstructionSite>;
   sourceTarget?: Id<Source>;
   spawnTarget?: Id<StructureSpawn>;
+  tombstoneTarget?: Id<Tombstone>;
+  resourceTarget?: Id<Resource>;
+}
+
+export function clearTaskTargets(creep: Creep): void {
+  creep.memory.target = undefined;
+  creep.memory.creepTarget = undefined;
+  creep.memory.structureTarget = undefined;
+  creep.memory.constructionTarget = undefined;
+  creep.memory.sourceTarget = undefined;
+  creep.memory.spawnTarget = undefined;
+  creep.memory.tombstoneTarget = undefined;
+  creep.memory.resourceTarget = undefined;
 }
 
 export default interface Task {

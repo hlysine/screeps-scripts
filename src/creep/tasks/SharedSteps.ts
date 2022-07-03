@@ -9,7 +9,7 @@ export const requireEnergy: Step = (creep: Creep, ctx: TaskContext, next: () => 
   next();
 };
 
-export const requireEnergyCapacity: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
+export const requireCapacity: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
   if (creep.store.getFreeCapacity() === 0) {
     ctx.status = TaskStatus.Complete;
     ctx.note = "energy store is full";
