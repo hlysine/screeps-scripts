@@ -12,16 +12,9 @@ const ClaimerRole: Role = {
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo
     const base = Math.floor(energyCapacity / 650);
-    let remainder = energyCapacity % 650;
-    // [TOUGH, MOVE] combo
-    const defense = Math.floor(remainder / 60);
-    remainder = remainder % 60;
+    const remainder = energyCapacity % 650;
 
     const bodyParts: BodyPartConstant[] = [];
-    for (let i = 0; i < defense; i++) {
-      bodyParts.push(TOUGH);
-      bodyParts.push(MOVE);
-    }
     for (let i = 0; i < base; i++) {
       bodyParts.push(CLAIM);
       bodyParts.push(MOVE);
