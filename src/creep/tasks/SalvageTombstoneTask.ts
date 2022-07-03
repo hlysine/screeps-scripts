@@ -20,7 +20,7 @@ const SalvageTombstoneTask: Task = {
         }
       }
 
-      const sources = creep.room.find(FIND_TOMBSTONES);
+      const sources = creep.room.find(FIND_TOMBSTONES, { filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0 });
       for (const target of sources) {
         if (creep.withdraw(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
@@ -59,7 +59,9 @@ const SalvageTombstoneTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_TOMBSTONES);
+      const target = creep.pos.findClosestByPath(FIND_TOMBSTONES, {
+        filter: tombstone => tombstone.store[RESOURCE_ENERGY] > 0
+      });
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
