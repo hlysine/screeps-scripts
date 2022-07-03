@@ -32,8 +32,11 @@ export interface Step {
   (creep: Creep, ctx: TaskContext, next: Next): void;
 }
 
+export type TaskCoordinate = `${number},${number}`;
+
 export interface TaskMemory {
-  task?: Id<Task>;
+  task?: TaskCoordinate;
+  taskId?: Id<Task>;
   debug: boolean;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;

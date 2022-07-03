@@ -1,4 +1,3 @@
-import { TaskMap } from "creep/tasks/TaskStore";
 import { RoleMap } from "creep/roles/RoleStore";
 import Role from "creep/roles/Role";
 import ClaimerRole from "creep/roles/ClaimerRole";
@@ -8,6 +7,11 @@ import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
 
 const logger = new Logger("CreepTaskManager");
+
+interface Coordinate {
+  tier: number;
+  priority: number;
+}
 
 class CreepTaskManager {
   private determineRole(creep: Creep): Id<Role> {
@@ -20,13 +24,35 @@ class CreepTaskManager {
     return WorkerRole.id;
   }
 
-  private executeTask(creep: Creep, task: Id<Task>, ctx: TaskContext): void {
+  private clearMemoryTargets(creep: Creep): void {
+    creep.memory.target = undefined;
+    creep.memory.creepTarget = undefined;
+    creep.memory.structureTarget = undefined;
+    creep.memory.constructionTarget = undefined;
+    creep.memory.sourceTarget = undefined;
+    creep.memory.spawnTarget = undefined;
+  }
+
+  private parseTaskCoordinate(coordinate: string): Coordinate | undefined {
+    const [tier, priority] = coordinate.split(",").map(c => parseInt(c, 10));
+    if (tier === undefined || priority === undefined) return undefined;
+    if (Number.isNaN(tier) || Number.isNaN(priority)) return undefined;
+    return { tier, priority };
+  }
+
+  private isCoordinateEqual(a?: Coordinate, b?: Coordinate): boolean {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    return a.tier === b.tier && a.priority === b.priority;
+  }
+
+  private executeTask(creep: Creep, task: Task, ctx: TaskContext): void {
     ctx.status = TaskStatus.InProgress;
     ctx.note = undefined;
     let idx = 0;
 
     const executeStep = () => {
-      const step = TaskMap[task].steps[idx];
+      const step = task.steps[idx];
       if (!step) {
         return;
       }
@@ -52,13 +78,23 @@ class CreepTaskManager {
     return creep.memory.role;
   }
 
-  private clearMemoryTargets(creep: Creep): void {
-    creep.memory.target = undefined;
-    creep.memory.creepTarget = undefined;
-    creep.memory.structureTarget = undefined;
-    creep.memory.constructionTarget = undefined;
-    creep.memory.sourceTarget = undefined;
-    creep.memory.spawnTarget = undefined;
+  private getTask(creep: Creep): Coordinate | undefined {
+    const task = creep.memory.task ? this.parseTaskCoordinate(creep.memory.task) : undefined;
+    if (!task) {
+      creep.memory.taskId = undefined;
+      return undefined;
+    }
+    if (RoleMap[creep.memory.role].tasks[task.tier][task.priority].id !== creep.memory.taskId) {
+      console.log(
+        `${creep.name} has task and taskId mismatch ${creep.memory.task ?? "undefined"} ${
+          creep.memory.taskId ?? "undefined"
+        }. Clearing task.`
+      );
+      creep.memory.task = undefined;
+      creep.memory.taskId = undefined;
+      return undefined;
+    }
+    return task;
   }
 
   public loop(): void {
@@ -71,37 +107,43 @@ class CreepTaskManager {
 
       let stopExecution = false;
       let debugReport = `${creep.name} is ${role}\n`;
+      const lastTask = this.getTask(creep);
 
-      for (const tier of RoleMap[role].tasks) {
+      for (let i = 0; i < RoleMap[role].tasks.length; i++) {
+        const tier = RoleMap[role].tasks[i];
         const tasks = tier.slice();
-        if (creep.memory.task) {
-          if (tasks.includes(creep.memory.task)) {
+        if (lastTask) {
+          if (lastTask.tier === i) {
             // add the in-progress task to the front
             // tasks.splice(tasks.indexOf(creep.memory.task), 1);
-            tasks.unshift(creep.memory.task);
+            tasks.unshift(RoleMap[role].tasks[i][lastTask.priority]);
           }
         }
         for (const task of tasks) {
+          const priority = RoleMap[role].tasks[i].indexOf(task);
           this.executeTask(creep, task, ctx);
           if (creep.memory.debug) {
-            if (ctx.note) debugReport += `  ${task}: ${ctx.status} (${ctx.note})\n`;
-            else debugReport += `  ${task}: ${ctx.status}\n`;
+            if (ctx.note) debugReport += `  ${task.id}: ${ctx.status} (${ctx.note})\n`;
+            else debugReport += `  ${task.id}: ${ctx.status}\n`;
           }
           if (ctx.status === TaskStatus.Complete) {
-            if (task === creep.memory.task) {
+            if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
               creep.memory.task = undefined;
+              creep.memory.taskId = undefined;
               this.clearMemoryTargets(creep);
             }
           } else if (ctx.status === TaskStatus.InProgress) {
-            if (creep.memory.task !== task) {
-              creep.memory.task = task;
-              creep.say(TaskMap[task].displayName);
+            if (!this.isCoordinateEqual(lastTask, { tier: i, priority })) {
+              creep.memory.task = `${i},${priority}`;
+              creep.memory.taskId = task.id;
+              creep.say(task.displayName);
             }
             stopExecution = true;
             break;
           } else if (ctx.status === TaskStatus.Background) {
-            if (task === creep.memory.task) creep.memory.task = undefined;
-            creep.say(TaskMap[task].displayName);
+            creep.memory.task = undefined;
+            creep.memory.taskId = undefined;
+            creep.say(task.displayName);
             stopExecution = true;
             break;
           }

@@ -10,15 +10,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const WorkerRole: Role = {
   id: "worker" as Id<Role>,
   tasks: [
-    [
-      UrgentUpgradeTask.id,
-      TransferOwnedTask.id,
-      BuildOwnedTask.id,
-      UpgradeTask.id,
-      HarvestTask.id,
-      RetreatToSpawnTask.id,
-      IdleTask.id
-    ]
+    [UrgentUpgradeTask, TransferOwnedTask, BuildOwnedTask, UpgradeTask, HarvestTask, RetreatToSpawnTask, IdleTask]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {

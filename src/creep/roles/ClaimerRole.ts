@@ -7,7 +7,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const ClaimerRole: Role = {
   id: "claimer" as Id<Role>,
-  tasks: [[RetreatWhenNoFlagTask.id], [ClaimTask.id, MoveToFlagTask.id, RetreatToSpawnTask.id, IdleTask.id]],
+  tasks: [[RetreatWhenNoFlagTask], [ClaimTask, MoveToFlagTask, RetreatToSpawnTask, IdleTask]],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [CLAIM, MOVE] combo

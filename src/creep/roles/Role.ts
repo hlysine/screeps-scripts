@@ -13,7 +13,7 @@ export interface RoleCountMap {
   [key: Id<Role>]: number;
 }
 
-export type TaskTiers = Id<Task>[][];
+export type TaskTiers = Task[][];
 
 export default interface Role {
   id: Id<this>;
