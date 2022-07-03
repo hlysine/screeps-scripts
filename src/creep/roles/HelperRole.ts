@@ -1,9 +1,9 @@
-import BuildTask from "creep/tasks/build/BuildTask";
+import BuildTask from "creep/tasks/BuildTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagRoomTask from "creep/tasks/MoveToFlagRoomTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
-import TransferTask from "creep/tasks/transfer/TransferTask";
+import TransferTask from "creep/tasks/TransferTask";
 import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
@@ -11,7 +11,7 @@ const HelperRole: Role = {
   id: "helper" as Id<Role>,
   tasks: [
     [RetreatWhenNoFlagTask],
-    [HarvestTask, MoveToFlagRoomTask, BuildTask, TransferTask, TransferToCreepTask, IdleTask]
+    [HarvestTask, MoveToFlagRoomTask, BuildTask(() => true), TransferTask(() => true), TransferToCreepTask, IdleTask]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {
