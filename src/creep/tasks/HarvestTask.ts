@@ -91,6 +91,7 @@ const HarvestTask: Task = {
               creep.memory.sourceTarget = source.source.id;
             } else {
               // there isn't a source?!
+              console.log(`Source not found at ${creep.memory.target.roomName} (creep: ${creep.name})`);
               creep.memory.target = undefined;
               creep.memory.sourceTarget = undefined;
               ctx.status = TaskStatus.Complete;

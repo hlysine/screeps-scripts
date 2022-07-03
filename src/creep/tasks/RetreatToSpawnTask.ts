@@ -14,6 +14,8 @@ const RetreatToSpawnTask: Task = {
           if (!isMoveSuccess(creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 }))) {
             creep.memory.target = undefined;
             creep.memory.spawnTarget = undefined;
+            ctx.status = TaskStatus.Complete;
+            return;
           } else {
             ctx.status = TaskStatus.Background;
             return;

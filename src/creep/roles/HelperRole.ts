@@ -1,7 +1,7 @@
 import BuildTask from "creep/tasks/BuildTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
-import MoveToFlagRoomTask from "creep/tasks/MoveToFlagRoom";
+import MoveToFlagRoomTask from "creep/tasks/MoveToFlagRoomTask";
 import TransferTask from "creep/tasks/TransferTask";
 import TransferToCreepTask from "creep/tasks/TransferToCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";

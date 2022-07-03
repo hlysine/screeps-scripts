@@ -3,35 +3,56 @@ import { completeTask, requireEnergy } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 const TransferToCreepTask: Task = {
-  id: "transfer_to_creep" as Id<Task>,
+  id: "transfer_creep" as Id<Task>,
   displayName: "Transfer to creep",
 
   steps: [
     requireEnergy,
     (creep: Creep, ctx: TaskContext, next: Next): void => {
+      if (creep.memory.creepTarget) {
+        const memoizedTarget = Game.getObjectById(creep.memory.creepTarget);
+        if (memoizedTarget) {
+          if (creep.transfer(memoizedTarget, RESOURCE_ENERGY) === OK) {
+            creep.memory.target = creep.pos;
+            next();
+            return;
+          }
+        }
+      }
+
       const targets = creep.room.find(FIND_CREEPS, { filter: c => c.store.getFreeCapacity() > 0 });
       for (const target of targets) {
         if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
-          ctx.status = TaskStatus.InProgress;
-          return;
+          creep.memory.creepTarget = target.id;
+          // don't complete the task here, since we may need to chase the target creep
+          break;
         }
       }
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.target) {
-        if (creep.pos.inRangeTo(creep.memory.target.x, creep.memory.target.y, 1)) {
+      if (creep.memory.creepTarget) {
+        const target = Game.getObjectById(creep.memory.creepTarget);
+        if (!target || target.store.getFreeCapacity(RESOURCE_ENERGY) === 0) {
           creep.memory.target = undefined;
+          creep.memory.creepTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else if (
           !isMoveSuccess(
-            creep.moveTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName), {
-              visualizePathStyle: { stroke: "#ffffff" }
+            creep.moveTo(target.pos, {
+              visualizePathStyle: { stroke: "#ffffff" },
+              ignoreDestructibleStructures: true
             })
           )
         ) {
           creep.memory.target = undefined;
+          creep.memory.creepTarget = undefined;
+          ctx.status = TaskStatus.Complete;
+          return;
         } else {
+          creep.memory.target = target.pos;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -43,6 +64,7 @@ const TransferToCreepTask: Task = {
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
+          creep.memory.creepTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }

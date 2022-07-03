@@ -7,7 +7,7 @@ import BuildTask from "./BuildTask";
 import ClaimTask from "./ClaimTask";
 import HarvestTask from "./HarvestTask";
 import IdleTask from "./IdleTask";
-import MoveToFlagRoomTask from "./MoveToFlagRoom";
+import MoveToFlagRoomTask from "./MoveToFlagRoomTask";
 import MoveToFlagTask from "./MoveToFlagTask";
 import RangedAttackAutoTask from "./RangedAttackAutoTask";
 import RetreatToSpawnTask from "./RetreatToSpawnTask";

@@ -42,6 +42,7 @@ const AttackCreepTask: Task = {
         if (creep.attack(target.creep) === OK) {
           creep.memory.target = creep.pos;
           creep.memory.creepTarget = target.creep.id;
+          // don't complete the task here, since we may need to chase the target creep
           break;
         }
       }

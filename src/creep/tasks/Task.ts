@@ -32,7 +32,7 @@ export interface TaskMemory {
   task?: Id<Task>;
   target?: Serialized<RoomPosition>;
   creepTarget?: Id<Creep>;
-  structureTarget?: Id<Structure>;
+  structureTarget?: Id<AnyStructure>;
   constructionTarget?: Id<ConstructionSite>;
   sourceTarget?: Id<Source>;
   spawnTarget?: Id<StructureSpawn>;
