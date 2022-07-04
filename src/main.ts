@@ -1,6 +1,6 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Serialized } from "utils/TypeUtils";
-import tower from "structure/Tower";
+import TowerBrain from "structure/Tower";
 import SourceManager from "managers/SourceManager";
 import CreepSpawnManager from "managers/CreepSpawnManager";
 import { TaskMemory } from "creep/tasks/Task";
@@ -59,7 +59,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const name in Game.structures) {
     const structure = Game.structures[name];
     if (structure instanceof StructureTower) {
-      tower.run(structure);
+      TowerBrain.run(structure);
     }
   }
 });
