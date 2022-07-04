@@ -15,3 +15,12 @@ export function isRoomRestricted(room: Room): boolean {
   }
   return false;
 }
+
+export function isRoomMine(room: Room): boolean {
+  if (room.controller) {
+    if (room.controller.my) return true;
+    if (room.controller.reservation?.username === getUsername()) return true;
+    return false;
+  }
+  return false;
+}

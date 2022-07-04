@@ -1,4 +1,5 @@
 import { isMoveSuccess } from "utils/MoveUtils";
+import { isRoomMine } from "utils/StructureUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
@@ -26,7 +27,7 @@ const AttackStructureTask: Task = {
         })
       ];
       // Only destroy walls if this room is not mine
-      if (creep.room.find(FIND_MY_SPAWNS).length === 0) {
+      if (!isRoomMine(creep.room)) {
         targets.push(
           ...creep.room.find(FIND_STRUCTURES, { filter: structure => structure.structureType === STRUCTURE_WALL })
         );

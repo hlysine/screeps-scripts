@@ -1,3 +1,4 @@
+import { isRoomMine } from "utils/StructureUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
@@ -47,7 +48,7 @@ const RangedAttackAutoTask: Task = {
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
       // Only destroy walls if this room is not mine
-      if (creep.room.find(FIND_MY_SPAWNS).length === 0 && (!creep.room.controller || !creep.room.controller.my)) {
+      if (!isRoomMine(creep.room)) {
         const targets = creep.room.find(FIND_STRUCTURES, {
           filter: structure => structure.structureType === STRUCTURE_WALL
         });

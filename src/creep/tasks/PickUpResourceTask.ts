@@ -59,7 +59,9 @@ const PickUpResourceTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES);
+      const target = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
+        filter: r => r.amount > r.pos.getRangeTo(creep.pos) * 1.5
+      });
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
