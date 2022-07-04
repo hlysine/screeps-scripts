@@ -14,7 +14,7 @@ const PickUpResourceTask: Task = {
         if (memoizedTarget) {
           if (creep.pickup(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
-            ctx.status = TaskStatus.InProgress;
+            ctx.status = TaskStatus.Complete;
             return;
           }
         }
@@ -25,7 +25,7 @@ const PickUpResourceTask: Task = {
         if (creep.pickup(target) === OK) {
           creep.memory.target = creep.pos;
           creep.memory.resourceTarget = target.id;
-          ctx.status = TaskStatus.InProgress;
+          ctx.status = TaskStatus.Complete;
           return;
         }
       }
