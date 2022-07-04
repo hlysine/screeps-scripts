@@ -50,7 +50,7 @@ const TowerBrain: StructureBrain<StructureTower> = {
         .find(FIND_STRUCTURES, {
           filter: struct => {
             if (struct.structureType === STRUCTURE_WALL) {
-              return struct.hits < 100000;
+              return struct.hits < 10000;
             } else if (struct.structureType === STRUCTURE_ROAD) {
               return struct.hits < struct.hitsMax * 0.5;
             }
@@ -69,9 +69,7 @@ const TowerBrain: StructureBrain<StructureTower> = {
       const target = structure.room
         .find(FIND_STRUCTURES, {
           filter: struct => {
-            if (struct.structureType === STRUCTURE_WALL) {
-              return struct.hits < 1000000;
-            } else if (struct.structureType === STRUCTURE_ROAD) {
+            if (struct.structureType === STRUCTURE_ROAD) {
               return struct.hits < struct.hitsMax * 0.8;
             }
             return false;
