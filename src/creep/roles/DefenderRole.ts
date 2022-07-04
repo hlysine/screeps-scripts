@@ -62,14 +62,8 @@ const DefenderRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      if (
-        Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined ||
-        room.find(FIND_HOSTILE_CREEPS).length > 0
-      ) {
-        return room.controller.level - 1;
-      } else {
-        return Math.max(0, Math.min(room.controller.level - 1, 1));
-      }
+      const flagCount = Object.keys(Game.flags).filter(f => f.includes("@" + this.id)).length;
+      if (flagCount || room.find(FIND_HOSTILE_CREEPS).length > 0) return flagCount;
     }
     return 0;
   },
