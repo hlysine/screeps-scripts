@@ -4,7 +4,7 @@ import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
 function isStructureValid(structure: AnyStructure | null): structure is AnyStructure {
   if (!structure) return false;
-  return structure.hits < structure.hitsMax;
+  return structure.hits < structure.hitsMax && structure.hits > 0;
 }
 
 export default function RepairTask(filter: (structure: AnyStructure) => boolean): Task {

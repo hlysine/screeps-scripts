@@ -6,6 +6,7 @@ import CreepSpawnManager from "managers/CreepSpawnManager";
 import { TaskMemory } from "creep/tasks/Task";
 import CreepTaskManager from "managers/CreepTaskManager";
 import { RoleMemory } from "creep/roles/Role";
+import "./utils/ArrayUtils";
 
 declare global {
   /*

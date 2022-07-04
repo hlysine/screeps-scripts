@@ -10,7 +10,7 @@ const TowerBrain: StructureBrain<StructureTower> = {
       const closestHostile = structure.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
       if (closestHostile) {
         structure.attack(closestHostile);
-        structure.room.visual.text("💢", structure.pos.x + 1, structure.pos.y);
+        structure.room.visual.text("💢", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });
         done = true;
       }
     }
@@ -21,50 +21,66 @@ const TowerBrain: StructureBrain<StructureTower> = {
       });
       if (closestDamagedCreep) {
         structure.heal(closestDamagedCreep);
-        structure.room.visual.text("❤️‍🩹", structure.pos.x + 1, structure.pos.y);
+        structure.room.visual.text("❤️‍🩹", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });
         done = true;
       }
     }
 
-    if (!done && energy > energyCapacity * 0.3) {
-      const closestDamagedStructure = structure.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-        filter: struct => struct.hits < struct.hitsMax && struct.hits > 0
-      });
-      if (closestDamagedStructure) {
-        structure.repair(closestDamagedStructure);
-        structure.room.visual.text("🛠️", structure.pos.x + 1, structure.pos.y);
+    if (!done && energy > energyCapacity * 0.5) {
+      const target = structure.room
+        .find(FIND_MY_STRUCTURES, {
+          filter: struct => {
+            if (struct.structureType === STRUCTURE_RAMPART) {
+              return struct.hits < 100000;
+            } else {
+              return struct.hits < struct.hitsMax && struct.hits > 0;
+            }
+          }
+        })
+        .minBy(struct => struct.hits);
+      if (target) {
+        structure.repair(target);
+        structure.room.visual.text("🛠️✅", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });
         done = true;
       }
     }
 
-    if (!done && energy > energyCapacity * 0.3) {
-      const closestDamagedStructure = structure.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: struct =>
-          struct.hits > 0 &&
-          ((struct.structureType !== STRUCTURE_WALL &&
-            struct.structureType !== STRUCTURE_RAMPART &&
-            struct.hits < structure.hitsMax * 0.5) ||
-            struct.hits < 10000)
-      });
-      if (closestDamagedStructure) {
-        structure.repair(closestDamagedStructure);
-        structure.room.visual.text("🛠️", structure.pos.x + 1, structure.pos.y);
+    if (!done && energy > energyCapacity * 0.5) {
+      const target = structure.room
+        .find(FIND_STRUCTURES, {
+          filter: struct => {
+            if (struct.structureType === STRUCTURE_WALL) {
+              return struct.hits < 100000;
+            } else if (struct.structureType === STRUCTURE_ROAD) {
+              return struct.hits < struct.hitsMax * 0.5;
+            }
+            return false;
+          }
+        })
+        .minBy(struct => struct.hits);
+      if (target) {
+        structure.repair(target);
+        structure.room.visual.text("🛠️", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });
         done = true;
       }
     }
 
-    if (!done && energy > energyCapacity * 0.6) {
-      const closestDamagedStructure = structure.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: struct =>
-          struct.hits > 0 &&
-          ((struct.structureType !== STRUCTURE_WALL &&
-            struct.structureType !== STRUCTURE_RAMPART &&
-            struct.hits < structure.hitsMax * 0.8) ||
-            struct.hits < 1000000)
-      });
-      if (closestDamagedStructure) {
-        structure.repair(closestDamagedStructure);
-        structure.room.visual.text("🔨", structure.pos.x + 1, structure.pos.y);
+    if (!done && energy > energyCapacity * 0.8) {
+      const target = structure.room
+        .find(FIND_STRUCTURES, {
+          filter: struct => {
+            if (struct.structureType === STRUCTURE_WALL) {
+              return struct.hits < 1000000;
+            } else if (struct.structureType === STRUCTURE_ROAD) {
+              return struct.hits < struct.hitsMax * 0.8;
+            }
+            return false;
+          }
+        })
+        .minBy(struct => struct.hits);
+      if (target) {
+        structure.repair(target);
+        structure.room.visual.text("🛠️", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });
         done = true;
       }
     }

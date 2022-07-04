@@ -19,14 +19,12 @@ const WorkerRole: Role = {
       RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
       TransferTask(structure => structure.my),
       BuildTask(site => site.my),
-      RepairTask(
-        structure =>
-          isRoomMine(structure.room) &&
-          ((structure.structureType !== STRUCTURE_WALL &&
-            structure.structureType !== STRUCTURE_RAMPART &&
-            structure.hits < structure.hitsMax * 0.3) ||
-            structure.hits < 1000000)
-      ),
+      RepairTask(structure => {
+        if (!isRoomMine(structure.room)) return false;
+        if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
+          return structure.hits < 100000;
+        else return structure.hits < structure.hitsMax * 0.3;
+      }),
       UpgradeTask,
       SalvageTask,
       HarvestTask,

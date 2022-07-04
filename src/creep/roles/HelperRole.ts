@@ -29,13 +29,11 @@ const HelperRole: Role = {
     [
       PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
       PrependTask(
-        RepairTask(
-          structure =>
-            (structure.structureType !== STRUCTURE_WALL &&
-              structure.structureType !== STRUCTURE_RAMPART &&
-              structure.hits < structure.hitsMax * 0.5) ||
-            structure.hits < 1000000
-        ),
+        RepairTask(structure => {
+          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
+            return structure.hits < 100000;
+          else return structure.hits < structure.hitsMax * 0.5;
+        }),
         requireFlag
       ),
       PrependTask(
