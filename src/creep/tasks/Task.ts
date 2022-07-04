@@ -44,7 +44,7 @@ export interface TaskMemory {
   constructionTarget?: Id<ConstructionSite>;
   sourceTarget?: Id<Source>;
   spawnTarget?: Id<StructureSpawn>;
-  salvageTarget?: Id<Tombstone> | Id<Ruin>;
+  salvageTarget?: Id<Tombstone> | Id<Ruin> | Id<AnyStructure>;
   resourceTarget?: Id<Resource>;
 }
 
