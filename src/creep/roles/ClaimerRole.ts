@@ -9,7 +9,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const ClaimerRole: Role = {
   id: "claimer" as Id<Role>,
   tasks: [
-    [RetreatWhenNoFlagTask],
+    [RetreatWhenNoFlagTask()],
     [ReserveTask, ClaimTask, MoveToFlagTask(MoveToFlagMode.LowPriorityInRoom, 1), RetreatToSpawnTask, IdleTask]
   ],
 
@@ -34,7 +34,7 @@ const ClaimerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      if (Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined) return 2;
+      return Object.keys(Game.flags).filter(f => f.includes("@" + this.id)).length;
     }
     return 0;
   },

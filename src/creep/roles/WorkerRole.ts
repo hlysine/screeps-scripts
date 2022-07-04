@@ -24,7 +24,7 @@ const WorkerRole: Role = {
           isRoomMine(structure.room) &&
           ((structure.structureType !== STRUCTURE_WALL &&
             structure.structureType !== STRUCTURE_RAMPART &&
-            structure.hits < structure.hitsMax * 0.5) ||
+            structure.hits < structure.hitsMax * 0.3) ||
             structure.hits < 1000000)
       ),
       UpgradeTask,

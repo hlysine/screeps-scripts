@@ -10,7 +10,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const DefenderRole: Role = {
   id: "defender" as Id<Role>,
   tasks: [
-    [RangedAttackAutoTask, RetreatWhenNoFlagTask],
+    [RangedAttackAutoTask, RetreatWhenNoFlagTask()],
     [
       AttackCreepTask,
       AttackStructureTask,

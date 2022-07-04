@@ -18,6 +18,19 @@ export const requireCapacity: Step = (creep: Creep, ctx: TaskContext, next: () =
   next();
 };
 
+export const requireFlag: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
+  if (
+    !Object.values(Game.flags).find(
+      f => f.name.toLowerCase().includes("@" + creep.memory.role) && f.pos.roomName === creep.pos.roomName
+    )
+  ) {
+    ctx.status = TaskStatus.Complete;
+    ctx.note = "no flag";
+    return;
+  }
+  next();
+};
+
 export const completeTask: Step = (_creep: Creep, ctx: TaskContext, next: () => void): void => {
   ctx.status = TaskStatus.Complete;
   ctx.note = "completeTask";

@@ -1,7 +1,7 @@
 import Manager from "./Manager";
 import { getWorldPathDistance, positionEquals } from "utils/MoveUtils";
 import { isRoomRestricted } from "utils/StructureUtils";
-import WorkerRole from "creep/roles/WorkerRole";
+import FlagTags from "utils/FlagTags";
 
 export interface MiningSpot {
   pos: RoomPosition;
@@ -40,7 +40,7 @@ class SourceManager implements Manager {
       if (isRoomRestricted(room)) return true;
       if (
         Object.values(Game.flags).find(
-          flag => flag.pos.roomName === room.name && flag.name.toLowerCase().includes("@" + WorkerRole.id)
+          flag => flag.pos.roomName === room.name && flag.name.toLowerCase().includes("#" + FlagTags.Harvest)
         )
       )
         return false;
@@ -48,7 +48,7 @@ class SourceManager implements Manager {
     } else {
       if (
         Object.values(Game.flags).find(
-          flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("@" + WorkerRole.id)
+          flag => flag.pos.roomName === roomName && flag.name.toLowerCase().includes("#" + FlagTags.Harvest)
         )
       )
         return false;
@@ -100,7 +100,7 @@ class SourceManager implements Manager {
       };
     });
     Object.values(Game.flags).forEach(flag => {
-      if (!flag.name.toLowerCase().includes("@" + WorkerRole.id)) return;
+      if (!flag.name.toLowerCase().includes("#" + FlagTags.Harvest)) return;
 
       const cache = newCache[flag.pos.roomName];
       if (!cache) {
