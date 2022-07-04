@@ -10,6 +10,7 @@ import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
 import SalvageTask from "creep/tasks/SalvageTask";
+import RepairTask from "creep/tasks/RepairTask";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
@@ -17,6 +18,13 @@ const HelperRole: Role = {
     [RetreatWhenNoFlagTask, PickUpResourceTask],
     [
       PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
+      RepairTask(
+        structure =>
+          (structure.structureType !== STRUCTURE_WALL &&
+            structure.structureType !== STRUCTURE_RAMPART &&
+            structure.hits < structure.hitsMax * 0.5) ||
+          structure.hits < 1000000
+      ),
       BuildTask(() => true),
       TransferTask(() => true),
       TransferToCreepTask,

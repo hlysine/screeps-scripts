@@ -8,6 +8,7 @@ import SalvageTask from "creep/tasks/SalvageTask";
 import TransferTask from "creep/tasks/TransferTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
+import { isRoomMine } from "utils/StructureUtils";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const WorkerRole: Role = {
@@ -15,13 +16,12 @@ const WorkerRole: Role = {
   tasks: [
     [UrgentUpgradeTask, PickUpResourceTask],
     [
-      RepairTask(structure => structure.hits < 100 && !!structure.room.controller && structure.room.controller.my),
+      RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
       TransferTask(structure => structure.my),
       BuildTask(site => site.my),
       RepairTask(
         structure =>
-          !!structure.room.controller &&
-          structure.room.controller.my &&
+          isRoomMine(structure.room) &&
           ((structure.structureType !== STRUCTURE_WALL &&
             structure.structureType !== STRUCTURE_RAMPART &&
             structure.hits < structure.hitsMax * 0.5) ||
