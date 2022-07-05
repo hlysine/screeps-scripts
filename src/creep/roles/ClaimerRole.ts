@@ -1,3 +1,4 @@
+import AttackControllerTask from "creep/tasks/AttackControllerTask";
 import ClaimTask from "creep/tasks/ClaimTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
@@ -10,7 +11,14 @@ const ClaimerRole: Role = {
   id: "claimer" as Id<Role>,
   tasks: [
     [RetreatWhenNoFlagTask()],
-    [ReserveTask, ClaimTask, MoveToFlagTask(MoveToFlagMode.LowPriorityInRoom, 1), RetreatToSpawnTask, IdleTask]
+    [
+      ClaimTask,
+      ReserveTask,
+      AttackControllerTask,
+      MoveToFlagTask(MoveToFlagMode.LowPriorityInRoom, 1),
+      RetreatToSpawnTask,
+      IdleTask
+    ]
   ],
 
   getCreepInfo(energyCapacity: number): CreepInfo {

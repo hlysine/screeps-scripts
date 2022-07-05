@@ -2,14 +2,14 @@ import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
 
-const ClaimTask: Task = {
-  id: "claim" as Id<Task>,
-  displayName: "Claim",
+const AttackControllerTask: Task = {
+  id: "attack_controller" as Id<Task>,
+  displayName: "Attack controller",
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.room.controller && !creep.room.controller.owner) {
-        const returnCode = creep.claimController(creep.room.controller);
+      if (creep.room.controller && !creep.room.controller.my) {
+        const returnCode = creep.attackController(creep.room.controller);
         if (returnCode === ERR_NOT_IN_RANGE) {
           const moveResult = creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
           if (!isMoveSuccess(moveResult)) {
@@ -24,9 +24,9 @@ const ClaimTask: Task = {
           }
         } else if (returnCode === OK) {
           creep.memory.target = creep.pos;
-          // claim is instant, but we need to wait 1 tick to avoid other tasks overriding the claim intent
+          // attack is instant, but we need to wait 1 tick to avoid other tasks overriding the attack intent
           ctx.status = TaskStatus.InProgress;
-          ctx.note = "claim success";
+          ctx.note = "attack success";
           return;
         }
       }
@@ -36,4 +36,4 @@ const ClaimTask: Task = {
   ]
 };
 
-export default ClaimTask;
+export default AttackControllerTask;
