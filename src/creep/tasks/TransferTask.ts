@@ -84,6 +84,21 @@ export default function TransferTask(
           filter: structure => isStructureValid(structure) && filter(structure)
         });
         if (target) {
+          // prevent more than 1 creep doing the same thing
+          const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.structureTarget === target.id });
+          if (creeps.length > 0) {
+            const range = target.pos.getRangeTo(creep);
+            if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
+              creeps.forEach(c => {
+                c.memory.target = undefined;
+                c.memory.structureTarget = undefined;
+              });
+            } else {
+              creep.memory.structureTarget = undefined;
+              ctx.status = TaskStatus.Complete;
+              return;
+            }
+          }
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
             creep.memory.structureTarget = target.id;

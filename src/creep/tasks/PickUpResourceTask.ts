@@ -63,6 +63,21 @@ const PickUpResourceTask: Task = {
         filter: r => r.amount > r.pos.getRangeTo(creep.pos) * 1.5
       });
       if (target) {
+        // prevent more than 1 creep doing the same thing
+        const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.resourceTarget === target.id });
+        if (creeps.length > 0) {
+          const range = target.pos.getRangeTo(creep);
+          if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
+            creeps.forEach(c => {
+              c.memory.target = undefined;
+              c.memory.resourceTarget = undefined;
+            });
+          } else {
+            creep.memory.resourceTarget = undefined;
+            ctx.status = TaskStatus.Complete;
+            return;
+          }
+        }
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
           creep.memory.resourceTarget = target.id;
