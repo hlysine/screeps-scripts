@@ -89,7 +89,7 @@ const AttackCreepTask: Task = {
       next();
     },
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const target = creep.pos.findClosestByPath(FIND_HOSTILE_CREEPS);
+      const target = creep.pos.findClosestHostileByPath();
       if (target) {
         if (
           isMoveSuccess(

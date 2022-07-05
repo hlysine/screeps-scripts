@@ -7,7 +7,7 @@ class TowerManager extends Manager {
     let done = false;
 
     if (!done) {
-      const closestHostile = structure.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+      const closestHostile = structure.pos.findClosestHostileByRange();
       if (closestHostile) {
         structure.attack(closestHostile);
         structure.room.visual.text("💢", structure.pos.x + 1, structure.pos.y, { align: "left", opacity: 0.5 });

@@ -8,7 +8,7 @@ const RangedAttackAutoTask: Task = {
 
   steps: [
     (creep: Creep, ctx: TaskContext, next: Next): void => {
-      const targets = creep.room.find(FIND_HOSTILE_CREEPS);
+      const targets = creep.room.findTrulyHostileCreeps();
       for (const target of targets) {
         if (creep.rangedAttack(target) === OK) {
           ctx.status = TaskStatus.Complete;

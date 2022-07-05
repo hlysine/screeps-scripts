@@ -90,7 +90,7 @@ const HelperRole: Role = {
   getCreepLimit(room: Room): number {
     if (room.controller) {
       const flagCount = FlagManager.getRelatedFlags(room.name).filter(f => f.name.includes("@" + this.id)).length;
-      if (flagCount && room.find(FIND_HOSTILE_CREEPS).length === 0) return flagCount;
+      if (flagCount && room.findTrulyHostileCreeps().length === 0) return flagCount;
     }
     return 0;
   },
