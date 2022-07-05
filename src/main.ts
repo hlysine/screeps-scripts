@@ -1,12 +1,12 @@
+import "./utils/prototypes/ArrayProto";
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Serialized } from "utils/TypeUtils";
+import { RoleMemory } from "creep/roles/Role";
+import { TaskMemory } from "creep/tasks/Task";
+import TowerManager from "managers/TowerManager";
 import SourceManager from "managers/SourceManager";
 import CreepSpawnManager from "managers/CreepSpawnManager";
-import { TaskMemory } from "creep/tasks/Task";
 import CreepTaskManager from "managers/CreepTaskManager";
-import { RoleMemory } from "creep/roles/Role";
-import "./utils/ArrayUtils";
-import TowerManager from "managers/TowerManager";
 
 declare global {
   /*
