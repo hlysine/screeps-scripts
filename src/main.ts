@@ -36,12 +36,18 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
     interface Global {
-      log: any;
+      managers: typeof managers;
     }
   }
 }
 
-const managers = [TowerManager, SourceManager, CreepSpawnManager, CreepTaskManager];
+const managers = {
+  tower: TowerManager,
+  source: SourceManager,
+  creepSpawn: CreepSpawnManager,
+  creepTask: CreepTaskManager
+} as const;
+global.managers = managers;
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -54,6 +60,7 @@ export const loop = ErrorMapper.wrapLoop(() => {
       delete Memory.creeps[name];
     }
   }
-
-  managers.forEach(manager => manager.loop());
+  for (const name in managers) {
+    managers[name as keyof typeof managers].loop();
+  }
 });

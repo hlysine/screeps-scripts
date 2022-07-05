@@ -28,10 +28,11 @@ export interface Reservation {
   get pos(): RoomPosition;
 }
 
-class SourceManager implements Manager {
+class SourceManager extends Manager {
   private roomCache?: RoomHarvestCache;
   public freeSpots: MiningSpot[] = [];
   public reservedSpots: Reservation[] = [];
+  public visualization = false;
 
   private isRoomIgnored(roomName: string): boolean {
     const room = Game.rooms[roomName];
@@ -169,6 +170,13 @@ class SourceManager implements Manager {
         const creep = creeps.find(c => c.memory.target && positionEquals(c.memory.target, spot.pos));
         if (creep === undefined) {
           this.freeSpots.push(spot);
+          if (this.visualization && Game.rooms[spot.pos.roomName]) {
+            Game.rooms[spot.pos.roomName].visual.rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
+              fill: "transparent",
+              stroke: "green",
+              strokeWidth: 0.1
+            });
+          }
         } else if (!positionEquals(creep.pos, creep.memory.target as RoomPosition)) {
           const lastReservation = lastReservations.find(
             r => r.creep.name === creep.name && positionEquals(r.spot.pos, spot.pos)
@@ -183,6 +191,13 @@ class SourceManager implements Manager {
               get pos(): RoomPosition {
                 return spot.pos;
               }
+            });
+          }
+          if (this.visualization && Game.rooms[spot.pos.roomName]) {
+            Game.rooms[spot.pos.roomName].visual.rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
+              fill: "transparent",
+              stroke: "blue",
+              strokeWidth: 0.1
             });
           }
         }

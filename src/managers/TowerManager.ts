@@ -1,6 +1,6 @@
 import Manager from "./Manager";
 
-class TowerManager implements Manager {
+class TowerManager extends Manager {
   private runTower(structure: StructureTower): void {
     const energy = structure.store[RESOURCE_ENERGY];
     const energyCapacity = structure.store.getCapacity(RESOURCE_ENERGY);

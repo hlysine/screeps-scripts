@@ -5,6 +5,7 @@ import DefenderRole from "creep/roles/DefenderRole";
 import WorkerRole from "creep/roles/WorkerRole";
 import Task, { clearTaskTargets, TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
+import Manager from "./Manager";
 
 const logger = new Logger("CreepTaskManager");
 
@@ -13,7 +14,7 @@ interface Coordinate {
   priority: number;
 }
 
-class CreepTaskManager {
+class CreepTaskManager extends Manager {
   private determineRole(creep: Creep): Id<Role> {
     if (creep.body.find(b => b.type === CLAIM)) {
       return ClaimerRole.id;

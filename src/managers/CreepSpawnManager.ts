@@ -17,7 +17,7 @@ interface SpawnInfo {
   roles: RoleInfoMap;
 }
 
-class CreepSpawnManager implements Manager {
+class CreepSpawnManager extends Manager {
   public spawns: SpawnInfo[] | undefined;
 
   public spawnRefreshFrequency = 10;
