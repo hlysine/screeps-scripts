@@ -170,8 +170,8 @@ class SourceManager extends Manager {
         const creep = creeps.find(c => c.memory.target && positionEquals(c.memory.target, spot.pos));
         if (creep === undefined) {
           this.freeSpots.push(spot);
-          if (this.visualization && Game.rooms[spot.pos.roomName]) {
-            Game.rooms[spot.pos.roomName].visual.rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
+          if (this.visualization) {
+            new RoomVisual(spot.pos.roomName).rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
               fill: "transparent",
               stroke: "green",
               strokeWidth: 0.1
@@ -193,8 +193,8 @@ class SourceManager extends Manager {
               }
             });
           }
-          if (this.visualization && Game.rooms[spot.pos.roomName]) {
-            Game.rooms[spot.pos.roomName].visual.rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
+          if (this.visualization) {
+            new RoomVisual(spot.pos.roomName).rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
               fill: "transparent",
               stroke: "blue",
               strokeWidth: 0.1

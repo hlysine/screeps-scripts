@@ -4,7 +4,7 @@ import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
-import { requireEnergy, requireFlag } from "creep/tasks/SharedSteps";
+import { requireEnergy, requireFlagInRoom } from "creep/tasks/SharedSteps";
 import TransferTask from "creep/tasks/TransferTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
@@ -14,6 +14,7 @@ import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import FlagTags from "utils/FlagTags";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import FleeFromAttackerTask from "creep/tasks/FleeFromAttackerTask";
+import FlagManager from "managers/FlagManager";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
@@ -36,17 +37,17 @@ const HelperRole: Role = {
             return structure.hits < 100000;
           else return structure.hits < structure.hitsMax * 0.5;
         }),
-        requireFlag
+        requireFlagInRoom
       ),
       PrependTask(
         BuildTask(() => true),
-        requireFlag
+        requireFlagInRoom
       ),
       PrependTask(
         TransferTask(() => true),
-        requireFlag
+        requireFlagInRoom
       ),
-      PrependTask(UpgradeTask, requireFlag),
+      PrependTask(UpgradeTask, requireFlagInRoom),
       SalvageTask,
       HarvestTask,
       RetreatToSpawnTask,
@@ -88,11 +89,8 @@ const HelperRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      if (
-        Object.keys(Game.flags).find(f => f.includes("@" + this.id)) !== undefined &&
-        room.find(FIND_HOSTILE_CREEPS).length === 0
-      )
-        return 2;
+      const flagCount = FlagManager.getRelatedFlags(room.name).filter(f => f.name.includes("@" + this.id)).length;
+      if (flagCount && room.find(FIND_HOSTILE_CREEPS).length === 0) return flagCount;
     }
     return 0;
   },

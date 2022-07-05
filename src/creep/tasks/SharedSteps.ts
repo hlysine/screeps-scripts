@@ -18,7 +18,7 @@ export const requireCapacity: Step = (creep: Creep, ctx: TaskContext, next: () =
   next();
 };
 
-export const requireFlag: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
+export const requireFlagInRoom: Step = (creep: Creep, ctx: TaskContext, next: () => void): void => {
   if (
     !Object.values(Game.flags).find(
       f => f.name.toLowerCase().includes("@" + creep.memory.role) && f.pos.roomName === creep.pos.roomName

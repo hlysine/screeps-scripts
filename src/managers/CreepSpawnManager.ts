@@ -2,6 +2,13 @@ import Manager from "./Manager";
 import Role, { CreepInfo, RoleCountMap } from "creep/roles/Role";
 import { Roles } from "creep/roles/RoleStore";
 
+export interface SpawnMemory {
+  /**
+   * Name of the spawn that this creep comes from.
+   */
+  origin: string;
+}
+
 interface RoleInfo {
   limit: number;
   creepInfo: CreepInfo;
@@ -17,12 +24,16 @@ interface SpawnInfo {
   roles: RoleInfoMap;
 }
 
+interface SpawnRoleCount {
+  [key: string]: RoleCountMap;
+}
+
 class CreepSpawnManager extends Manager {
   public spawns: SpawnInfo[] | undefined;
 
   public spawnRefreshFrequency = 10;
 
-  public creeepsCount: RoleCountMap = {} as RoleCountMap;
+  public creeepsCount: SpawnRoleCount = {};
 
   private countCreepCapacity(): number {
     return Object.values(Game.creeps).reduce((sum, creep) => {
@@ -42,7 +53,7 @@ class CreepSpawnManager extends Manager {
       map[role.id] = {
         limit: role.getCreepLimit(spawn.room),
         creepInfo: role.getCreepInfo(effectiveEnergyCapacity),
-        spawnPriority: role.getSpawnPriority(spawn.room, this.creeepsCount)
+        spawnPriority: role.getSpawnPriority(spawn.room, this.creeepsCount[spawn.name])
       };
       return map;
     }, {} as RoleInfoMap);
@@ -57,18 +68,24 @@ class CreepSpawnManager extends Manager {
     });
   }
 
-  private countCreepsByRole(creeps: Creep[]): void {
-    this.creeepsCount = {} as RoleCountMap;
+  private countCreepsByRole(creeps: Creep[], origin: string): RoleCountMap {
+    const creeepsCount = {} as RoleCountMap;
     creeps.forEach(c => {
+      if (c.memory.origin === undefined) {
+        c.memory.origin = origin;
+      } else if (c.memory.origin !== origin) return;
       const role = c.memory.role;
-      if (!this.creeepsCount[role]) this.creeepsCount[role] = 0;
-      this.creeepsCount[role]++;
+      if (!creeepsCount[role]) creeepsCount[role] = 0;
+      creeepsCount[role]++;
     });
+    return creeepsCount;
   }
 
   public loop(): void {
     const creeps = Object.values(Game.creeps);
-    this.countCreepsByRole(creeps);
+    Object.values(Game.spawns).forEach(spawn => {
+      this.creeepsCount[spawn.name] = this.countCreepsByRole(creeps, spawn.name);
+    });
     console.log(`Total creeps: ${creeps.length}`);
 
     if (!this.spawns || Game.time % this.spawnRefreshFrequency === 0) {
@@ -100,17 +117,17 @@ class CreepSpawnManager extends Manager {
           creepInfo: { bodyParts, energyCost },
           spawnPriority
         } = roles[role.id];
-        const count = this.creeepsCount[role.id] || 0;
+        const count = this.creeepsCount[spawn.name][role.id] || 0;
         report += `  ${role.id}: ${count}/${limit} (${energyCost} energy ${spawnPriority} priority)\n`;
         if (!blockSpawn && count < limit) {
           if (spawn.room.energyAvailable >= energyCost) {
             const newName = `${spawn.name}-${role.id}-${Game.time}`;
             const result = spawn.spawnCreep(bodyParts, newName, {
-              memory: { role: role.id, debug: false }
+              memory: { role: role.id, debug: false, origin: spawn.name }
             });
             console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
             if (result === OK) {
-              this.creeepsCount[role.id] = count + 1;
+              this.creeepsCount[spawn.name][role.id] = count + 1;
               blockSpawn = true;
             }
           } else {

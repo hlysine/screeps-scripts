@@ -5,6 +5,7 @@ import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import ReserveTask from "creep/tasks/ReserveTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
+import FlagManager from "managers/FlagManager";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const ClaimerRole: Role = {
@@ -42,7 +43,7 @@ const ClaimerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      return Object.keys(Game.flags).filter(f => f.includes("@" + this.id)).length;
+      return FlagManager.getRelatedFlags(room.name).filter(f => f.name.includes("@" + this.id)).length;
     }
     return 0;
   },

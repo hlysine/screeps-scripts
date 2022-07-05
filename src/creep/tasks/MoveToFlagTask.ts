@@ -1,3 +1,4 @@
+import FlagManager from "managers/FlagManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskContext, Next, TaskStatus } from "./Task";
@@ -24,7 +25,9 @@ export default function MoveToFlagTask(mode: MoveToFlagMode, range: number): Tas
 
     steps: [
       (creep: Creep, ctx: TaskContext, next: Next): void => {
-        const target = Object.values(Game.flags).find(f => f.name.toLowerCase().includes("@" + creep.memory.role));
+        const target = FlagManager.getRelatedFlags(creep.memory.origin).find(f =>
+          f.name.toLowerCase().includes("@" + creep.memory.role)
+        );
         if (!target) {
           next();
           return;

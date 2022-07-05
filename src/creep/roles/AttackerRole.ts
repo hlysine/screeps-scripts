@@ -5,6 +5,7 @@ import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RangedAttackAutoTask from "creep/tasks/RangedAttackAutoTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
+import FlagManager from "managers/FlagManager";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
 const AttackerRole: Role = {
@@ -62,7 +63,7 @@ const AttackerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      const flagCount = Object.keys(Game.flags).filter(f => f.includes("@" + this.id)).length;
+      const flagCount = FlagManager.getRelatedFlags(room.name).filter(f => f.name.includes("@" + this.id)).length;
       if (flagCount || room.find(FIND_HOSTILE_CREEPS).length > 0) return flagCount;
     }
     return 0;

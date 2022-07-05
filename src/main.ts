@@ -5,8 +5,9 @@ import { RoleMemory } from "creep/roles/Role";
 import { TaskMemory } from "creep/tasks/Task";
 import TowerManager from "managers/TowerManager";
 import SourceManager from "managers/SourceManager";
-import CreepSpawnManager from "managers/CreepSpawnManager";
+import CreepSpawnManager, { SpawnMemory } from "managers/CreepSpawnManager";
 import CreepTaskManager from "managers/CreepTaskManager";
+import FlagManager from "managers/FlagManager";
 
 declare global {
   /*
@@ -23,7 +24,7 @@ declare global {
     log: any;
   }
 
-  interface CreepMemory extends TaskMemory, RoleMemory {
+  interface CreepMemory extends TaskMemory, RoleMemory, SpawnMemory {
     _move?: {
       dest: Serialized<RoomPosition>;
       time: number;
@@ -42,6 +43,7 @@ declare global {
 }
 
 const managers = {
+  flag: FlagManager,
   tower: TowerManager,
   source: SourceManager,
   creepSpawn: CreepSpawnManager,
