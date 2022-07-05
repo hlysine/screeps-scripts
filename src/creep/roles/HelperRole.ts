@@ -6,13 +6,14 @@ import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
 import { requireEnergy, requireFlag } from "creep/tasks/SharedSteps";
 import TransferTask from "creep/tasks/TransferTask";
-import TransferToCreepTask from "creep/tasks/TransferToHostileCreepTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
 import SalvageTask from "creep/tasks/SalvageTask";
 import RepairTask from "creep/tasks/RepairTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import FlagTags from "utils/FlagTags";
+import UpgradeTask from "creep/tasks/UpgradeTask";
+import FleeFromAttackerTask from "creep/tasks/FleeFromAttackerTask";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
@@ -24,6 +25,7 @@ const HelperRole: Role = {
         if (name.includes("#" + FlagTags.Harvest)) return true; // this is to allow helpers to harvest in other rooms
         return false;
       }),
+      FleeFromAttackerTask,
       PickUpResourceTask
     ],
     [
@@ -44,7 +46,7 @@ const HelperRole: Role = {
         TransferTask(() => true),
         requireFlag
       ),
-      PrependTask(TransferToCreepTask, requireFlag),
+      PrependTask(UpgradeTask, requireFlag),
       SalvageTask,
       HarvestTask,
       RetreatToSpawnTask,

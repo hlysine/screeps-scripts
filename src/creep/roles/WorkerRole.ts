@@ -1,4 +1,5 @@
 import BuildTask from "creep/tasks/BuildTask";
+import FleeFromAttackerTask from "creep/tasks/FleeFromAttackerTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
@@ -14,7 +15,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const WorkerRole: Role = {
   id: "worker" as Id<Role>,
   tasks: [
-    [UrgentUpgradeTask, PickUpResourceTask],
+    [UrgentUpgradeTask, FleeFromAttackerTask, PickUpResourceTask],
     [
       RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
       TransferTask(structure => structure.my),
