@@ -1,12 +1,12 @@
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Serialized } from "utils/TypeUtils";
-import TowerBrain from "structure/Tower";
 import SourceManager from "managers/SourceManager";
 import CreepSpawnManager from "managers/CreepSpawnManager";
 import { TaskMemory } from "creep/tasks/Task";
 import CreepTaskManager from "managers/CreepTaskManager";
 import { RoleMemory } from "creep/roles/Role";
 import "./utils/ArrayUtils";
+import TowerManager from "managers/TowerManager";
 
 declare global {
   /*
@@ -41,7 +41,7 @@ declare global {
   }
 }
 
-const managers = [SourceManager, CreepSpawnManager, CreepTaskManager];
+const managers = [TowerManager, SourceManager, CreepSpawnManager, CreepTaskManager];
 
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
@@ -56,11 +56,4 @@ export const loop = ErrorMapper.wrapLoop(() => {
   }
 
   managers.forEach(manager => manager.loop());
-
-  for (const name in Game.structures) {
-    const structure = Game.structures[name];
-    if (structure instanceof StructureTower) {
-      TowerBrain.run(structure);
-    }
-  }
 });

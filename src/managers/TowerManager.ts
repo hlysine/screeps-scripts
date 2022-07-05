@@ -1,7 +1,7 @@
-import StructureBrain from "./StructureBrain";
+import Manager from "./Manager";
 
-const TowerBrain: StructureBrain<StructureTower> = {
-  run(structure: StructureTower) {
+class TowerManager implements Manager {
+  private runTower(structure: StructureTower): void {
     const energy = structure.store[RESOURCE_ENERGY];
     const energyCapacity = structure.store.getCapacity(RESOURCE_ENERGY);
     let done = false;
@@ -83,6 +83,15 @@ const TowerBrain: StructureBrain<StructureTower> = {
       }
     }
   }
-};
 
-export default TowerBrain;
+  public loop(): void {
+    for (const name in Game.structures) {
+      const structure = Game.structures[name];
+      if (structure instanceof StructureTower) {
+        this.runTower(structure);
+      }
+    }
+  }
+}
+
+export default new TowerManager();
