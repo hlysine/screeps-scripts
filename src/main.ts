@@ -63,4 +63,8 @@ export const loop = ErrorMapper.wrapLoop(() => {
   for (const name in managers) {
     managers[name as keyof typeof managers].loop();
   }
+  if (Game.cpu.bucket === 10000) {
+    Game.cpu.generatePixel();
+    console.log("Generated pixel");
+  }
 });
