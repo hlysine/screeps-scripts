@@ -1,5 +1,5 @@
 import Manager from "./Manager";
-import { getWorldPathDistance, positionEquals } from "utils/MoveUtils";
+import { getWorldPathDistance, isSpotObstructed, positionEquals } from "utils/MoveUtils";
 import { isRoomRestricted } from "utils/StructureUtils";
 import FlagTags from "utils/FlagTags";
 import HarvestTask from "creep/tasks/HarvestTask";
@@ -168,6 +168,7 @@ class SourceManager extends Manager {
           }
         }
 
+        if (isSpotObstructed(spot.pos)) return;
         const creep = creeps.find(c => c.memory.target && positionEquals(c.memory.target, spot.pos));
         if (creep === undefined) {
           this.freeSpots.push(spot);

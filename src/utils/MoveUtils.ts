@@ -63,3 +63,29 @@ export function findClosestAcrossRooms<T extends _HasRoomPosition>(pos: RoomPosi
 export function isMoveSuccess(moveResult: number): boolean {
   return moveResult === OK || moveResult === ERR_TIRED;
 }
+
+export function isSpotObstructed(pos: RoomPosition): boolean {
+  if (Game.rooms[pos.roomName]) {
+    const result = pos.look();
+    for (const obj of result) {
+      if (obj.structure) {
+        if (
+          obj.structure.structureType !== STRUCTURE_ROAD &&
+          obj.structure.structureType !== STRUCTURE_CONTAINER &&
+          obj.structure.structureType !== STRUCTURE_RAMPART
+        )
+          return true;
+        else if (obj.structure instanceof StructureRampart) {
+          if (!obj.structure.my) return true;
+        }
+      } else if (obj.terrain) {
+        if (obj.terrain === "wall") return true;
+      } else if (obj.creep) {
+        return true;
+      }
+    }
+    return false;
+  } else {
+    return false;
+  }
+}
