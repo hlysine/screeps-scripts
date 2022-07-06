@@ -1,16 +1,19 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { isRoomMine } from "utils/StructureUtils";
 import { completeTask } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
-const AttackStructureTask: Task = {
+const AttackStructureTask = makeTask({
   id: "attack_structure" as Id<Task>,
   displayName: "Attack structure",
+  data: () => ({
+    structureTarget: undefined as Id<AnyStructure> | undefined
+  }),
 
   steps: [
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.structureTarget) {
-        const memoizedTarget = Game.getObjectById(creep.memory.structureTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.structureTarget) {
+        const memoizedTarget = Game.getObjectById(ctx.data.structureTarget);
         if (memoizedTarget) {
           if (creep.attack(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
@@ -49,18 +52,18 @@ const AttackStructureTask: Task = {
       }
       if (creep.attack(target) === OK) {
         creep.memory.target = creep.pos;
-        creep.memory.structureTarget = target.id;
+        ctx.data.structureTarget = target.id;
         ctx.status = TaskStatus.Background;
         return;
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.structureTarget) {
-        const target = Game.getObjectById(creep.memory.structureTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.structureTarget) {
+        const target = Game.getObjectById(ctx.data.structureTarget);
         if (!target || target.hits === 0) {
           creep.memory.target = undefined;
-          creep.memory.structureTarget = undefined;
+          ctx.data.structureTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -79,7 +82,7 @@ const AttackStructureTask: Task = {
             )
           ) {
             creep.memory.target = undefined;
-            creep.memory.structureTarget = undefined;
+            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -95,7 +98,7 @@ const AttackStructureTask: Task = {
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const target = creep.pos.findClosestByPath(FIND_HOSTILE_SPAWNS);
       if (target) {
         if (
@@ -123,7 +126,7 @@ const AttackStructureTask: Task = {
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const target = creep.pos.findClosestByPath(FIND_HOSTILE_STRUCTURES, {
         filter: structure => structure.hits > 0
       });
@@ -155,6 +158,6 @@ const AttackStructureTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default AttackStructureTask;

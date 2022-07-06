@@ -4,21 +4,25 @@ export enum TaskStatus {
   /**
    * The task is currently running. No more tasks will be executed in the same tick.
    * This task will be prioritized over other tasks of the same tier in the next tick.
+   * Task data is persisted to the next tick.
    */
   InProgress = "in_progress",
   /**
    * The task is currently running with a low priority. No more tasks will be executed in the same tick,
    * but it does not get priority over other tasks of the same tier in the next tick.
+   * Task data is persisted to the next tick.
    */
   Background = "background",
   /**
    * The task is complete or cannot be executed. The next task in queue will be executed in the same tick.
+   * Task data will be discarded.
    */
   Complete = "complete"
 }
 
-export interface TaskContext {
+export interface TaskContext<TData = unknown> {
   status: TaskStatus;
+  data: TData;
   /**
    * Debug print explaining the status of the current task.
    */
@@ -28,39 +32,47 @@ export interface TaskContext {
 
 export type Next = () => void;
 
-export interface Step {
-  (creep: Creep, ctx: TaskContext, next: Next): void;
+export interface Step<TData = unknown> {
+  (creep: Creep, ctx: TaskContext<TData>, next: Next): void;
 }
 
 export type TaskCoordinate = `${number},${number}`;
 
 export interface TaskMemory {
+  /**
+   * Coordinate of the in-progress task in the role task matrix.
+   */
   task?: TaskCoordinate;
+  /**
+   * The id of the current task. This is used to verify the task coordinate.
+   */
   taskId?: Id<Task>;
+  /**
+   * Whether the task gets priority over other tasks of the same tier.
+   */
+  isBackground?: boolean;
+  /**
+   * If debug is true, the creep is highlighted and detailed task information is printed.
+   */
   debug: boolean;
+  /**
+   * Where the creep is currently headed to.
+   */
   target?: Serialized<RoomPosition>;
-  creepTarget?: Id<Creep>;
-  structureTarget?: Id<AnyStructure>;
-  constructionTarget?: Id<ConstructionSite>;
-  sourceTarget?: Id<Source>;
-  spawnTarget?: Id<StructureSpawn>;
-  salvageTarget?: Id<Tombstone> | Id<Ruin> | Id<AnyStructure>;
-  resourceTarget?: Id<Resource>;
+  /**
+   * The data associated with the current task.
+   * This data is only accessible to the current task and is cleared when the task is completed.
+   */
+  data?: unknown;
 }
 
-export function clearTaskTargets(creep: Creep): void {
-  creep.memory.target = undefined;
-  creep.memory.creepTarget = undefined;
-  creep.memory.structureTarget = undefined;
-  creep.memory.constructionTarget = undefined;
-  creep.memory.sourceTarget = undefined;
-  creep.memory.spawnTarget = undefined;
-  creep.memory.salvageTarget = undefined;
-  creep.memory.resourceTarget = undefined;
+export function makeTask<TData>(task: Task<TData>): Task {
+  return task as Task;
 }
 
-export default interface Task {
-  id: Id<this>;
+export default interface Task<TData = unknown> {
+  id: Id<Task>;
   displayName: string;
-  steps: Step[];
+  data: (creep: Creep) => TData;
+  steps: Step<TData>[];
 }

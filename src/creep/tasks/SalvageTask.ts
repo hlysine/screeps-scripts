@@ -1,7 +1,7 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { isRoomMine, isRoomRestricted } from "utils/StructureUtils";
 import { completeTask, requireCapacity } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 
 function isStructureValid(
   structure: AnyStructure | Tombstone | Ruin | null
@@ -18,15 +18,20 @@ function isStructureValid(
   );
 }
 
-const SalvageTask: Task = {
+const SalvageTask = makeTask({
   id: "salvage" as Id<Task>,
   displayName: "Salvage",
+  data(_creep: Creep) {
+    return {
+      salvageTarget: undefined as Id<Tombstone> | Id<Ruin> | Id<AnyStructure> | undefined
+    };
+  },
 
   steps: [
     requireCapacity,
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.salvageTarget) {
-        const memoizedTarget = Game.getObjectById(creep.memory.salvageTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.salvageTarget) {
+        const memoizedTarget = Game.getObjectById(ctx.data.salvageTarget);
         if (memoizedTarget) {
           if (creep.withdraw(memoizedTarget, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
@@ -44,19 +49,19 @@ const SalvageTask: Task = {
       for (const target of sources) {
         if (creep.withdraw(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.salvageTarget = target.id;
+          ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.salvageTarget) {
-        const target = Game.getObjectById(creep.memory.salvageTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.salvageTarget) {
+        const target = Game.getObjectById(ctx.data.salvageTarget);
         if (!target || !isStructureValid(target)) {
           creep.memory.target = undefined;
-          creep.memory.salvageTarget = undefined;
+          ctx.data.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -67,7 +72,7 @@ const SalvageTask: Task = {
           )
         ) {
           creep.memory.target = undefined;
-          creep.memory.salvageTarget = undefined;
+          ctx.data.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else {
@@ -78,7 +83,7 @@ const SalvageTask: Task = {
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const targets = [
         creep.pos.findClosestByPath(FIND_TOMBSTONES, { filter: isStructureValid }),
         creep.pos.findClosestByPath(FIND_RUINS, { filter: isStructureValid }),
@@ -92,7 +97,7 @@ const SalvageTask: Task = {
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
-          creep.memory.salvageTarget = target.id;
+          ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -101,6 +106,6 @@ const SalvageTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default SalvageTask;

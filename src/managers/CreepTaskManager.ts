@@ -3,7 +3,7 @@ import Role from "creep/roles/Role";
 import ClaimerRole from "creep/roles/ClaimerRole";
 import DefenderRole from "creep/roles/DefenderRole";
 import WorkerRole from "creep/roles/WorkerRole";
-import Task, { clearTaskTargets, TaskContext, TaskStatus } from "creep/tasks/Task";
+import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
 import Manager from "./Manager";
 
@@ -70,10 +70,18 @@ class CreepTaskManager extends Manager {
     return creep.memory.role;
   }
 
+  private clearTask(creep: Creep): void {
+    creep.memory.task = undefined;
+    creep.memory.taskId = undefined;
+    creep.memory.isBackground = undefined;
+    creep.memory.target = undefined;
+    creep.memory.data = undefined;
+  }
+
   private getTask(creep: Creep): Coordinate | undefined {
     const task = creep.memory.task ? this.parseTaskCoordinate(creep.memory.task) : undefined;
     if (!task) {
-      creep.memory.taskId = undefined;
+      this.clearTask(creep);
       return undefined;
     }
     if (
@@ -85,12 +93,22 @@ class CreepTaskManager extends Manager {
           creep.memory.taskId ?? "undefined"
         }. Clearing task.`
       );
-      creep.memory.task = undefined;
-      creep.memory.taskId = undefined;
-      clearTaskTargets(creep);
+      this.clearTask(creep);
       return undefined;
     }
     return task;
+  }
+
+  /**
+   * Terminate the current task of the creep if the id provided matches its current task.
+   * @param creep The creep to terminate the task of.
+   * @param id The id of the task to terminate.
+   */
+  public terminateTask(creep: Creep, id: Id<Task>): void {
+    this.getTask(creep);
+    if (creep.memory.taskId === id) {
+      this.clearTask(creep);
+    }
   }
 
   public loop(): void {
@@ -98,48 +116,56 @@ class CreepTaskManager extends Manager {
       const creep = Game.creeps[name];
       const role = this.getRole(creep);
       const ctx: TaskContext = {
-        status: TaskStatus.InProgress
+        status: TaskStatus.InProgress,
+        data: undefined
       };
 
       let stopExecution = false;
       let debugReport = `${creep.name} is ${role}\n`;
-      const lastTask = this.getTask(creep);
+      let lastTask = this.getTask(creep);
 
       for (let i = 0; i < RoleMap[role].tasks.length; i++) {
         const tier = RoleMap[role].tasks[i];
         const tasks = tier.slice();
         if (lastTask) {
           if (lastTask.tier === i) {
-            // add the in-progress task to the front
-            // tasks.splice(tasks.indexOf(creep.memory.task), 1);
-            tasks.unshift(RoleMap[role].tasks[i][lastTask.priority]);
+            if (!creep.memory.isBackground) {
+              // add the in-progress task to the front
+              // tasks.splice(tasks.indexOf(creep.memory.task), 1);
+              tasks.unshift(RoleMap[role].tasks[i][lastTask.priority]);
+            }
           }
         }
         for (const task of tasks) {
           const priority = RoleMap[role].tasks[i].indexOf(task);
+          let savedData = false;
+          if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
+            ctx.data = creep.memory.data ?? task.data(creep);
+            savedData = true;
+          } else {
+            ctx.data = task.data(creep);
+          }
           this.executeTask(creep, task, ctx);
           if (creep.memory.debug) {
-            if (ctx.note) debugReport += `  ${task.id}: ${ctx.status} (${ctx.note})\n`;
-            else debugReport += `  ${task.id}: ${ctx.status}\n`;
+            if (ctx.note)
+              debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"}) (${
+                ctx.note
+              })\n`;
+            else debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"})\n`;
           }
           if (ctx.status === TaskStatus.Complete) {
             if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
-              creep.memory.task = undefined;
-              creep.memory.taskId = undefined;
-              clearTaskTargets(creep);
+              this.clearTask(creep);
+              lastTask = undefined;
             }
-          } else if (ctx.status === TaskStatus.InProgress) {
+          } else if (ctx.status === TaskStatus.InProgress || ctx.status === TaskStatus.Background) {
             if (!this.isCoordinateEqual(lastTask, { tier: i, priority })) {
               creep.memory.task = `${i},${priority}`;
               creep.memory.taskId = task.id;
               creep.say(task.displayName);
             }
-            stopExecution = true;
-            break;
-          } else if (ctx.status === TaskStatus.Background) {
-            creep.memory.task = undefined;
-            creep.memory.taskId = undefined;
-            creep.say(task.displayName);
+            creep.memory.isBackground = ctx.status === TaskStatus.Background;
+            creep.memory.data = ctx.data;
             stopExecution = true;
             break;
           }

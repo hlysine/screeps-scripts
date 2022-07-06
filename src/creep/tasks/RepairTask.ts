@@ -1,6 +1,6 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
 function isStructureValid(structure: AnyStructure | null): structure is AnyStructure {
   if (!structure) return false;
@@ -8,15 +8,18 @@ function isStructureValid(structure: AnyStructure | null): structure is AnyStruc
 }
 
 export default function RepairTask(filter: (structure: AnyStructure) => boolean): Task {
-  return {
+  return makeTask({
     id: "repair" as Id<Task>,
     displayName: "Repair",
+    data: () => ({
+      structureTarget: undefined as Id<AnyStructure> | undefined
+    }),
 
     steps: [
       requireEnergy,
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.structureTarget) {
-          const memoizedTarget = Game.getObjectById(creep.memory.structureTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.structureTarget) {
+          const memoizedTarget = Game.getObjectById(ctx.data.structureTarget);
           if (memoizedTarget) {
             if (isStructureValid(memoizedTarget) && creep.repair(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
@@ -33,19 +36,19 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         for (const target of targets) {
           if (creep.repair(target) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.structureTarget = target.id;
+            ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.structureTarget) {
-          const target = Game.getObjectById(creep.memory.structureTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.structureTarget) {
+          const target = Game.getObjectById(ctx.data.structureTarget);
           if (!isStructureValid(target)) {
             creep.memory.target = undefined;
-            creep.memory.structureTarget = undefined;
+            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else if (
@@ -56,7 +59,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
             )
           ) {
             creep.memory.target = undefined;
-            creep.memory.structureTarget = undefined;
+            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -67,7 +70,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
+      (creep, ctx, next) => {
         const targets = creep.room.find(FIND_STRUCTURES, {
           filter: structure => isStructureValid(structure) && filter(structure)
         });
@@ -89,7 +92,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.structureTarget = target.id;
+            ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -98,5 +101,5 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
       },
       completeTask
     ]
-  };
+  });
 }

@@ -1,15 +1,16 @@
-import Task, { Next, TaskContext, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
-const IdleTask: Task = {
+const IdleTask = makeTask({
   id: "idle" as Id<Task>,
   displayName: "Idle",
+  data: () => null,
 
   steps: [
-    (_creep: Creep, ctx: TaskContext, next: Next): void => {
+    (_creep, ctx, next) => {
       ctx.status = TaskStatus.Background;
       next();
     }
   ]
-};
+});
 
 export default IdleTask;

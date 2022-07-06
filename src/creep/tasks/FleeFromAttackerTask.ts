@@ -1,12 +1,13 @@
 import { completeTask } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 
-const FleeFromAttackerTask: Task = {
+const FleeFromAttackerTask = makeTask({
   id: "flee_from_attacker" as Id<Task>,
   displayName: "Flee from attacker",
+  data: () => null,
 
   steps: [
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const target = creep.room
         .lookForAtArea(LOOK_CREEPS, creep.pos.y - 3, creep.pos.x - 3, creep.pos.y + 3, creep.pos.x + 3, true)
         .filter(r => !r.creep.my && r.creep.getActiveBodyparts(ATTACK) + r.creep.getActiveBodyparts(RANGED_ATTACK) > 0)
@@ -22,6 +23,6 @@ const FleeFromAttackerTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default FleeFromAttackerTask;

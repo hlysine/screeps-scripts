@@ -1,13 +1,14 @@
 import { isRoomMine } from "utils/StructureUtils";
 import { completeTask } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 
-const RangedAttackAutoTask: Task = {
+const RangedAttackAutoTask = makeTask({
   id: "ranged_attack_auto" as Id<Task>,
   displayName: "Auto ranged attack",
+  data: () => null,
 
   steps: [
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const targets = creep.room.findTrulyHostileCreeps();
       for (const target of targets) {
         if (creep.rangedAttack(target) === OK) {
@@ -17,7 +18,7 @@ const RangedAttackAutoTask: Task = {
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const targets: AnyStructure[] = [
         ...creep.room.find(FIND_HOSTILE_SPAWNS),
         ...creep.room.find(FIND_HOSTILE_STRUCTURES, {
@@ -46,7 +47,7 @@ const RangedAttackAutoTask: Task = {
 
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       // Only destroy walls if this room is not mine
       if (!isRoomMine(creep.room)) {
         const targets = creep.room.find(FIND_STRUCTURES, {
@@ -63,6 +64,6 @@ const RangedAttackAutoTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default RangedAttackAutoTask;

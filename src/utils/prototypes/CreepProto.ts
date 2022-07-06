@@ -1,7 +1,11 @@
+import Task from "creep/tasks/Task";
+import CreepTaskManager from "managers/CreepTaskManager";
+
 declare global {
   interface Creep {
     countBodyParts(part: BodyPartConstant): number;
     isOffensive(): boolean;
+    terminateTask(id: Id<Task>): void;
   }
 }
 
@@ -16,6 +20,10 @@ Creep.prototype.isOffensive = function (): boolean {
     this.countBodyParts(CLAIM) > 0 ||
     this.countBodyParts(HEAL) > 0
   );
+};
+
+Creep.prototype.terminateTask = function (id: Id<Task>): void {
+  CreepTaskManager.terminateTask(this, id);
 };
 
 export {};

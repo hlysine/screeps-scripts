@@ -1,16 +1,20 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
 export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>["filter"]): Task {
-  return {
+  return makeTask({
     id: "build" as Id<Task>,
     displayName: "Build",
+    data: () => ({
+      constructionTarget: undefined as Id<ConstructionSite> | undefined
+    }),
+
     steps: [
       requireEnergy,
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.constructionTarget) {
-          const memoizedTarget = Game.getObjectById(creep.memory.constructionTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.constructionTarget) {
+          const memoizedTarget = Game.getObjectById(ctx.data.constructionTarget);
           if (memoizedTarget) {
             if (creep.build(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
@@ -24,19 +28,19 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         for (const target of sources) {
           if (creep.build(target) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.constructionTarget = target.id;
+            ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.constructionTarget) {
-          const target = Game.getObjectById(creep.memory.constructionTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.constructionTarget) {
+          const target = Game.getObjectById(ctx.data.constructionTarget);
           if (!target) {
             creep.memory.target = undefined;
-            creep.memory.constructionTarget = undefined;
+            ctx.data.constructionTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else if (
@@ -47,7 +51,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
             )
           ) {
             creep.memory.target = undefined;
-            creep.memory.constructionTarget = undefined;
+            ctx.data.constructionTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -58,12 +62,12 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
+      (creep, ctx, next) => {
         const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES, { filter });
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.constructionTarget = target.id;
+            ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -72,5 +76,5 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
       },
       completeTask
     ]
-  };
+  });
 }

@@ -1,7 +1,7 @@
 import FlagManager from "managers/FlagManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 
 export enum MoveToFlagMode {
   /**
@@ -19,12 +19,13 @@ export enum MoveToFlagMode {
 }
 
 export default function MoveToFlagTask(mode: MoveToFlagMode, range: number): Task {
-  return {
+  return makeTask({
     id: "move_to_flag" as Id<Task>,
     displayName: "Move to flag",
+    data: () => null,
 
     steps: [
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
+      (creep, ctx, next) => {
         const target = FlagManager.getRelatedFlags(creep.memory.origin).find(f =>
           f.name.toLowerCase().includes("@" + creep.memory.role)
         );
@@ -62,5 +63,5 @@ export default function MoveToFlagTask(mode: MoveToFlagMode, range: number): Tas
       },
       completeTask
     ]
-  };
+  });
 }

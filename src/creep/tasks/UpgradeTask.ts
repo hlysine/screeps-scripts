@@ -1,14 +1,15 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
-const UpgradeTask: Task = {
+const UpgradeTask = makeTask({
   id: "upgrade" as Id<Task>,
   displayName: "Upgrade",
+  data: () => null,
 
   steps: [
     requireEnergy,
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       if (creep.room.controller && creep.room.controller.my) {
         const returnCode = creep.upgradeController(creep.room.controller);
         if (returnCode === ERR_NOT_IN_RANGE) {
@@ -30,6 +31,6 @@ const UpgradeTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default UpgradeTask;

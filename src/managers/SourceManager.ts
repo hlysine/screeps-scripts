@@ -2,6 +2,7 @@ import Manager from "./Manager";
 import { getWorldPathDistance, positionEquals } from "utils/MoveUtils";
 import { isRoomRestricted } from "utils/StructureUtils";
 import FlagTags from "utils/FlagTags";
+import HarvestTask from "creep/tasks/HarvestTask";
 
 export interface MiningSpot {
   pos: RoomPosition;
@@ -213,8 +214,7 @@ class SourceManager extends Manager {
     const reservation = this.reservedSpots.find(r => positionEquals(r.spot.pos, spot.pos));
     if (reservation) {
       this.reservedSpots = this.reservedSpots.filter(r => r !== reservation);
-      reservation.creep.memory.target = undefined;
-      reservation.creep.memory.sourceTarget = undefined;
+      reservation.creep.terminateTask(HarvestTask.id);
     }
   }
 }

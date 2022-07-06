@@ -1,12 +1,13 @@
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 import UpgradeTask from "./UpgradeTask";
 
-const UrgentUpgradeTask: Task = {
+const UrgentUpgradeTask = makeTask({
   id: "urgent_upgrade" as Id<Task>,
   displayName: "Urgent upgrade",
+  data: creep => UpgradeTask.data(creep),
 
   steps: [
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       if (creep.room.controller && creep.room.controller.my) {
         if (creep.room.controller.ticksToDowngrade < 1000) {
           next();
@@ -17,6 +18,6 @@ const UrgentUpgradeTask: Task = {
     },
     ...UpgradeTask.steps
   ]
-};
+});
 
 export default UrgentUpgradeTask;

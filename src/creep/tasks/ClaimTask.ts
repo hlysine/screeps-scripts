@@ -1,13 +1,14 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
-const ClaimTask: Task = {
+const ClaimTask = makeTask({
   id: "claim" as Id<Task>,
   displayName: "Claim",
+  data: () => null,
 
   steps: [
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       if (creep.room.controller && !creep.room.controller.owner) {
         const returnCode = creep.claimController(creep.room.controller);
         if (returnCode === ERR_NOT_IN_RANGE) {
@@ -34,6 +35,6 @@ const ClaimTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default ClaimTask;

@@ -1,6 +1,6 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
 function isStructureValid(
   structure: AnyStructure | null
@@ -21,15 +21,18 @@ function isStructureValid(
 export default function TransferTask(
   filter: (structure: StructureExtension | StructureSpawn | StructureTower) => boolean
 ): Task {
-  return {
+  return makeTask({
     id: "transfer" as Id<Task>,
     displayName: "Transfer",
+    data: () => ({
+      structureTarget: undefined as Id<AnyStructure> | undefined
+    }),
 
     steps: [
       requireEnergy,
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.structureTarget) {
-          const memoizedTarget = Game.getObjectById(creep.memory.structureTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.structureTarget) {
+          const memoizedTarget = Game.getObjectById(ctx.data.structureTarget);
           if (memoizedTarget) {
             if (creep.transfer(memoizedTarget, RESOURCE_ENERGY) === OK) {
               creep.memory.target = creep.pos;
@@ -45,19 +48,19 @@ export default function TransferTask(
         for (const target of targets) {
           if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.structureTarget = target.id;
+            ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
-        if (creep.memory.structureTarget) {
-          const target = Game.getObjectById(creep.memory.structureTarget);
+      (creep, ctx, next) => {
+        if (ctx.data.structureTarget) {
+          const target = Game.getObjectById(ctx.data.structureTarget);
           if (!isStructureValid(target)) {
             creep.memory.target = undefined;
-            creep.memory.structureTarget = undefined;
+            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else if (
@@ -68,7 +71,7 @@ export default function TransferTask(
             )
           ) {
             creep.memory.target = undefined;
-            creep.memory.structureTarget = undefined;
+            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -79,29 +82,29 @@ export default function TransferTask(
         }
         next();
       },
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
+      (creep, ctx, next) => {
         const target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
           filter: structure => isStructureValid(structure) && filter(structure)
         });
         if (target) {
-          // prevent more than 1 creep doing the same thing
-          const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.structureTarget === target.id });
-          if (creeps.length > 0) {
-            const range = target.pos.getRangeTo(creep);
-            if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
-              creeps.forEach(c => {
-                c.memory.target = undefined;
-                c.memory.structureTarget = undefined;
-              });
-            } else {
-              creep.memory.structureTarget = undefined;
-              ctx.status = TaskStatus.Complete;
-              return;
-            }
-          }
+          // // prevent more than 1 creep doing the same thing
+          // const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.structureTarget === target.id });
+          // if (creeps.length > 0) {
+          //   const range = target.pos.getRangeTo(creep);
+          //   if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
+          //     creeps.forEach(c => {
+          //       c.memory.target = undefined;
+          //       c.memory.structureTarget = undefined;
+          //     });
+          //   } else {
+          //     ctx.data.structureTarget = undefined;
+          //     ctx.status = TaskStatus.Complete;
+          //     return;
+          //   }
+          // }
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.structureTarget = target.id;
+            ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -110,5 +113,5 @@ export default function TransferTask(
       },
       completeTask
     ]
-  };
+  });
 }

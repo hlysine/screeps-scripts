@@ -1,16 +1,19 @@
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireCapacity } from "./SharedSteps";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { TaskStatus, makeTask } from "./Task";
 
-const PickUpResourceTask: Task = {
+const PickUpResourceTask = makeTask({
   id: "pick_up_resource" as Id<Task>,
   displayName: "Pick up resource",
+  data: () => ({
+    resourceTarget: undefined as Id<Resource> | undefined
+  }),
 
   steps: [
     requireCapacity,
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.resourceTarget) {
-        const memoizedTarget = Game.getObjectById(creep.memory.resourceTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.resourceTarget) {
+        const memoizedTarget = Game.getObjectById(ctx.data.resourceTarget);
         if (memoizedTarget) {
           if (creep.pickup(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
@@ -24,19 +27,19 @@ const PickUpResourceTask: Task = {
       for (const target of sources) {
         if (creep.pickup(target) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.resourceTarget = target.id;
+          ctx.data.resourceTarget = target.id;
           ctx.status = TaskStatus.Complete;
           return;
         }
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
-      if (creep.memory.resourceTarget) {
-        const target = Game.getObjectById(creep.memory.resourceTarget);
+    (creep, ctx, next) => {
+      if (ctx.data.resourceTarget) {
+        const target = Game.getObjectById(ctx.data.resourceTarget);
         if (!target || target.amount === 0) {
           creep.memory.target = undefined;
-          creep.memory.resourceTarget = undefined;
+          ctx.data.resourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -47,7 +50,7 @@ const PickUpResourceTask: Task = {
           )
         ) {
           creep.memory.target = undefined;
-          creep.memory.resourceTarget = undefined;
+          ctx.data.resourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else {
@@ -58,29 +61,29 @@ const PickUpResourceTask: Task = {
       }
       next();
     },
-    (creep: Creep, ctx: TaskContext, next: Next): void => {
+    (creep, ctx, next) => {
       const target = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
         filter: r => r.amount > r.pos.getRangeTo(creep.pos) * 1.5
       });
       if (target) {
-        // prevent more than 1 creep doing the same thing
-        const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.resourceTarget === target.id });
-        if (creeps.length > 0) {
-          const range = target.pos.getRangeTo(creep);
-          if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
-            creeps.forEach(c => {
-              c.memory.target = undefined;
-              c.memory.resourceTarget = undefined;
-            });
-          } else {
-            creep.memory.resourceTarget = undefined;
-            ctx.status = TaskStatus.Complete;
-            return;
-          }
-        }
+        // // prevent more than 1 creep doing the same thing
+        // const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.data.resourceTarget === target.id });
+        // if (creeps.length > 0) {
+        //   const range = target.pos.getRangeTo(creep);
+        //   if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
+        //     creeps.forEach(c => {
+        //       c.memory.target = undefined;
+        //       c.memory.data.resourceTarget = undefined;
+        //     });
+        //   } else {
+        //     ctx.data.resourceTarget = undefined;
+        //     ctx.status = TaskStatus.Complete;
+        //     return;
+        //   }
+        // }
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
-          creep.memory.resourceTarget = target.id;
+          ctx.data.resourceTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -89,6 +92,6 @@ const PickUpResourceTask: Task = {
     },
     completeTask
   ]
-};
+});
 
 export default PickUpResourceTask;

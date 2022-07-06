@@ -1,16 +1,17 @@
 import RetreatToSpawnTask from "./RetreatToSpawnTask";
-import Task, { TaskContext, Next, TaskStatus } from "./Task";
+import Task, { makeTask, TaskStatus } from "./Task";
 
 export default function RetreatWhenNoFlagTask(
   filter: (flag: Flag, creep: Creep) => boolean = (flag, creep) =>
     flag.name.toLowerCase().includes("@" + creep.memory.role)
 ): Task {
-  return {
+  return makeTask({
     id: "retreat_no_flag" as Id<Task>,
     displayName: "Retreat when no flag",
+    data: () => null,
 
     steps: [
-      (creep: Creep, ctx: TaskContext, next: Next): void => {
+      (creep, ctx, next) => {
         if (creep.room.controller && creep.room.controller.my) {
           ctx.status = TaskStatus.Complete;
           return;
@@ -27,5 +28,5 @@ export default function RetreatWhenNoFlagTask(
       },
       ...RetreatToSpawnTask.steps
     ]
-  };
+  });
 }
