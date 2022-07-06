@@ -1,10 +1,13 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
 import Task, { makeTask, TaskStatus } from "./Task";
 
+const BuildTaskId = "build" as Id<Task>;
+
 export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>["filter"]): Task {
   return makeTask({
-    id: "build" as Id<Task>,
+    id: BuildTaskId,
     displayName: "Build",
     data: () => ({
       constructionTarget: undefined as Id<ConstructionSite> | undefined
@@ -18,7 +21,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
           if (memoizedTarget) {
             if (creep.build(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
-              creep.memory.targetId = memoizedTarget.id;
+              TaskTargetManager.setTarget(creep, BuildTaskId, memoizedTarget.id);
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -29,7 +32,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         for (const target of sources) {
           if (creep.build(target) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, BuildTaskId, target.id);
             ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -54,7 +57,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
             return;
           } else {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, BuildTaskId, target.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -66,7 +69,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, BuildTaskId, target.id);
             ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;

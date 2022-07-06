@@ -1,3 +1,4 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { findClosestAcrossRooms, isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskStatus, makeTask } from "./Task";
@@ -37,7 +38,7 @@ const RetreatToSpawnTask = makeTask({
       }
       creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
       creep.memory.target = closestSpawn.pos;
-      creep.memory.targetId = closestSpawn.id;
+      TaskTargetManager.setTarget(creep, RetreatToSpawnTask.id, closestSpawn.id);
       ctx.data.spawnTarget = closestSpawn.id;
       ctx.status = TaskStatus.Background;
     },

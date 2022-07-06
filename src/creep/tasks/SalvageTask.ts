@@ -1,3 +1,4 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { isRoomMine, isRoomRestricted } from "utils/StructureUtils";
 import { completeTask, requireCapacity } from "./SharedSteps";
@@ -35,7 +36,7 @@ const SalvageTask = makeTask({
         if (memoizedTarget) {
           if (creep.withdraw(memoizedTarget, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = memoizedTarget.id;
+            TaskTargetManager.setTarget(creep, SalvageTask.id, memoizedTarget.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -50,7 +51,7 @@ const SalvageTask = makeTask({
       for (const target of sources) {
         if (creep.withdraw(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, SalvageTask.id, target.id);
           ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
@@ -75,7 +76,7 @@ const SalvageTask = makeTask({
           return;
         } else {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, SalvageTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -96,7 +97,7 @@ const SalvageTask = makeTask({
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, SalvageTask.id, target.id);
           ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;

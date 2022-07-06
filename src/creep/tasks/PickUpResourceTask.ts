@@ -18,7 +18,7 @@ const PickUpResourceTask = makeTask({
         if (memoizedTarget) {
           if (creep.pickup(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = memoizedTarget.id;
+            TaskTargetManager.setTarget(creep, PickUpResourceTask.id, memoizedTarget.id);
             ctx.status = TaskStatus.Complete;
             return;
           }
@@ -29,7 +29,7 @@ const PickUpResourceTask = makeTask({
       for (const target of sources) {
         if (creep.pickup(target) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, PickUpResourceTask.id, target.id);
           ctx.data.resourceTarget = target.id;
           ctx.status = TaskStatus.Complete;
           return;
@@ -54,7 +54,7 @@ const PickUpResourceTask = makeTask({
           return;
         } else {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, PickUpResourceTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -70,9 +70,8 @@ const PickUpResourceTask = makeTask({
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
-          ctx.data.resourceTarget = target.id;
           TaskTargetManager.setTarget(creep, PickUpResourceTask.id, target.id);
+          ctx.data.resourceTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }

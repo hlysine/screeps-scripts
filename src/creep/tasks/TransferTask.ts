@@ -39,7 +39,7 @@ export default function TransferTask(
           if (memoizedTarget) {
             if (creep.transfer(memoizedTarget, RESOURCE_ENERGY) === OK) {
               creep.memory.target = creep.pos;
-              creep.memory.targetId = memoizedTarget.id;
+              TaskTargetManager.setTarget(creep, TransferTaskId, memoizedTarget.id);
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -52,7 +52,7 @@ export default function TransferTask(
         for (const target of targets) {
           if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -77,7 +77,7 @@ export default function TransferTask(
             return;
           } else {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -94,9 +94,8 @@ export default function TransferTask(
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
-            ctx.data.structureTarget = target.id;
             TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
+            ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }

@@ -1,3 +1,4 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
 import Task, { makeTask, TaskStatus } from "./Task";
@@ -7,9 +8,11 @@ function isStructureValid(structure: AnyStructure | null): structure is AnyStruc
   return structure.hits < structure.hitsMax && structure.hits > 0;
 }
 
+const RepairTaskId = "repair" as Id<Task>;
+
 export default function RepairTask(filter: (structure: AnyStructure) => boolean): Task {
   return makeTask({
-    id: "repair" as Id<Task>,
+    id: RepairTaskId,
     displayName: "Repair",
     data: () => ({
       structureTarget: undefined as Id<AnyStructure> | undefined
@@ -23,7 +26,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
           if (memoizedTarget) {
             if (isStructureValid(memoizedTarget) && creep.repair(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
-              creep.memory.targetId = memoizedTarget.id;
+              TaskTargetManager.setTarget(creep, RepairTaskId, memoizedTarget.id);
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -37,7 +40,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         for (const target of targets) {
           if (creep.repair(target) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, RepairTaskId, target.id);
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -62,7 +65,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
             return;
           } else {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, RepairTaskId, target.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -91,7 +94,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, RepairTaskId, target.id);
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;

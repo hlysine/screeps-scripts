@@ -1,3 +1,4 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { makeTask, TaskStatus } from "./Task";
@@ -19,7 +20,7 @@ const AttackCreepTask = makeTask({
         for (const target of targets) {
           if (creep.attack(target.structure) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = target.structure.id;
+            TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.structure.id);
             break;
           }
         }
@@ -32,7 +33,7 @@ const AttackCreepTask = makeTask({
         if (memoizedTarget) {
           if (creep.attack(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
-            creep.memory.targetId = memoizedTarget.id;
+            TaskTargetManager.setTarget(creep, AttackCreepTask.id, memoizedTarget.id);
             next();
             return;
           }
@@ -46,7 +47,7 @@ const AttackCreepTask = makeTask({
       for (const target of targets) {
         if (creep.attack(target.creep) === OK) {
           creep.memory.target = creep.pos;
-          creep.memory.targetId = target.creep.id;
+          TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.creep.id);
           ctx.data.creepTarget = target.creep.id;
           // don't complete the task here, since we may need to chase the target creep
           break;
@@ -79,13 +80,13 @@ const AttackCreepTask = makeTask({
             return;
           } else {
             creep.memory.target = target.pos;
-            creep.memory.targetId = target.id;
+            TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
         } else {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -103,7 +104,7 @@ const AttackCreepTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.id);
           ctx.data.creepTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
@@ -116,7 +117,7 @@ const AttackCreepTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
-          creep.memory.targetId = target.id;
+          TaskTargetManager.setTarget(creep, AttackCreepTask.id, target.id);
           ctx.data.creepTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
