@@ -70,5 +70,5 @@ export const loop = ErrorMapper.wrapLoop(() => {
     Game.cpu.generatePixel?.(); // this function does not exist on private servers
     console.log("Generated pixel");
   }
-  console.log("CPU usage:", Game.cpu.getUsed());
+  console.log("CPU usage:", Game.cpu.getUsed().toFixed(2));
 });
