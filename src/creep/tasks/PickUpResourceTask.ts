@@ -1,3 +1,4 @@
+import TaskTargetManager from "managers/TaskTargetManager";
 import { isMoveSuccess } from "utils/MoveUtils";
 import { completeTask, requireCapacity } from "./SharedSteps";
 import Task, { TaskStatus, makeTask } from "./Task";
@@ -17,6 +18,7 @@ const PickUpResourceTask = makeTask({
         if (memoizedTarget) {
           if (creep.pickup(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.targetId = memoizedTarget.id;
             ctx.status = TaskStatus.Complete;
             return;
           }
@@ -27,6 +29,7 @@ const PickUpResourceTask = makeTask({
       for (const target of sources) {
         if (creep.pickup(target) === OK) {
           creep.memory.target = creep.pos;
+          creep.memory.targetId = target.id;
           ctx.data.resourceTarget = target.id;
           ctx.status = TaskStatus.Complete;
           return;
@@ -38,8 +41,6 @@ const PickUpResourceTask = makeTask({
       if (ctx.data.resourceTarget) {
         const target = Game.getObjectById(ctx.data.resourceTarget);
         if (!target || target.amount === 0) {
-          creep.memory.target = undefined;
-          ctx.data.resourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -49,12 +50,11 @@ const PickUpResourceTask = makeTask({
             })
           )
         ) {
-          creep.memory.target = undefined;
-          ctx.data.resourceTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -63,27 +63,16 @@ const PickUpResourceTask = makeTask({
     },
     (creep, ctx, next) => {
       const target = creep.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
-        filter: r => r.amount > r.pos.getRangeTo(creep.pos) * 1.5
+        filter: r =>
+          r.amount > r.pos.getRangeTo(creep.pos) * 1.5 &&
+          !TaskTargetManager.isAlreadyTargeted(PickUpResourceTask.id, r.id)
       });
       if (target) {
-        // // prevent more than 1 creep doing the same thing
-        // const creeps = creep.room.find(FIND_MY_CREEPS, { filter: c => c.memory.data.resourceTarget === target.id });
-        // if (creeps.length > 0) {
-        //   const range = target.pos.getRangeTo(creep);
-        //   if (creeps.find(c => target.pos.getRangeTo(c.pos) < range) === undefined) {
-        //     creeps.forEach(c => {
-        //       c.memory.target = undefined;
-        //       c.memory.data.resourceTarget = undefined;
-        //     });
-        //   } else {
-        //     ctx.data.resourceTarget = undefined;
-        //     ctx.status = TaskStatus.Complete;
-        //     return;
-        //   }
-        // }
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.data.resourceTarget = target.id;
+          TaskTargetManager.setTarget(creep, PickUpResourceTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         }

@@ -75,6 +75,7 @@ class CreepTaskManager extends Manager {
     creep.memory.taskId = undefined;
     creep.memory.isBackground = undefined;
     creep.memory.target = undefined;
+    creep.memory.targetId = undefined;
     creep.memory.data = undefined;
   }
 

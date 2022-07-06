@@ -23,6 +23,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
           if (memoizedTarget) {
             if (isStructureValid(memoizedTarget) && creep.repair(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
+              creep.memory.targetId = memoizedTarget.id;
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -36,6 +37,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         for (const target of targets) {
           if (creep.repair(target) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.targetId = target.id;
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -47,8 +49,6 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         if (ctx.data.structureTarget) {
           const target = Game.getObjectById(ctx.data.structureTarget);
           if (!isStructureValid(target)) {
-            creep.memory.target = undefined;
-            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else if (
@@ -58,12 +58,11 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
               })
             )
           ) {
-            creep.memory.target = undefined;
-            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
             creep.memory.target = target.pos;
+            creep.memory.targetId = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -92,6 +91,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
+            creep.memory.targetId = target.id;
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;

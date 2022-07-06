@@ -17,6 +17,7 @@ const AttackStructureTask = makeTask({
         if (memoizedTarget) {
           if (creep.attack(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.targetId = memoizedTarget.id;
             ctx.status = TaskStatus.Background;
             return;
           }
@@ -52,6 +53,7 @@ const AttackStructureTask = makeTask({
       }
       if (creep.attack(target) === OK) {
         creep.memory.target = creep.pos;
+        creep.memory.targetId = target.id;
         ctx.data.structureTarget = target.id;
         ctx.status = TaskStatus.Background;
         return;
@@ -62,8 +64,6 @@ const AttackStructureTask = makeTask({
       if (ctx.data.structureTarget) {
         const target = Game.getObjectById(ctx.data.structureTarget);
         if (!target || target.hits === 0) {
-          creep.memory.target = undefined;
-          ctx.data.structureTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -81,17 +81,17 @@ const AttackStructureTask = makeTask({
               })
             )
           ) {
-            creep.memory.target = undefined;
-            ctx.data.structureTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
             creep.memory.target = target.pos;
+            creep.memory.targetId = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
         } else {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -109,6 +109,7 @@ const AttackStructureTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         } else if (
@@ -120,6 +121,7 @@ const AttackStructureTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -139,6 +141,7 @@ const AttackStructureTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         } else if (
@@ -150,6 +153,7 @@ const AttackStructureTask = makeTask({
           )
         ) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }

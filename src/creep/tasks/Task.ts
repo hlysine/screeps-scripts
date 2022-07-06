@@ -60,6 +60,10 @@ export interface TaskMemory {
    */
   target?: Serialized<RoomPosition>;
   /**
+   * Id of the current target of the task. This is used by TaskTargetManager to manage targets.
+   */
+  targetId?: string;
+  /**
    * The data associated with the current task.
    * This data is only accessible to the current task and is cleared when the task is completed.
    */

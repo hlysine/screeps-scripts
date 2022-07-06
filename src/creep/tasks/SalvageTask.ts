@@ -35,6 +35,7 @@ const SalvageTask = makeTask({
         if (memoizedTarget) {
           if (creep.withdraw(memoizedTarget, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.targetId = memoizedTarget.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -49,6 +50,7 @@ const SalvageTask = makeTask({
       for (const target of sources) {
         if (creep.withdraw(target, RESOURCE_ENERGY) === OK) {
           creep.memory.target = creep.pos;
+          creep.memory.targetId = target.id;
           ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
@@ -60,8 +62,6 @@ const SalvageTask = makeTask({
       if (ctx.data.salvageTarget) {
         const target = Game.getObjectById(ctx.data.salvageTarget);
         if (!target || !isStructureValid(target)) {
-          creep.memory.target = undefined;
-          ctx.data.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -71,12 +71,11 @@ const SalvageTask = makeTask({
             })
           )
         ) {
-          creep.memory.target = undefined;
-          ctx.data.salvageTarget = undefined;
           ctx.status = TaskStatus.Complete;
           return;
         } else {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.status = TaskStatus.InProgress;
           return;
         }
@@ -97,6 +96,7 @@ const SalvageTask = makeTask({
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
           creep.memory.target = target.pos;
+          creep.memory.targetId = target.id;
           ctx.data.salvageTarget = target.id;
           ctx.status = TaskStatus.InProgress;
           return;

@@ -20,7 +20,7 @@ interface RoleInfoMap {
 }
 
 interface SpawnInfo {
-  spawn: StructureSpawn;
+  spawnId: Id<StructureSpawn>;
   roles: RoleInfoMap;
 }
 
@@ -62,7 +62,7 @@ class CreepSpawnManager extends Manager {
   public getSpawns(): SpawnInfo[] {
     return Object.values(Game.spawns).map(spawn => {
       return {
-        spawn,
+        spawnId: spawn.id,
         roles: this.getRoleInfoMap(spawn)
       };
     });
@@ -94,7 +94,9 @@ class CreepSpawnManager extends Manager {
     }
 
     this.spawns.forEach(spawnInfo => {
-      const { spawn, roles } = spawnInfo;
+      const { spawnId, roles } = spawnInfo;
+      const spawn = Game.getObjectById(spawnId);
+      if (spawn === null) return;
 
       let report = `Spawn info: ${spawn.name}\n`;
 

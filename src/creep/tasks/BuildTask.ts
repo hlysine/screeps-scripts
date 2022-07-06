@@ -18,6 +18,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
           if (memoizedTarget) {
             if (creep.build(memoizedTarget) === OK) {
               creep.memory.target = creep.pos;
+              creep.memory.targetId = memoizedTarget.id;
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -28,6 +29,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         for (const target of sources) {
           if (creep.build(target) === OK) {
             creep.memory.target = creep.pos;
+            creep.memory.targetId = target.id;
             ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -39,8 +41,6 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         if (ctx.data.constructionTarget) {
           const target = Game.getObjectById(ctx.data.constructionTarget);
           if (!target) {
-            creep.memory.target = undefined;
-            ctx.data.constructionTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else if (
@@ -50,12 +50,11 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
               })
             )
           ) {
-            creep.memory.target = undefined;
-            ctx.data.constructionTarget = undefined;
             ctx.status = TaskStatus.Complete;
             return;
           } else {
             creep.memory.target = target.pos;
+            creep.memory.targetId = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -67,6 +66,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
+            creep.memory.targetId = target.id;
             ctx.data.constructionTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;

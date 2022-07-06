@@ -11,6 +11,7 @@ import SourceManager from "managers/SourceManager";
 import CreepSpawnManager, { SpawnMemory } from "managers/CreepSpawnManager";
 import CreepTaskManager from "managers/CreepTaskManager";
 import FlagManager from "managers/FlagManager";
+import TaskTargetManager from "managers/TaskTargetManager";
 
 declare global {
   /*
@@ -50,6 +51,7 @@ const managers = {
   tower: TowerManager,
   source: SourceManager,
   creepSpawn: CreepSpawnManager,
+  taskTarget: TaskTargetManager,
   creepTask: CreepTaskManager
 } as const;
 global.managers = managers;
