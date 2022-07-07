@@ -8,7 +8,7 @@ export default function RetreatWhenNoFlagTask(
   return makeTask({
     id: "retreat_no_flag" as Id<Task>,
     displayName: "Retreat when no flag",
-    data: () => null,
+    data: RetreatToSpawnTask.data,
 
     steps: [
       (creep, ctx, next) => {

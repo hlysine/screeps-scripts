@@ -33,8 +33,7 @@ const HelperRole: Role = {
       PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
       PrependTask(
         RepairTask(structure => {
-          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
-            return structure.hits < 100000;
+          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) return false;
           else return structure.hits < structure.hitsMax * 0.5;
         }),
         requireFlagInRoom
