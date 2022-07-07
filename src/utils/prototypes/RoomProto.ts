@@ -6,7 +6,7 @@ declare global {
 
 Room.prototype.findTrulyHostileCreeps = function (): Creep[] {
   return this.find(FIND_HOSTILE_CREEPS, {
-    filter: c => c.isOffensive()
+    filter: _ => true // c.isOffensive()
   });
 };
 
