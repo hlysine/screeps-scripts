@@ -65,7 +65,10 @@ const WithdrawContainerTask = makeTask({
     },
     (creep, ctx, next) => {
       const target = creep.pos.findClosestByRange<FIND_STRUCTURES, StructureContainer>(FIND_STRUCTURES, {
-        filter: s => s.structureType === STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
+        filter: s =>
+          s.structureType === STRUCTURE_CONTAINER &&
+          s.store[RESOURCE_ENERGY] > 0 &&
+          !TaskTargetManager.isAlreadyTargeted(WithdrawContainerTask.id, s.id)
       });
       if (target) {
         if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {

@@ -85,9 +85,15 @@ const SalvageTask = makeTask({
     },
     (creep, ctx, next) => {
       const targets = [
-        creep.pos.findClosestByPath(FIND_TOMBSTONES, { filter: isStructureValid }),
-        creep.pos.findClosestByPath(FIND_RUINS, { filter: isStructureValid }),
-        creep.pos.findClosestByPath(FIND_STRUCTURES, { filter: isStructureValid })
+        creep.pos.findClosestByPath(FIND_TOMBSTONES, {
+          filter: s => isStructureValid(s) && !TaskTargetManager.isAlreadyTargeted(SalvageTask.id, s.id)
+        }),
+        creep.pos.findClosestByPath(FIND_RUINS, {
+          filter: s => isStructureValid(s) && !TaskTargetManager.isAlreadyTargeted(SalvageTask.id, s.id)
+        }),
+        creep.pos.findClosestByPath(FIND_STRUCTURES, {
+          filter: s => isStructureValid(s) && !TaskTargetManager.isAlreadyTargeted(SalvageTask.id, s.id)
+        })
       ].filter(t => !!t) as (AnyStructure | Tombstone | Ruin)[];
       let target: Tombstone | Ruin | AnyStructure | null;
       if (targets.length === 0) target = null;
