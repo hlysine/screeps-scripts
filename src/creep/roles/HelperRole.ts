@@ -40,11 +40,11 @@ const HelperRole: Role = {
         requireFlagInRoom
       ),
       PrependTask(
-        BuildTask(() => true),
+        TransferTask(() => true),
         requireFlagInRoom
       ),
       PrependTask(
-        TransferTask(() => true),
+        BuildTask(() => true),
         requireFlagInRoom
       ),
       PrependTask(UpgradeTask, requireFlagInRoom),
