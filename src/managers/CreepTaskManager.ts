@@ -6,6 +6,7 @@ import WorkerRole from "creep/roles/WorkerRole";
 import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
 import Manager from "./Manager";
+import HarvesterRole from "creep/roles/HarvesterRole";
 
 const logger = new Logger("CreepTaskManager");
 
@@ -21,6 +22,9 @@ class CreepTaskManager extends Manager {
     }
     if (creep.body.find(b => b.type === ATTACK || b.type === RANGED_ATTACK)) {
       return DefenderRole.id;
+    }
+    if (creep.body.find(b => b.type === WORK) && !creep.body.find(b => b.type === CARRY)) {
+      return HarvesterRole.id;
     }
     return WorkerRole.id;
   }
