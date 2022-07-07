@@ -9,6 +9,7 @@ import SalvageTask from "creep/tasks/SalvageTask";
 import TransferTask from "creep/tasks/TransferTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
+import WithdrawContainerTask from "creep/tasks/WithdrawContainerTask";
 import { isRoomMine } from "utils/StructureUtils";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 
@@ -28,6 +29,7 @@ const WorkerRole: Role = {
       }),
       UpgradeTask,
       SalvageTask,
+      WithdrawContainerTask,
       HarvestTask,
       RetreatToSpawnTask,
       IdleTask
@@ -63,7 +65,12 @@ const WorkerRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
-    if (room.controller) return Math.min(8, Math.max(4, room.controller.level * 2 + 2));
+    if (room.controller) {
+      const containerCount = room.find(FIND_STRUCTURES, {
+        filter: s => s.structureType === STRUCTURE_CONTAINER
+      }).length;
+      return Math.max(4, Math.min(8 - containerCount, room.controller.level * 2 + 2 - containerCount));
+    }
     return 0;
   },
 

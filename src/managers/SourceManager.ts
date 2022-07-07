@@ -32,6 +32,10 @@ export interface Reservation {
 class SourceManager extends Manager {
   private roomCache?: RoomHarvestCache;
   public freeSpots: MiningSpot[] = [];
+  /**
+   * Spots are dedicated if there is a container at that spot.
+   */
+  public dedicatedSpots: MiningSpot[] = [];
   public reservedSpots: Reservation[] = [];
   public visualization = false;
 
@@ -153,6 +157,7 @@ class SourceManager extends Manager {
     }
 
     this.freeSpots = [];
+    this.dedicatedSpots = [];
     const lastReservations = this.reservedSpots;
     this.reservedSpots = [];
 
@@ -171,11 +176,18 @@ class SourceManager extends Manager {
         if (isSpotObstructed(spot.pos)) return;
         const creep = creeps.find(c => c.memory.target && positionEquals(c.memory.target, spot.pos));
         if (creep === undefined) {
-          this.freeSpots.push(spot);
+          let container: StructureContainer | undefined;
+          if (Game.rooms[spot.pos.roomName]) {
+            container = Game.rooms[spot.pos.roomName]
+              .lookForAt(LOOK_STRUCTURES, spot.pos)
+              .find(s => s.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+          }
+          if (container) this.dedicatedSpots.push(spot);
+          else this.freeSpots.push(spot);
           if (this.visualization) {
             new RoomVisual(spot.pos.roomName).rect(spot.pos.x - 0.5, spot.pos.y - 0.5, 1, 1, {
               fill: "transparent",
-              stroke: "green",
+              stroke: container ? "red" : "green",
               strokeWidth: 0.1
             });
           }
@@ -209,6 +221,10 @@ class SourceManager extends Manager {
 
   public claimFreeSpot(spot: MiningSpot): void {
     this.freeSpots = this.freeSpots.filter(s => !positionEquals(s.pos, spot.pos));
+  }
+
+  public claimDedicatedSpot(spot: MiningSpot): void {
+    this.dedicatedSpots = this.dedicatedSpots.filter(s => !positionEquals(s.pos, spot.pos));
   }
 
   public claimReservedSpot(spot: MiningSpot): void {
