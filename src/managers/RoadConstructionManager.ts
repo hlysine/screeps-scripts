@@ -31,7 +31,10 @@ interface Spot {
   y: number;
   cost: number;
 }
-
+/**
+ * How long to idle for before beginning the first construction cycle.
+ */
+const InitialIdleTicks = 2000;
 /**
  * How long each survey lasts for.
  */
@@ -187,7 +190,7 @@ class RoadConstructionManager extends Manager {
       }
 
       if (room.memory.idleTicks === undefined) {
-        room.memory.idleTicks = 2000;
+        room.memory.idleTicks = InitialIdleTicks;
       }
 
       if (room.memory.idleTicks > 0) {
