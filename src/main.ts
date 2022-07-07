@@ -13,6 +13,7 @@ import CreepTaskManager from "managers/CreepTaskManager";
 import FlagManager from "managers/FlagManager";
 import TaskTargetManager from "managers/TaskTargetManager";
 import RoadConstructionManager, { RoadMemory } from "managers/RoadConstructionManager";
+import ExtensionConstructionManager, { ExtensionMemory } from "managers/ExtensionConstructionManager";
 
 declare global {
   interface Memory {
@@ -29,8 +30,9 @@ declare global {
     };
   }
 
-  interface RoomMemory extends RoadMemory {
-    [_: symbol]: never; // placeholder
+  interface RoomMemory {
+    roads: RoadMemory;
+    extensions: ExtensionMemory;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -48,6 +50,7 @@ const managers = {
   creepSpawn: CreepSpawnManager,
   taskTarget: TaskTargetManager,
   creepTask: CreepTaskManager,
+  extensionConstruction: ExtensionConstructionManager,
   roadConstruction: RoadConstructionManager
 } as const;
 global.managers = managers;

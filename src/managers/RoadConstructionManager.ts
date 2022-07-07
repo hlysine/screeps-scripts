@@ -34,7 +34,7 @@ interface Spot {
 /**
  * How long to idle for before beginning the first construction cycle.
  */
-const InitialIdleTicks = 2000;
+const InitialIdleTicks = 100;
 /**
  * How long each survey lasts for.
  */
@@ -118,13 +118,13 @@ class RoadConstructionManager extends Manager {
   }
 
   private constructSeed(room: Room, roadCount: number): number {
-    if (roadCount >= room.memory.maxRoads) return 0;
-    let remainingQuota = Math.min(SeedQuota, room.memory.maxRoads - roadCount);
+    if (roadCount >= room.memory.roads.maxRoads) return 0;
+    let remainingQuota = Math.min(SeedQuota, room.memory.roads.maxRoads - roadCount);
 
     const paths: RoomPosition[] = [];
     const spawns = room.find(FIND_MY_SPAWNS);
     if (spawns.length === 0) {
-      logger.error(`Road construction failed. No spawns found in ${room.name}`);
+      logger.log(`Road construction failed. No spawns found in ${room.name}`);
       return 0;
     }
     const spawn = spawns[0];
@@ -146,17 +146,17 @@ class RoadConstructionManager extends Manager {
         }
       }
     }
-    room.memory.seeded = true;
+    room.memory.roads.seeded = true;
     return buildCount;
   }
 
   private construct(room: Room, cost: CostMatrix, roadCount: number): number {
-    if (roadCount >= room.memory.maxRoads) return 0;
-    if (!room.memory.seeded) {
+    if (roadCount >= room.memory.roads.maxRoads) return 0;
+    if (!room.memory.roads.seeded) {
       logger.log(`Constructing seed for ${room.name}`);
       return this.constructSeed(room, roadCount);
     }
-    const remainingQuota = Math.min(ConstructQuota, room.memory.maxRoads - roadCount);
+    const remainingQuota = Math.min(ConstructQuota, room.memory.roads.maxRoads - roadCount);
     const spots: Spot[] = [];
     for (let x = 0; x < 50; x++) {
       for (let y = 0; y < 50; y++) {
@@ -185,16 +185,26 @@ class RoadConstructionManager extends Manager {
       if (!room.controller) continue;
       if (!room.controller.my) continue;
 
-      if (room.memory.seeded === undefined) {
-        room.memory.seeded = false;
+      if (room.memory.roads === undefined) {
+        room.memory.roads = {
+          cost: new PathFinder.CostMatrix().serialize(),
+          surveyTicks: MaxSurveyTicks,
+          idleTicks: InitialIdleTicks,
+          seeded: false,
+          maxRoads: this.getMaxRoads(room)
+        };
       }
 
-      if (room.memory.idleTicks === undefined) {
-        room.memory.idleTicks = InitialIdleTicks;
+      if (room.memory.roads.seeded === undefined) {
+        room.memory.roads.seeded = false;
       }
 
-      if (room.memory.idleTicks > 0) {
-        room.memory.idleTicks--;
+      if (room.memory.roads.idleTicks === undefined) {
+        room.memory.roads.idleTicks = InitialIdleTicks;
+      }
+
+      if (room.memory.roads.idleTicks > 0) {
+        room.memory.roads.idleTicks--;
         continue;
       }
 
@@ -207,38 +217,38 @@ class RoadConstructionManager extends Manager {
         }
       }
       if (constructingRoad) {
-        room.memory.idleTicks = 10;
+        room.memory.roads.idleTicks = 10;
         continue;
       }
 
-      if (room.memory.surveyTicks === undefined) {
-        room.memory.surveyTicks = MaxSurveyTicks;
+      if (room.memory.roads.surveyTicks === undefined) {
+        room.memory.roads.surveyTicks = MaxSurveyTicks;
       }
 
-      if (room.memory.cost === undefined) {
-        room.memory.cost = new PathFinder.CostMatrix().serialize();
+      if (room.memory.roads.cost === undefined) {
+        room.memory.roads.cost = new PathFinder.CostMatrix().serialize();
       }
-      const cost = PathFinder.CostMatrix.deserialize(room.memory.cost);
+      const cost = PathFinder.CostMatrix.deserialize(room.memory.roads.cost);
 
-      if (room.memory.surveyTicks > 0 && room.memory.seeded) {
-        logger.log(`Surveying ${room.name}, ${room.memory.surveyTicks} ticks left`);
+      if (room.memory.roads.surveyTicks > 0 && room.memory.roads.seeded) {
+        logger.log(`Surveying ${room.name}, ${room.memory.roads.surveyTicks} ticks left`);
         this.survey(room, cost);
-        room.memory.cost = cost.serialize();
-        room.memory.surveyTicks--;
+        room.memory.roads.cost = cost.serialize();
+        room.memory.roads.surveyTicks--;
       } else {
-        room.memory.maxRoads = this.getMaxRoads(room);
+        room.memory.roads.maxRoads = this.getMaxRoads(room);
         const roadCount = this.countRoads(room);
-        logger.log(`Constructing roads for ${room.name}, ${roadCount}/${room.memory.maxRoads}`);
+        logger.log(`Constructing roads for ${room.name}, ${roadCount}/${room.memory.roads.maxRoads}`);
         const buildCount = this.construct(room, cost, roadCount);
-        room.memory.cost = undefined;
-        room.memory.surveyTicks = MaxSurveyTicks;
-        if (roadCount + buildCount >= room.memory.maxRoads) {
-          room.memory.idleTicks = 20000;
+        room.memory.roads.cost = undefined;
+        room.memory.roads.surveyTicks = MaxSurveyTicks;
+        if (roadCount + buildCount >= room.memory.roads.maxRoads) {
+          room.memory.roads.idleTicks = 20000;
         } else {
-          room.memory.idleTicks = 400;
+          room.memory.roads.idleTicks = 400;
         }
         logger.log(
-          `Construction for ${room.name} complete, ${roadCount}+${buildCount}/${room.memory.maxRoads}, idling for ${room.memory.idleTicks} ticks`
+          `Construction for ${room.name} complete, ${roadCount}+${buildCount}/${room.memory.roads.maxRoads}, idling for ${room.memory.roads.idleTicks} ticks`
         );
       }
     }

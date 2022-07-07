@@ -24,3 +24,27 @@ export function isRoomMine(room: Room): boolean {
   }
   return false;
 }
+
+export function getExtensionQuota(room: Room): number {
+  if (room.controller && room.controller.my) {
+    switch (room.controller.level) {
+      case 2:
+        return 5;
+      case 3:
+        return 10;
+      case 4:
+        return 20;
+      case 5:
+        return 30;
+      case 6:
+        return 40;
+      case 7:
+        return 50;
+      case 8:
+        return 60;
+      default:
+        return 0;
+    }
+  }
+  return 0;
+}
