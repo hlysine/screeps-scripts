@@ -15,6 +15,7 @@ import FlagTags from "utils/FlagTags";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import FleeFromAttackerTask from "creep/tasks/FleeFromAttackerTask";
 import FlagManager from "managers/FlagManager";
+import WithdrawContainerTask from "creep/tasks/WithdrawContainerTask";
 
 const HelperRole: Role = {
   id: "helper" as Id<Role>,
@@ -48,6 +49,7 @@ const HelperRole: Role = {
       ),
       PrependTask(UpgradeTask, requireFlagInRoom),
       SalvageTask,
+      WithdrawContainerTask,
       HarvestTask,
       RetreatToSpawnTask,
       IdleTask

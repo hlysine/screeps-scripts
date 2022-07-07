@@ -44,7 +44,6 @@ const HarvestDedicatedTask = makeTask({
           ctx.status = TaskStatus.Complete;
           return;
         } else {
-          creep.memory.target = target.pos;
           TaskTargetManager.setTarget(creep, HarvestDedicatedTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
