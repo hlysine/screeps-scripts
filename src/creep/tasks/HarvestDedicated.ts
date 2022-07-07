@@ -1,6 +1,6 @@
 import SourceManager from "managers/SourceManager";
 import { completeTask } from "./SharedSteps";
-import { isMoveSuccess } from "utils/MoveUtils";
+import { isMoveSuccess, positionEquals } from "utils/MoveUtils";
 import Task, { makeTask, TaskStatus } from "./Task";
 import { isRoomRestricted } from "utils/StructureUtils";
 import TaskTargetManager from "managers/TaskTargetManager";
@@ -14,7 +14,7 @@ const HarvestDedicatedTask = makeTask({
 
   steps: [
     (creep, ctx, next) => {
-      if (ctx.data.sourceTarget) {
+      if (ctx.data.sourceTarget && creep.memory.target && positionEquals(creep.pos, creep.memory.target)) {
         const memoizedTarget = Game.getObjectById(ctx.data.sourceTarget);
         if (memoizedTarget) {
           if (creep.harvest(memoizedTarget) === OK) {
@@ -29,14 +29,14 @@ const HarvestDedicatedTask = makeTask({
       next();
     },
     (creep, ctx, next) => {
-      if (ctx.data.sourceTarget) {
+      if (ctx.data.sourceTarget && creep.memory.target) {
         const target = Game.getObjectById(ctx.data.sourceTarget);
         if (!target || isRoomRestricted(target.room)) {
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
           !isMoveSuccess(
-            creep.moveTo(target.pos, {
+            creep.moveTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName), {
               visualizePathStyle: { stroke: "#ffffff" }
             })
           )
