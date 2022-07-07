@@ -60,18 +60,14 @@ const HelperRole: Role = {
     // [WORK, CARRY, MOVE] combo
     const base = Math.floor(energyCapacity / 200);
     let remainder = energyCapacity % 200;
+    // [WORK, MOVE] combo
     // remaining WORK
-    const remainingWork = Math.floor(remainder / 100);
-    remainder = remainder % 100;
-    // remaining MOVE
-    const remainingMove = Math.floor(remainder / 50);
-    remainder = remainder % 50;
+    const remainingWork = Math.floor(remainder / 150);
+    remainder = remainder % 150;
 
     const bodyParts: BodyPartConstant[] = [];
     for (let i = 0; i < remainingWork; i++) {
       bodyParts.push(WORK);
-    }
-    for (let i = 0; i < remainingMove; i++) {
       bodyParts.push(MOVE);
     }
     for (let i = 0; i < base; i++) {
