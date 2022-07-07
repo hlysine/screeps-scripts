@@ -34,7 +34,7 @@ interface Spot {
 /**
  * How long to idle for before beginning the first construction cycle.
  */
-const InitialIdleTicks = 100;
+const InitialIdleTicks = 200;
 /**
  * How long each survey lasts for.
  */
@@ -184,6 +184,8 @@ class RoadConstructionManager extends Manager {
       const room = Game.rooms[roomName];
       if (!room.controller) continue;
       if (!room.controller.my) continue;
+
+      if (room.controller.level < 2) continue;
 
       if (room.memory.roads === undefined) {
         room.memory.roads = {
