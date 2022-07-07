@@ -57,6 +57,7 @@ export interface TaskMemory {
   debug: boolean;
   /**
    * Where the creep is currently headed to.
+   * Note that this field is shared between tasks and may be overwritten by other tasks.
    */
   target?: Serialized<RoomPosition>;
   /**

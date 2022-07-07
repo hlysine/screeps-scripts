@@ -27,19 +27,20 @@ const RetreatToSpawnTask = makeTask({
       next();
     },
     (creep, ctx, next) => {
-      const closestSpawn = findClosestAcrossRooms(creep.pos, Object.values(Game.spawns));
-      if (!closestSpawn) {
+      let target: StructureSpawn | undefined = Game.spawns[creep.memory.origin];
+      if (!target) target = findClosestAcrossRooms(creep.pos, Object.values(Game.spawns));
+      if (!target) {
         next();
         return;
       }
-      if (creep.pos.roomName === closestSpawn.pos.roomName && creep.pos.inRangeTo(closestSpawn, 15)) {
+      if (creep.pos.roomName === target.pos.roomName && creep.pos.inRangeTo(target, 15)) {
         next();
         return;
       }
-      creep.moveTo(closestSpawn.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
-      creep.memory.target = closestSpawn.pos;
-      TaskTargetManager.setTarget(creep, RetreatToSpawnTask.id, closestSpawn.id);
-      ctx.data.spawnTarget = closestSpawn.id;
+      creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
+      creep.memory.target = target.pos;
+      TaskTargetManager.setTarget(creep, RetreatToSpawnTask.id, target.id);
+      ctx.data.spawnTarget = target.id;
       ctx.status = TaskStatus.Background;
     },
     completeTask

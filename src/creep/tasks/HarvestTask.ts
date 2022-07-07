@@ -15,6 +15,7 @@ const HarvestTask = makeTask({
   id: "harvest" as Id<Task>,
   displayName: "Harvest",
   data: () => ({
+    targetMemorized: false,
     sourceTarget: undefined as Id<Source> | undefined
   }),
 
@@ -27,6 +28,7 @@ const HarvestTask = makeTask({
           if (creep.harvest(memoizedTarget) === OK) {
             creep.memory.target = creep.pos;
             TaskTargetManager.setTarget(creep, HarvestTask.id, memoizedTarget.id);
+            ctx.data.targetMemorized = true;
             ctx.status = TaskStatus.InProgress;
             ctx.note = "harvesting memory target";
             return;
@@ -46,6 +48,7 @@ const HarvestTask = makeTask({
           if (reservation) {
             SourceManager.claimReservedSpot(reservation.spot);
           }
+          ctx.data.targetMemorized = true;
           ctx.status = TaskStatus.InProgress;
           ctx.note = "harvesting nearby target";
           return;
@@ -54,6 +57,10 @@ const HarvestTask = makeTask({
       next();
     },
     (creep, ctx, next) => {
+      if (!ctx.data.targetMemorized) {
+        next();
+        return;
+      }
       // cannot check sourceTarget here because it can be undefined when mining in another room without visibility
       if (creep.memory.target) {
         if (positionEquals(creep.memory.target, creep.pos)) {
@@ -122,6 +129,7 @@ const HarvestTask = makeTask({
           creep.memory.target = freeTarget.pos;
           TaskTargetManager.setTarget(creep, HarvestTask.id, freeTarget.sourceId);
           ctx.data.sourceTarget = freeTarget.sourceId;
+          ctx.data.targetMemorized = true;
           ctx.status = TaskStatus.InProgress;
           ctx.note = "moving to free target";
           return;
@@ -141,6 +149,7 @@ const HarvestTask = makeTask({
               creep.memory.target = reservedTarget.pos;
               TaskTargetManager.setTarget(creep, HarvestTask.id, reservedTarget.spot.sourceId);
               ctx.data.sourceTarget = reservedTarget.spot.sourceId;
+              ctx.data.targetMemorized = true;
               ctx.status = TaskStatus.InProgress;
               ctx.note = "moving to reserved target";
               return;
