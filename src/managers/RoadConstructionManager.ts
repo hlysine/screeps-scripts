@@ -187,7 +187,7 @@ class RoadConstructionManager extends Manager {
       }
 
       if (room.memory.idleTicks === undefined) {
-        room.memory.idleTicks = 0;
+        room.memory.idleTicks = 2000;
       }
 
       if (room.memory.idleTicks > 0) {
