@@ -186,10 +186,6 @@ class RoadConstructionManager extends Manager {
         room.memory.seeded = false;
       }
 
-      if (room.memory.maxRoads === undefined) {
-        room.memory.maxRoads = this.getMaxRoads(room);
-      }
-
       if (room.memory.idleTicks === undefined) {
         room.memory.idleTicks = 0;
       }
@@ -227,6 +223,7 @@ class RoadConstructionManager extends Manager {
         room.memory.cost = cost.serialize();
         room.memory.surveyTicks--;
       } else {
+        room.memory.maxRoads = this.getMaxRoads(room);
         const roadCount = this.countRoads(room);
         logger.log(`Constructing roads for ${room.name}, ${roadCount}/${room.memory.maxRoads}`);
         const buildCount = this.construct(room, cost, roadCount);
