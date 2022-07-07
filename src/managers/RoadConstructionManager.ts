@@ -51,7 +51,7 @@ const ConstructQuota = 25;
 /**
  * The maximum number of roads allowed for a room is equal to the combined path length times this number.
  */
-const MaxRoadsMultiplier = 3;
+const MaxRoadsMultiplier = 2.25;
 
 const pathFinderOpts = {
   plainCost: 2,
