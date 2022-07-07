@@ -16,7 +16,7 @@ import Role, { CreepInfo, RoleCountMap } from "./Role";
 const WorkerRole: Role = {
   id: "worker" as Id<Role>,
   tasks: [
-    [UrgentUpgradeTask, FleeFromAttackerTask, PickUpResourceTask],
+    [UrgentUpgradeTask, FleeFromAttackerTask],
     [
       RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
       TransferTask(structure => structure.my),
@@ -28,6 +28,7 @@ const WorkerRole: Role = {
         else return structure.hits < structure.hitsMax * 0.3;
       }),
       UpgradeTask,
+      PickUpResourceTask,
       SalvageTask,
       WithdrawContainerTask,
       HarvestTask,

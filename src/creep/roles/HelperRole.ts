@@ -27,8 +27,7 @@ const HelperRole: Role = {
         if (name.includes("#" + FlagTags.Harvest)) return true; // this is to allow helpers to harvest in other rooms
         return false;
       }),
-      FleeFromAttackerTask,
-      PickUpResourceTask
+      FleeFromAttackerTask
     ],
     [
       PrependTask(MoveToFlagTask(MoveToFlagMode.RoomOnly, 1), requireEnergy),
@@ -48,6 +47,7 @@ const HelperRole: Role = {
         requireFlagInRoom
       ),
       PrependTask(UpgradeTask, requireFlagInRoom),
+      PickUpResourceTask,
       SalvageTask,
       WithdrawContainerTask,
       HarvestTask,
