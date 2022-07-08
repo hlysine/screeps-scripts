@@ -107,10 +107,10 @@ class RoadConstructionManager extends Manager {
     const sources = room.find(FIND_SOURCES);
     let totalLength = 0;
     for (const source of sources) {
-      totalLength += PathFinder.search(spawn.pos, source.pos, pathFinderOpts).path.length;
+      totalLength += PathFinder.search(spawn.pos, { pos: source.pos, range: 1 }, pathFinderOpts).path.length;
     }
     if (room.controller) {
-      totalLength += PathFinder.search(spawn.pos, room.controller.pos, pathFinderOpts).path.length;
+      totalLength += PathFinder.search(spawn.pos, { pos: room.controller.pos, range: 1 }, pathFinderOpts).path.length;
     }
     return totalLength * MaxRoadsMultiplier;
   }
@@ -137,13 +137,13 @@ class RoadConstructionManager extends Manager {
     }
     const spawn = spawns[0];
     if (room.controller) {
-      const result = PathFinder.search(spawn.pos, room.controller.pos, pathFinderOpts);
-      if (getPathError(result, room.controller.pos) <= 1) paths.push(...result.path);
+      const result = PathFinder.search(spawn.pos, { pos: room.controller.pos, range: 1 }, pathFinderOpts);
+      if (getPathError(result, room.controller.pos)) paths.push(...result.path);
     }
     const sources = room.find(FIND_SOURCES);
     for (const source of sources) {
-      const result = PathFinder.search(spawn.pos, source.pos, pathFinderOpts);
-      if (getPathError(result, source.pos) <= 1) paths.push(...result.path);
+      const result = PathFinder.search(spawn.pos, { pos: source.pos, range: 1 }, pathFinderOpts);
+      if (getPathError(result, source.pos)) paths.push(...result.path);
     }
 
     let buildCount = 0;
