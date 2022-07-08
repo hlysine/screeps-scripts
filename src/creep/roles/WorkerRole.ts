@@ -3,9 +3,11 @@ import FleeFromAttackerTask from "creep/tasks/FleeFromAttackerTask";
 import HarvestTask from "creep/tasks/HarvestTask";
 import IdleTask from "creep/tasks/IdleTask";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
+import PrependTask from "creep/tasks/PrependTask";
 import RepairTask from "creep/tasks/RepairTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import SalvageTask from "creep/tasks/SalvageTask";
+import { inHomeRoom } from "creep/tasks/SharedSteps";
 import TransferTask from "creep/tasks/TransferTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
@@ -18,16 +20,28 @@ const WorkerRole: Role = {
   tasks: [
     [UrgentUpgradeTask, FleeFromAttackerTask],
     [
-      RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
-      TransferTask(structure => structure.my),
-      BuildTask(site => site.my),
-      RepairTask(structure => {
-        if (!isRoomMine(structure.room)) return false;
-        if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
-          return structure.hits < 100000;
-        else return structure.hits < structure.hitsMax * 0.3;
-      }),
-      UpgradeTask,
+      PrependTask(
+        RepairTask(structure => structure.hits < 100 && isRoomMine(structure.room)),
+        inHomeRoom
+      ),
+      PrependTask(
+        TransferTask(structure => structure.my),
+        inHomeRoom
+      ),
+      PrependTask(
+        BuildTask(site => site.my),
+        inHomeRoom
+      ),
+      PrependTask(
+        RepairTask(structure => {
+          if (!isRoomMine(structure.room)) return false;
+          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
+            return structure.hits < 100000;
+          else return structure.hits < structure.hitsMax * 0.3;
+        }),
+        inHomeRoom
+      ),
+      PrependTask(UpgradeTask, inHomeRoom),
       PickUpResourceTask,
       SalvageTask,
       WithdrawContainerTask,
