@@ -32,6 +32,7 @@ const pathFinderOpts: PathFinderOpts = {
         if (x === 0 || y === 0 || x === 49 || y === 49) {
           costs.set(x, y, 0xff);
         } else if (terrain.get(x, y) !== TERRAIN_MASK_WALL) {
+          costs.set(x, y, 1);
           let done = false;
           for (let i = -1; i <= 1; i++) {
             for (let j = -1; j <= 1; j++) {
@@ -46,6 +47,8 @@ const pathFinderOpts: PathFinderOpts = {
             }
             if (done) break;
           }
+        } else {
+          costs.set(x, y, 0xff);
         }
       }
     }

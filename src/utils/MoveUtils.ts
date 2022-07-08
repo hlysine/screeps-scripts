@@ -89,3 +89,8 @@ export function isSpotObstructed(pos: RoomPosition): boolean {
     return false;
   }
 }
+
+export function getPathError(path: PathFinderPath, pos: RoomPosition): number {
+  const dest = path.path[path.path.length - 1];
+  return pos.getRangeTo(dest);
+}

@@ -1,4 +1,5 @@
 import Logger from "utils/Logger";
+import { getPathError } from "utils/MoveUtils";
 import Manager from "./Manager";
 
 const logger = new Logger("RoadConstructionManager");
@@ -63,6 +64,13 @@ const pathFinderOpts = {
   roomCallback(roomName: string) {
     const r = Game.rooms[roomName];
     const costs = new PathFinder.CostMatrix();
+    const terrain = Game.map.getRoomTerrain(roomName);
+    for (let x = 0; x < 50; x++) {
+      for (let y = 0; y < 50; y++) {
+        if (x === 0 || y === 0 || x === 49 || y === 49) costs.set(x, y, 0xff);
+        else costs.set(x, y, terrain.get(x, y) === TERRAIN_MASK_WALL ? 0xff : 1);
+      }
+    }
     if (!r) return costs;
 
     r.find(FIND_STRUCTURES).forEach(struct => {
@@ -128,10 +136,14 @@ class RoadConstructionManager extends Manager {
       return 0;
     }
     const spawn = spawns[0];
-    if (room.controller) paths.push(...PathFinder.search(spawn.pos, room.controller.pos, pathFinderOpts).path);
+    if (room.controller) {
+      const result = PathFinder.search(spawn.pos, room.controller.pos, pathFinderOpts);
+      if (getPathError(result, room.controller.pos) <= 1) paths.push(...result.path);
+    }
     const sources = room.find(FIND_SOURCES);
     for (const source of sources) {
-      paths.push(...PathFinder.search(spawn.pos, source.pos, pathFinderOpts).path);
+      const result = PathFinder.search(spawn.pos, source.pos, pathFinderOpts);
+      if (getPathError(result, source.pos) <= 1) paths.push(...result.path);
     }
 
     let buildCount = 0;
