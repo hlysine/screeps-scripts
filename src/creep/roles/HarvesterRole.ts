@@ -10,16 +10,10 @@ const HarvesterRole: Role = {
 
   getCreepInfo(energyCapacity: number): CreepInfo {
     // [WORK, WORK, MOVE] combo
-    const base = Math.floor(energyCapacity / 250);
-    let remainder = energyCapacity % 250;
-    // remaining WORK
-    const remainingWork = Math.floor(remainder / 100);
-    remainder = remainder % 100;
+    const base = Math.min(4, Math.floor(energyCapacity / 250));
+    const remainder = energyCapacity - 250 * base;
 
     const bodyParts: BodyPartConstant[] = [];
-    for (let i = 0; i < remainingWork; i++) {
-      bodyParts.push(WORK);
-    }
     for (let i = 0; i < base; i++) {
       bodyParts.push(WORK);
       bodyParts.push(WORK);
