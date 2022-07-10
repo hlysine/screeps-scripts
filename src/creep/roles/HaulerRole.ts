@@ -47,7 +47,21 @@ const HaulerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      return room.controller.level >= 6 ? 2 : 0;
+      if (room.controller.level >= 6) {
+        let count = 0;
+
+        const containers = room.find(FIND_STRUCTURES, {
+          filter: structure => structure.structureType === STRUCTURE_CONTAINER
+        });
+
+        const minerals = room.find(FIND_MINERALS);
+        count += containers.reduce((acc, container) => {
+          const mineral = minerals.find(s => s.pos.isNearTo(container));
+          return mineral ? acc + 1 : acc;
+        }, 0);
+
+        return count;
+      }
     }
     return 0;
   },
