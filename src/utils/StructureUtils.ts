@@ -48,3 +48,23 @@ export function getExtensionQuota(room: Room): number {
   }
   return 0;
 }
+
+export function getTowerQuota(room: Room): number {
+  if (room.controller && room.controller.my) {
+    switch (room.controller.level) {
+      case 3:
+      case 4:
+        return 1;
+      case 5:
+      case 6:
+        return 2;
+      case 7:
+        return 3;
+      case 8:
+        return 6;
+      default:
+        return 0;
+    }
+  }
+  return 0;
+}
