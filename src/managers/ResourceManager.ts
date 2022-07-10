@@ -285,6 +285,7 @@ class ResourceManager extends Manager {
       info.reservedSpots = [];
       info.dedicatedSpots = [];
     }
+    this.globalSpotsCache = undefined;
 
     for (const roomName in this.roomCache) {
       const cache = this.roomCache[roomName];

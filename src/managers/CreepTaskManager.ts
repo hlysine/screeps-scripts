@@ -116,6 +116,16 @@ class CreepTaskManager extends Manager {
     }
   }
 
+  /**
+   * Reset all task states so that all creeps refresh their task.
+   */
+  public resetAllCreeps(): void {
+    for (const creepName in Game.creeps) {
+      const creep = Game.creeps[creepName];
+      this.clearTask(creep);
+    }
+  }
+
   public loop(): void {
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
