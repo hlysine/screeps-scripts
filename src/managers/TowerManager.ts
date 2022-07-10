@@ -51,7 +51,7 @@ class TowerManager extends Manager {
           filter: struct => {
             if (struct.structureType === STRUCTURE_WALL) {
               return struct.hits < 10000;
-            } else if (struct.structureType === STRUCTURE_ROAD) {
+            } else if (struct.structureType === STRUCTURE_ROAD || struct.structureType === STRUCTURE_CONTAINER) {
               return struct.hits < struct.hitsMax * 0.5;
             }
             return false;
