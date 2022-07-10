@@ -1,5 +1,5 @@
 import TaskTargetManager from "managers/TaskTargetManager";
-import { isMoveSuccess } from "utils/MoveUtils";
+import { isMoveSuccess } from "utils/ReturnCodeUtils";
 import { isRoomMine } from "utils/StructureUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { makeTask, TaskStatus } from "./Task";

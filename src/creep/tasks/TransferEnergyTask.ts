@@ -1,5 +1,5 @@
 import TaskTargetManager from "managers/TaskTargetManager";
-import { isMoveSuccess } from "utils/MoveUtils";
+import { isMoveSuccess } from "utils/ReturnCodeUtils";
 import { completeTask, requireEnergy } from "./SharedSteps";
 import Task, { makeTask, TaskStatus } from "./Task";
 
@@ -19,13 +19,13 @@ function isStructureValid(
   return false;
 }
 
-export const TransferTaskId = "transfer" as Id<Task>;
+export const TransferEnergyTaskId = "transfer" as Id<Task>;
 
-export default function TransferTask(
+export default function TransferEnergyTask(
   filter: (structure: StructureExtension | StructureSpawn | StructureTower) => boolean
 ): Task {
   return makeTask({
-    id: TransferTaskId,
+    id: TransferEnergyTaskId,
     displayName: "Transfer",
     data: () => ({
       structureTarget: undefined as Id<AnyStructure> | undefined
@@ -39,7 +39,7 @@ export default function TransferTask(
           if (memoizedTarget) {
             if (creep.transfer(memoizedTarget, RESOURCE_ENERGY) === OK) {
               creep.memory.target = creep.pos;
-              TaskTargetManager.setTarget(creep, TransferTaskId, memoizedTarget.id);
+              TaskTargetManager.setTarget(creep, TransferEnergyTaskId, memoizedTarget.id);
               ctx.status = TaskStatus.InProgress;
               return;
             }
@@ -52,7 +52,7 @@ export default function TransferTask(
         for (const target of targets) {
           if (creep.transfer(target, RESOURCE_ENERGY) === OK) {
             creep.memory.target = creep.pos;
-            TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
+            TaskTargetManager.setTarget(creep, TransferEnergyTaskId, target.id);
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;
@@ -77,7 +77,7 @@ export default function TransferTask(
             return;
           } else {
             creep.memory.target = target.pos;
-            TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
+            TaskTargetManager.setTarget(creep, TransferEnergyTaskId, target.id);
             ctx.status = TaskStatus.InProgress;
             return;
           }
@@ -88,13 +88,13 @@ export default function TransferTask(
         const target = creep.pos.findClosestByPath(FIND_STRUCTURES, {
           filter: structure =>
             isStructureValid(structure) &&
-            !TaskTargetManager.isAlreadyTargeted(TransferTaskId, structure.id) &&
+            !TaskTargetManager.isAlreadyTargeted(TransferEnergyTaskId, structure.id) &&
             filter(structure)
         });
         if (target) {
           if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
             creep.memory.target = target.pos;
-            TaskTargetManager.setTarget(creep, TransferTaskId, target.id);
+            TaskTargetManager.setTarget(creep, TransferEnergyTaskId, target.id);
             ctx.data.structureTarget = target.id;
             ctx.status = TaskStatus.InProgress;
             return;

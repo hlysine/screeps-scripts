@@ -29,14 +29,24 @@ const HarvesterRole: Role = {
   },
 
   getCreepLimit(room: Room): number {
+    let count = 0;
+
     const containers = room.find(FIND_STRUCTURES, {
       filter: structure => structure.structureType === STRUCTURE_CONTAINER
     });
+
     const sources = room.find(FIND_SOURCES);
-    return containers.reduce((acc, container) => {
+    count += containers.reduce((acc, container) => {
       const source = sources.find(s => s.pos.isNearTo(container));
       return source ? acc + 1 : acc;
     }, 0);
+    const minerals = room.find(FIND_MINERALS);
+    count += containers.reduce((acc, container) => {
+      const mineral = minerals.find(s => s.pos.isNearTo(container));
+      return mineral ? acc + 1 : acc;
+    }, 0);
+
+    return count;
   },
 
   getSpawnPriority(_room: Room, _roleCount: RoleCountMap): number {

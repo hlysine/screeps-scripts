@@ -25,6 +25,17 @@ export function isRoomMine(room: Room): boolean {
   return false;
 }
 
+export function getStoreContentTypes(store: StoreDefinition | StoreDefinitionUnlimited): ResourceConstant[] {
+  return Object.keys(store).filter(key => store[key as ResourceConstant] > 0) as ResourceConstant[];
+}
+
+export function isFilteredStoreEmpty(
+  store: StoreDefinition | StoreDefinitionUnlimited,
+  filter: (resourceType: ResourceConstant) => boolean
+): boolean {
+  return !getStoreContentTypes(store).some(filter);
+}
+
 export function getExtensionQuota(room: Room): number {
   if (room.controller && room.controller.my) {
     switch (room.controller.level) {

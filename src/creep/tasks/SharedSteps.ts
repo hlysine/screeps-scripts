@@ -1,18 +1,24 @@
 import { Step, TaskStatus } from "creep/tasks/Task";
+import { getStoreContentTypes } from "utils/StructureUtils";
 
-export const requireEnergy: Step = (creep, ctx, next) => {
-  if (creep.store[RESOURCE_ENERGY] === 0) {
-    ctx.status = TaskStatus.Complete;
-    ctx.note = "out of energy";
-    return;
-  }
-  next();
-};
+export function requireResource(filter: (resourceType: ResourceConstant) => boolean): Step {
+  return (creep, ctx, next) => {
+    const resources = getStoreContentTypes(creep.store).filter(filter);
+    if (!resources.some(filter)) {
+      ctx.status = TaskStatus.Complete;
+      ctx.note = "out of specified resource";
+      return;
+    }
+    next();
+  };
+}
+
+export const requireEnergy: Step = requireResource(r => r === RESOURCE_ENERGY);
 
 export const requireCapacity: Step = (creep, ctx, next) => {
   if (creep.store.getFreeCapacity() === 0) {
     ctx.status = TaskStatus.Complete;
-    ctx.note = "energy store is full";
+    ctx.note = "creep store is full";
     return;
   }
   next();

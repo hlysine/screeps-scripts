@@ -1,5 +1,6 @@
 import TaskTargetManager from "managers/TaskTargetManager";
-import { findClosestAcrossRooms, isMoveSuccess } from "utils/MoveUtils";
+import { findClosestAcrossRooms } from "utils/MoveUtils";
+import { isMoveSuccess } from "utils/ReturnCodeUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskStatus, makeTask } from "./Task";
 

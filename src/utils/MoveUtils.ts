@@ -60,10 +60,6 @@ export function findClosestAcrossRooms<T extends _HasRoomPosition>(pos: RoomPosi
   return closestTarget;
 }
 
-export function isMoveSuccess(moveResult: number): boolean {
-  return moveResult === OK || moveResult === ERR_TIRED;
-}
-
 export function isSpotObstructed(pos: RoomPosition): boolean {
   if (Game.rooms[pos.roomName]) {
     const result = pos.look();

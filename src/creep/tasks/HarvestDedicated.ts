@@ -1,15 +1,16 @@
-import SourceManager from "managers/SourceManager";
+import ResourceManager from "managers/ResourceManager";
 import { completeTask } from "./SharedSteps";
-import { isMoveSuccess, positionEquals } from "utils/MoveUtils";
+import { positionEquals } from "utils/MoveUtils";
 import Task, { makeTask, TaskStatus } from "./Task";
 import { isRoomRestricted } from "utils/StructureUtils";
 import TaskTargetManager from "managers/TaskTargetManager";
+import { isHarvestSuccess, isMoveSuccess } from "utils/ReturnCodeUtils";
 
 const HarvestDedicatedTask = makeTask({
   id: "harvest_dedicated" as Id<Task>,
   displayName: "Harvest dedicated",
   data: () => ({
-    sourceTarget: undefined as Id<Source> | undefined
+    sourceTarget: undefined as Id<Source> | Id<Mineral> | undefined
   }),
 
   steps: [
@@ -17,7 +18,7 @@ const HarvestDedicatedTask = makeTask({
       if (ctx.data.sourceTarget && creep.memory.target && positionEquals(creep.pos, creep.memory.target)) {
         const memoizedTarget = Game.getObjectById(ctx.data.sourceTarget);
         if (memoizedTarget) {
-          if (creep.harvest(memoizedTarget) === OK) {
+          if (isHarvestSuccess(creep.harvest(memoizedTarget))) {
             creep.memory.target = creep.pos;
             TaskTargetManager.setTarget(creep, HarvestDedicatedTask.id, memoizedTarget.id);
             ctx.status = TaskStatus.InProgress;
@@ -31,7 +32,9 @@ const HarvestDedicatedTask = makeTask({
     (creep, ctx, next) => {
       if (ctx.data.sourceTarget && creep.memory.target) {
         const target = Game.getObjectById(ctx.data.sourceTarget);
-        if (!target || isRoomRestricted(target.room)) {
+        // just to make ts happy
+        // target.room should not be undefined because creep gives visibility to the room
+        if (!target || !target.room || isRoomRestricted(target.room)) {
           ctx.status = TaskStatus.Complete;
           return;
         } else if (
@@ -52,13 +55,13 @@ const HarvestDedicatedTask = makeTask({
       next();
     },
     (creep, ctx, next) => {
-      const dedicatedTarget = creep.pos.findClosestByPath(SourceManager.dedicatedSpots);
+      const dedicatedTarget = creep.pos.findClosestByPath(ResourceManager.dedicatedSpots);
       if (dedicatedTarget) {
         if (isMoveSuccess(creep.moveTo(dedicatedTarget, { visualizePathStyle: { stroke: "#ffffff" } }))) {
-          SourceManager.claimDedicatedSpot(dedicatedTarget);
+          ResourceManager.claimDedicatedSpot(dedicatedTarget.resourceType, dedicatedTarget);
           creep.memory.target = dedicatedTarget.pos;
-          TaskTargetManager.setTarget(creep, HarvestDedicatedTask.id, dedicatedTarget.sourceId);
-          ctx.data.sourceTarget = dedicatedTarget.sourceId;
+          TaskTargetManager.setTarget(creep, HarvestDedicatedTask.id, dedicatedTarget.resourceId);
+          ctx.data.sourceTarget = dedicatedTarget.resourceId;
           ctx.status = TaskStatus.InProgress;
           ctx.note = "moving to dedicated target";
           return;

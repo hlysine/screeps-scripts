@@ -1,4 +1,4 @@
-import { isMoveSuccess } from "utils/MoveUtils";
+import { isMoveSuccess } from "utils/ReturnCodeUtils";
 import { completeTask } from "./SharedSteps";
 import Task, { TaskStatus, makeTask } from "./Task";
 

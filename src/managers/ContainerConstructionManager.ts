@@ -27,16 +27,34 @@ class ContainerConstructionManager extends Manager {
     let count = 0;
 
     const sources = room.find(FIND_SOURCES);
-    if (sources.length === 0) return 0;
-    for (const source of sources) {
-      const items = room.lookAtArea(source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true);
-      if (items.find(x => x.structure && x.structure.structureType === STRUCTURE_CONTAINER)) continue;
-      const spots = items.filter(x => x.terrain && x.terrain !== "wall");
-      const spot = spots.filter(
-        x => !items.some(y => y.x === x.x && y.y === x.y && y.structure && y.structure.structureType !== STRUCTURE_ROAD)
-      )[0];
-      if (room.createConstructionSite(new RoomPosition(spot.x, spot.y, room.name), STRUCTURE_CONTAINER) === OK) {
-        count++;
+    if (sources.length > 0) {
+      for (const source of sources) {
+        const items = room.lookAtArea(source.pos.y - 1, source.pos.x - 1, source.pos.y + 1, source.pos.x + 1, true);
+        if (items.find(x => x.structure && x.structure.structureType === STRUCTURE_CONTAINER)) continue;
+        const spots = items.filter(x => x.terrain && x.terrain !== "wall");
+        const spot = spots.filter(
+          x =>
+            !items.some(y => y.x === x.x && y.y === x.y && y.structure && y.structure.structureType !== STRUCTURE_ROAD)
+        )[0];
+        if (room.createConstructionSite(new RoomPosition(spot.x, spot.y, room.name), STRUCTURE_CONTAINER) === OK) {
+          count++;
+        }
+      }
+    }
+
+    const minerals = room.find(FIND_MINERALS);
+    if (minerals.length > 0) {
+      for (const mineral of minerals) {
+        const items = room.lookAtArea(mineral.pos.y - 1, mineral.pos.x - 1, mineral.pos.y + 1, mineral.pos.x + 1, true);
+        if (items.find(x => x.structure && x.structure.structureType === STRUCTURE_CONTAINER)) continue;
+        const spots = items.filter(x => x.terrain && x.terrain !== "wall");
+        const spot = spots.filter(
+          x =>
+            !items.some(y => y.x === x.x && y.y === x.y && y.structure && y.structure.structureType !== STRUCTURE_ROAD)
+        )[0];
+        if (room.createConstructionSite(new RoomPosition(spot.x, spot.y, room.name), STRUCTURE_CONTAINER) === OK) {
+          count++;
+        }
       }
     }
 

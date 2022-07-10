@@ -8,7 +8,7 @@ import RepairTask from "creep/tasks/RepairTask";
 import RetreatToSpawnTask from "creep/tasks/RetreatToSpawnTask";
 import SalvageTask from "creep/tasks/SalvageTask";
 import { inHomeRoom } from "creep/tasks/SharedSteps";
-import TransferTask from "creep/tasks/TransferTask";
+import TransferEnergyTask from "creep/tasks/TransferEnergyTask";
 import UpgradeTask from "creep/tasks/UpgradeTask";
 import UrgentUpgradeTask from "creep/tasks/UrgentUpgradeTask";
 import WithdrawContainerTask from "creep/tasks/WithdrawContainerTask";
@@ -25,7 +25,7 @@ const WorkerRole: Role = {
         inHomeRoom
       ),
       PrependTask(
-        TransferTask(structure => structure.my),
+        TransferEnergyTask(structure => structure.my),
         inHomeRoom
       ),
       PrependTask(
@@ -42,10 +42,10 @@ const WorkerRole: Role = {
         inHomeRoom
       ),
       PrependTask(UpgradeTask, inHomeRoom),
-      PickUpResourceTask,
-      SalvageTask,
-      WithdrawContainerTask,
-      HarvestTask,
+      PickUpResourceTask(t => t === RESOURCE_ENERGY),
+      SalvageTask(t => t === RESOURCE_ENERGY),
+      WithdrawContainerTask(t => t === RESOURCE_ENERGY),
+      HarvestTask(t => t === RESOURCE_ENERGY),
       RetreatToSpawnTask,
       IdleTask
     ]

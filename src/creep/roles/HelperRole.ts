@@ -5,7 +5,7 @@ import IdleTask from "creep/tasks/IdleTask";
 import MoveToFlagTask, { MoveToFlagMode } from "creep/tasks/MoveToFlagTask";
 import RetreatWhenNoFlagTask from "creep/tasks/RetreatWhenNoFlagTask";
 import { requireEnergy, requireFlagInRoom } from "creep/tasks/SharedSteps";
-import TransferTask from "creep/tasks/TransferTask";
+import TransferEnergyTask from "creep/tasks/TransferEnergyTask";
 import Role, { CreepInfo, RoleCountMap } from "./Role";
 import PickUpResourceTask from "creep/tasks/PickUpResourceTask";
 import SalvageTask from "creep/tasks/SalvageTask";
@@ -39,7 +39,7 @@ const HelperRole: Role = {
         requireFlagInRoom
       ),
       PrependTask(
-        TransferTask(() => true),
+        TransferEnergyTask(() => true),
         requireFlagInRoom
       ),
       PrependTask(
@@ -47,10 +47,10 @@ const HelperRole: Role = {
         requireFlagInRoom
       ),
       PrependTask(UpgradeTask, requireFlagInRoom),
-      PickUpResourceTask,
-      SalvageTask,
-      WithdrawContainerTask,
-      HarvestTask,
+      PickUpResourceTask(t => t === RESOURCE_ENERGY),
+      SalvageTask(t => t === RESOURCE_ENERGY),
+      WithdrawContainerTask(t => t === RESOURCE_ENERGY),
+      HarvestTask(t => t === RESOURCE_ENERGY),
       RetreatToSpawnTask,
       IdleTask
     ]

@@ -7,7 +7,7 @@ import { Serialized } from "utils/TypeUtils";
 import { RoleMemory } from "creep/roles/Role";
 import { TaskMemory } from "creep/tasks/Task";
 import TowerManager from "managers/TowerManager";
-import SourceManager from "managers/SourceManager";
+import ResourceManager from "managers/ResourceManager";
 import CreepSpawnManager, { SpawnMemory } from "managers/CreepSpawnManager";
 import CreepTaskManager from "managers/CreepTaskManager";
 import FlagManager from "managers/FlagManager";
@@ -50,7 +50,7 @@ declare global {
 const managers = {
   flag: FlagManager,
   tower: TowerManager,
-  source: SourceManager,
+  resource: ResourceManager,
   creepSpawn: CreepSpawnManager,
   taskTarget: TaskTargetManager,
   creepTask: CreepTaskManager,
