@@ -12,7 +12,7 @@ const ClaimTask = makeTask({
       if (creep.room.controller && !creep.room.controller.owner) {
         const returnCode = creep.claimController(creep.room.controller);
         if (returnCode === ERR_NOT_IN_RANGE) {
-          const moveResult = creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } });
+          const moveResult = creep.travelTo(creep.room.controller);
           if (!isMoveSuccess(moveResult)) {
             ctx.note = `could not move to controller, reason: ${moveResult}`;
             next();

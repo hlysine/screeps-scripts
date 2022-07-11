@@ -54,13 +54,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
           if (!isStructureValid(target)) {
             ctx.status = TaskStatus.Complete;
             return;
-          } else if (
-            !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -92,7 +86,7 @@ export default function RepairTask(filter: (structure: AnyStructure) => boolean)
         }
 
         if (target) {
-          if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(target))) {
             creep.memory.target = target.pos;
             TaskTargetManager.setTarget(creep, RepairTaskId, target.id);
             ctx.data.structureTarget = target.id;

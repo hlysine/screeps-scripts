@@ -105,13 +105,7 @@ export default function HarvestTask(filter: (resourceType: ResourceConstant) => 
               return;
             }
           }
-          if (
-            !isMoveSuccess(
-              creep.moveTo(deserialize(creep.memory.target), {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          if (!isMoveSuccess(creep.travelTo(deserialize(creep.memory.target)))) {
             ctx.status = TaskStatus.Complete;
             ctx.note = "failed to path find to memory target";
             return;
@@ -151,7 +145,7 @@ export default function HarvestTask(filter: (resourceType: ResourceConstant) => 
           ResourceManager.freeSpots.filter(s => filter(s.resourceType))
         );
         if (freeTarget) {
-          if (isMoveSuccess(creep.moveTo(freeTarget, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(freeTarget))) {
             ResourceManager.claimFreeSpot(freeTarget.resourceType, freeTarget);
             creep.memory.target = freeTarget.pos;
             TaskTargetManager.setTarget(creep, HarvestTaskId, freeTarget.resourceId);
@@ -166,14 +160,16 @@ export default function HarvestTask(filter: (resourceType: ResourceConstant) => 
           ResourceManager.reservedSpots.filter(s => filter(s.spot.resourceType))
         );
         if (reservedTarget) {
-          if (isMoveSuccess(creep.moveTo(reservedTarget))) {
-            if (creep.memory._move) {
-              const path = Room.deserializePath(creep.memory._move.path);
-              if (path.length + getInterRoomDistance(creep.pos, reservedTarget.spot.pos) < reservedTarget.distance) {
-                creep.room.visual.poly(
-                  path.map(s => [s.x, s.y]),
-                  { fill: "transparent", stroke: "#00f", lineStyle: "dashed", strokeWidth: 0.15, opacity: 0.5 }
-                );
+          if (isMoveSuccess(creep.travelTo(reservedTarget))) {
+            if (creep.memory._trav) {
+              const pathLength = creep.memory._trav.path?.length ?? 0;
+              if (pathLength + getInterRoomDistance(creep.pos, reservedTarget.spot.pos) < reservedTarget.distance) {
+                creep.room.visual.circle(creep.pos.x, creep.pos.y, {
+                  radius: 0.7,
+                  fill: "transparent",
+                  stroke: "#00f",
+                  strokeWidth: 0.2
+                });
                 ResourceManager.claimReservedSpot(reservedTarget.spot.resourceType, reservedTarget.spot);
                 creep.memory.target = reservedTarget.pos;
                 TaskTargetManager.setTarget(creep, HarvestTaskId, reservedTarget.spot.resourceId);

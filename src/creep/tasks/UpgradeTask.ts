@@ -13,7 +13,7 @@ const UpgradeTask = makeTask({
       if (creep.room.controller && creep.room.controller.my) {
         const returnCode = creep.upgradeController(creep.room.controller);
         if (returnCode === ERR_NOT_IN_RANGE) {
-          if (!isMoveSuccess(creep.moveTo(creep.room.controller, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (!isMoveSuccess(creep.travelTo(creep.room.controller))) {
             next();
             return;
           } else {

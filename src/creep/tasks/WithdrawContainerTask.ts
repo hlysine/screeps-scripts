@@ -51,13 +51,7 @@ export default function WithdrawContainerTask(filter: (resourceType: ResourceCon
           if (!target || isFilteredStoreEmpty(target.store, filter)) {
             ctx.status = TaskStatus.Complete;
             return;
-          } else if (
-            !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -77,7 +71,7 @@ export default function WithdrawContainerTask(filter: (resourceType: ResourceCon
             !TaskTargetManager.isAlreadyTargeted(WithdrawContainerTaskId, s.id)
         });
         if (target) {
-          if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(target))) {
             creep.memory.target = target.pos;
             TaskTargetManager.setTarget(creep, WithdrawContainerTaskId, target.id);
             ctx.data.containerTarget = target.id;

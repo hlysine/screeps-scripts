@@ -46,13 +46,7 @@ export default function PickUpResourceTask(filter: (resourceType: ResourceConsta
           if (!target || target.amount === 0 || !filter(target.resourceType)) {
             ctx.status = TaskStatus.Complete;
             return;
-          } else if (
-            !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -72,7 +66,7 @@ export default function PickUpResourceTask(filter: (resourceType: ResourceConsta
             !TaskTargetManager.isAlreadyTargeted(PickUpResourceTaskId, r.id)
         });
         if (target) {
-          if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(target))) {
             creep.memory.target = target.pos;
             TaskTargetManager.setTarget(creep, PickUpResourceTaskId, target.id);
             ctx.data.resourceTarget = target.id;

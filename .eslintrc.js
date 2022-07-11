@@ -92,6 +92,7 @@ module.exports = {
     "spaced-comment": "error",
     "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
     "no-bitwise": "off",
-    "sort-imports": "off"
+    "sort-imports": "off",
+    "@typescript-eslint/no-non-null-assertion": "off"
   }
 };

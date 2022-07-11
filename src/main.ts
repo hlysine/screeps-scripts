@@ -2,6 +2,7 @@ import "./utils/prototypes/ArrayProto";
 import "./utils/prototypes/CreepProto";
 import "./utils/prototypes/RoomPositionProto";
 import "./utils/prototypes/RoomProto";
+import "./utils/prototypes/Traveler";
 import { ErrorMapper } from "utils/ErrorMapper";
 import { Serialized } from "utils/TypeUtils";
 import { RoleMemory } from "creep/roles/Role";

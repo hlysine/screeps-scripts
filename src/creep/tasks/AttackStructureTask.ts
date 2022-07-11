@@ -67,18 +67,11 @@ const AttackStructureTask = makeTask({
         if (!target || target.hits === 0) {
           ctx.status = TaskStatus.Complete;
           return;
-        } else if (
-          !isMoveSuccess(
-            creep.moveTo(target.pos, {
-              visualizePathStyle: { stroke: "#ffffff" }
-            })
-          )
-        ) {
+        } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
           if (
             !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" },
-                ignoreDestructibleStructures: true
+              creep.travelTo(target.pos, {
+                ignoreStructures: true
               })
             )
           ) {
@@ -102,22 +95,15 @@ const AttackStructureTask = makeTask({
     (creep, ctx, next) => {
       const target = creep.pos.findClosestByPath(FIND_HOSTILE_SPAWNS);
       if (target) {
-        if (
-          isMoveSuccess(
-            creep.moveTo(target, {
-              visualizePathStyle: { stroke: "#ffffff" }
-            })
-          )
-        ) {
+        if (isMoveSuccess(creep.travelTo(target))) {
           creep.memory.target = target.pos;
           TaskTargetManager.setTarget(creep, AttackStructureTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         } else if (
           isMoveSuccess(
-            creep.moveTo(target, {
-              visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true
+            creep.travelTo(target, {
+              ignoreStructures: true
             })
           )
         ) {
@@ -134,22 +120,15 @@ const AttackStructureTask = makeTask({
         filter: structure => structure.hits > 0
       });
       if (target) {
-        if (
-          isMoveSuccess(
-            creep.moveTo(target, {
-              visualizePathStyle: { stroke: "#ffffff" }
-            })
-          )
-        ) {
+        if (isMoveSuccess(creep.travelTo(target))) {
           creep.memory.target = target.pos;
           TaskTargetManager.setTarget(creep, AttackStructureTask.id, target.id);
           ctx.status = TaskStatus.InProgress;
           return;
         } else if (
           isMoveSuccess(
-            creep.moveTo(target, {
-              visualizePathStyle: { stroke: "#ffffff" },
-              ignoreDestructibleStructures: true
+            creep.travelTo(target, {
+              ignoreStructures: true
             })
           )
         ) {

@@ -16,7 +16,7 @@ const RetreatToSpawnTask = makeTask({
       if (ctx.data.spawnTarget) {
         const spawn = Game.getObjectById(ctx.data.spawnTarget);
         if (spawn) {
-          if (!isMoveSuccess(creep.moveTo(spawn, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 }))) {
+          if (!isMoveSuccess(creep.travelTo(spawn, { range: 15 }))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -38,7 +38,7 @@ const RetreatToSpawnTask = makeTask({
         next();
         return;
       }
-      creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range: 15 });
+      creep.travelTo(target.pos, { range: 15 });
       creep.memory.target = target.pos;
       TaskTargetManager.setTarget(creep, RetreatToSpawnTask.id, target.id);
       ctx.data.spawnTarget = target.id;

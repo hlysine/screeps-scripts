@@ -47,7 +47,7 @@ export default function MoveToFlagTask(mode: MoveToFlagMode, range: number): Tas
             return;
           }
         }
-        if (isMoveSuccess(creep.moveTo(target.pos, { visualizePathStyle: { stroke: "#ffffff" }, range }))) {
+        if (isMoveSuccess(creep.travelTo(target.pos, { range }))) {
           if (creep.pos.roomName === target.pos.roomName) {
             if (mode === MoveToFlagMode.LowPriorityInRoom) {
               ctx.note = mode + ": already in room";

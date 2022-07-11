@@ -37,13 +37,7 @@ export default function StoreResourceTask(filter: (resourceType: ResourceConstan
           if (!target || target.structureType !== STRUCTURE_STORAGE || target.store.getFreeCapacity() <= 0) {
             ctx.status = TaskStatus.Complete;
             return;
-          } else if (
-            !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -63,7 +57,7 @@ export default function StoreResourceTask(filter: (resourceType: ResourceConstan
             !TaskTargetManager.isAlreadyTargeted(StoreResourceTaskId, structure.id)
         });
         if (target) {
-          if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(target))) {
             creep.memory.target = target.pos;
             TaskTargetManager.setTarget(creep, StoreResourceTaskId, target.id);
             ctx.data.storageTarget = target.id as Id<StructureStorage>;

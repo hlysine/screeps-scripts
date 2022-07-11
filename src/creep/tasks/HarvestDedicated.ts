@@ -39,9 +39,7 @@ const HarvestDedicatedTask = makeTask({
           return;
         } else if (
           !isMoveSuccess(
-            creep.moveTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName), {
-              visualizePathStyle: { stroke: "#ffffff" }
-            })
+            creep.travelTo(new RoomPosition(creep.memory.target.x, creep.memory.target.y, creep.memory.target.roomName))
           )
         ) {
           ctx.status = TaskStatus.Complete;
@@ -57,7 +55,7 @@ const HarvestDedicatedTask = makeTask({
     (creep, ctx, next) => {
       const dedicatedTarget = creep.pos.findClosestByPath(ResourceManager.dedicatedSpots);
       if (dedicatedTarget) {
-        if (isMoveSuccess(creep.moveTo(dedicatedTarget, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+        if (isMoveSuccess(creep.travelTo(dedicatedTarget))) {
           ResourceManager.claimDedicatedSpot(dedicatedTarget.resourceType, dedicatedTarget);
           creep.memory.target = dedicatedTarget.pos;
           TaskTargetManager.setTarget(creep, HarvestDedicatedTask.id, dedicatedTarget.resourceId);

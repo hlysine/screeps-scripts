@@ -46,13 +46,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
           if (!target) {
             ctx.status = TaskStatus.Complete;
             return;
-          } else if (
-            !isMoveSuccess(
-              creep.moveTo(target.pos, {
-                visualizePathStyle: { stroke: "#ffffff" }
-              })
-            )
-          ) {
+          } else if (!isMoveSuccess(creep.travelTo(target.pos))) {
             ctx.status = TaskStatus.Complete;
             return;
           } else {
@@ -67,7 +61,7 @@ export default function BuildTask(filter: FilterOptions<FIND_CONSTRUCTION_SITES>
       (creep, ctx, next) => {
         const target = creep.pos.findClosestByPath(FIND_CONSTRUCTION_SITES, { filter });
         if (target) {
-          if (isMoveSuccess(creep.moveTo(target, { visualizePathStyle: { stroke: "#ffffff" } }))) {
+          if (isMoveSuccess(creep.travelTo(target))) {
             creep.memory.target = target.pos;
             TaskTargetManager.setTarget(creep, BuildTaskId, target.id);
             ctx.data.constructionTarget = target.id;
