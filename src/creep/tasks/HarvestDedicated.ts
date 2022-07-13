@@ -16,6 +16,16 @@ const HarvestDedicatedTask = makeTask({
   steps: [
     (creep, ctx, next) => {
       if (ctx.data.sourceTarget && creep.memory.target && positionEquals(creep.pos, creep.memory.target)) {
+        const container = creep.room
+          .lookForAt(LOOK_STRUCTURES, creep)
+          .find(s => s.structureType === STRUCTURE_CONTAINER) as StructureContainer | undefined;
+        if (container) {
+          if (container.store.getFreeCapacity() < 50) {
+            ctx.status = TaskStatus.InProgress;
+            ctx.note = "waiting for container capacity";
+            return;
+          }
+        }
         const memoizedTarget = Game.getObjectById(ctx.data.sourceTarget);
         if (memoizedTarget) {
           if (isHarvestSuccess(creep.harvest(memoizedTarget))) {
