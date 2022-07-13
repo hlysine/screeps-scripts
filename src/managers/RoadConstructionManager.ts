@@ -18,9 +18,9 @@ export interface RoadMemory {
    */
   idleTicks: number;
   /**
-   * Whether the seed roads have been constructed.
+   * The level of the room when the seed is last constructed.
    */
-  seeded: boolean;
+  roomLevel: number;
   /**
    * The maximum number of roads allowed.
    */
@@ -55,7 +55,7 @@ const ConstructQuota = 25;
 /**
  * The maximum number of roads allowed for a room is equal to the combined path length times this number.
  */
-const MaxRoadsMultiplier = 2.25;
+const MaxRoadsMultiplier = 1.75;
 
 const pathFinderOpts = {
   plainCost: 2,
@@ -104,7 +104,12 @@ class RoadConstructionManager extends Manager {
       return 0;
     }
     const spawn = spawns[0];
-    const sources = room.find(FIND_SOURCES);
+    const sources: (Source | Mineral)[] = room.find(FIND_SOURCES);
+    if (room.controller) {
+      if (room.controller.level >= 6) {
+        sources.push(...room.find(FIND_MINERALS));
+      }
+    }
     let totalLength = 0;
     for (const source of sources) {
       totalLength += PathFinder.search(spawn.pos, { pos: source.pos, range: 1 }, pathFinderOpts).path.length;
@@ -140,7 +145,10 @@ class RoadConstructionManager extends Manager {
       const result = PathFinder.search(spawn.pos, { pos: room.controller.pos, range: 1 }, pathFinderOpts);
       if (getPathError(result, room.controller.pos)) paths.push(...result.path);
     }
-    const sources = room.find(FIND_SOURCES);
+    const sources: (Source | Mineral)[] = room.find(FIND_SOURCES);
+    if ((room.controller?.level ?? 0) >= 6) {
+      sources.push(...room.find(FIND_MINERALS));
+    }
     for (const source of sources) {
       const result = PathFinder.search(spawn.pos, { pos: source.pos, range: 1 }, pathFinderOpts);
       if (getPathError(result, source.pos)) paths.push(...result.path);
@@ -158,13 +166,13 @@ class RoadConstructionManager extends Manager {
         }
       }
     }
-    room.memory.roads.seeded = true;
+    room.memory.roads.roomLevel = room.controller?.level ?? 0;
     return buildCount;
   }
 
   private construct(room: Room, cost: CostMatrix, roadCount: number): number {
     if (roadCount >= room.memory.roads.maxRoads) return 0;
-    if (!room.memory.roads.seeded) {
+    if (room.memory.roads.roomLevel < (room.controller?.level ?? 0)) {
       logger.log(`Constructing seed for ${room.name}`);
       return this.constructSeed(room, roadCount);
     }
@@ -204,13 +212,13 @@ class RoadConstructionManager extends Manager {
           cost: new PathFinder.CostMatrix().serialize(),
           surveyTicks: MaxSurveyTicks,
           idleTicks: InitialIdleTicks,
-          seeded: false,
+          roomLevel: 0,
           maxRoads: this.getMaxRoads(room)
         };
       }
 
-      if (room.memory.roads.seeded === undefined) {
-        room.memory.roads.seeded = false;
+      if (room.memory.roads.roomLevel === undefined) {
+        room.memory.roads.roomLevel = 0;
       }
 
       if (room.memory.roads.idleTicks === undefined) {
@@ -244,7 +252,7 @@ class RoadConstructionManager extends Manager {
       }
       const cost = PathFinder.CostMatrix.deserialize(room.memory.roads.cost);
 
-      if (room.memory.roads.surveyTicks > 0 && room.memory.roads.seeded) {
+      if (room.memory.roads.surveyTicks > 0 && room.memory.roads.roomLevel >= (room.controller?.level ?? 0)) {
         logger.log(`Surveying ${room.name}, ${room.memory.roads.surveyTicks} ticks left`);
         this.survey(room, cost);
         room.memory.roads.cost = cost.serialize();
