@@ -21,7 +21,7 @@ class FlagManager extends Manager {
   public loop(): void {
     this.flags = Object.values(Game.flags);
     const roomCoords = Object.values(Game.rooms)
-      .filter(room => room.controller?.my)
+      .filter(room => room.controller?.my && room.controller.level > 2 && room.find(FIND_MY_SPAWNS).length > 0)
       .map(room => ({
         name: room.name,
         pos: new WorldPosition(new RoomPosition(24, 24, room.name))
