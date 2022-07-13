@@ -1,6 +1,14 @@
 declare global {
   interface Array<T> {
+    /**
+     * Returns the element with the minimum value of the array, with the value being determined by the selector function.
+     * @param selector function that returns a value to compare
+     */
     minBy<U>(selector: (t: T) => U): T | undefined;
+    /**
+     * Returns the element with the maximum value of the array, with the value being determined by the selector function.
+     * @param selector function that returns a value to compare
+     */
     maxBy<U>(selector: (t: T) => U): T | undefined;
   }
 }

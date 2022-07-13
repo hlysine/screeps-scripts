@@ -1,5 +1,8 @@
 declare global {
   interface Room {
+    /**
+     * Find creeps in this room that are truly hostile.
+     */
     findTrulyHostileCreeps(): Creep[];
   }
 }

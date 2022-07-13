@@ -1,6 +1,12 @@
 declare global {
   interface RoomPosition {
+    /**
+     * Find the closest hostile creep by path. This only finds creeps that are "truly hostile".
+     */
     findClosestHostileByPath(): Creep | null;
+    /**
+     * Find the closest hostile creep by range. This only finds creeps that are "truly hostile".
+     */
     findClosestHostileByRange(): Creep | null;
   }
 }
