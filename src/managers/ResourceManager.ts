@@ -43,11 +43,14 @@ interface RoomResourceInfo {
   dedicatedSpots: MiningSpot[];
 }
 
+const CACHE_TICKS = 200;
+
 class ResourceManager extends Manager {
   private roomCache?: RoomHarvestCache;
   private resourceInfo: ResourceMap<RoomResourceInfo> = {};
   private globalSpotsCache?: RoomResourceInfo;
   public visualization = false;
+  private cacheTicks = CACHE_TICKS;
 
   /**
    * Check if a room is ignored. This is the case if there are no flags there or if it is restricted due to controller level.
@@ -256,6 +259,12 @@ class ResourceManager extends Manager {
   }
 
   public loop(): void {
+    this.cacheTicks--;
+    if (this.cacheTicks <= 0) {
+      this.cacheTicks = CACHE_TICKS;
+      this.invalidateCache();
+    }
+
     // compute room cache if it's not already computed
     if (!this.roomCache) this.roomCache = this.computeCache();
     const creeps = Object.values(Game.creeps);
