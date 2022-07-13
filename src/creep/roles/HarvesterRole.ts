@@ -47,7 +47,9 @@ const HarvesterRole: Role = {
       const source = sources.find(s => s.pos.isNearTo(container));
       return source ? acc + 1 : acc;
     }, 0);
-    const minerals = room.find(FIND_MINERALS);
+    const minerals = room.find(FIND_MINERALS, {
+      filter: m => m.mineralAmount > 0 || (m.ticksToRegeneration ?? 0) < 100
+    });
     count += containers.reduce((acc, container) => {
       const mineral = minerals.find(s => s.pos.isNearTo(container));
       return mineral ? acc + 1 : acc;
