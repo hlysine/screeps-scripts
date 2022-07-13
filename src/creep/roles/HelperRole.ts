@@ -94,6 +94,10 @@ const HelperRole: Role = {
 
   getSpawnPriority(_room: Room, _roleCount: RoleCountMap): number {
     return 0;
+  },
+
+  identifyRole(creep: Creep): boolean {
+    return !!creep.body.find(b => b.type === WORK) && !!creep.body.find(b => b.type === CARRY);
   }
 };
 

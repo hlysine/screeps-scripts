@@ -72,6 +72,10 @@ const DefenderRole: Role = {
   getSpawnPriority(room: Room, _roleCount: RoleCountMap): number {
     if (room.findTrulyHostileCreeps().length > 0) return 50;
     return 0;
+  },
+
+  identifyRole(creep: Creep): boolean {
+    return !!creep.body.find(b => b.type === ATTACK || b.type === RANGED_ATTACK);
   }
 };
 

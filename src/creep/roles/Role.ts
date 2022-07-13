@@ -21,4 +21,5 @@ export default interface Role {
   getCreepInfo(energyCapacity: number): CreepInfo;
   getCreepLimit(room: Room): number;
   getSpawnPriority(room: Room, roleCount: RoleCountMap): number;
+  identifyRole(creep: Creep): boolean;
 }

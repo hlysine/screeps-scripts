@@ -92,6 +92,10 @@ const WorkerRole: Role = {
   getSpawnPriority(room: Room, roleCount: RoleCountMap): number {
     if (roleCount[WorkerRole.id] >= this.getCreepLimit(room) / 2) return 0;
     return 99;
+  },
+
+  identifyRole(creep: Creep): boolean {
+    return !!creep.body.find(b => b.type === WORK) && !!creep.body.find(b => b.type === CARRY);
   }
 };
 

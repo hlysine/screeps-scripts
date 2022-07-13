@@ -1,12 +1,9 @@
-import { RoleMap } from "creep/roles/RoleStore";
+import { RoleMap, Roles } from "creep/roles/RoleStore";
 import Role from "creep/roles/Role";
-import ClaimerRole from "creep/roles/ClaimerRole";
-import DefenderRole from "creep/roles/DefenderRole";
 import WorkerRole from "creep/roles/WorkerRole";
 import Task, { TaskContext, TaskStatus } from "creep/tasks/Task";
 import Logger from "utils/Logger";
 import Manager from "./Manager";
-import HarvesterRole from "creep/roles/HarvesterRole";
 
 const logger = new Logger("CreepTaskManager");
 
@@ -17,16 +14,7 @@ interface Coordinate {
 
 class CreepTaskManager extends Manager {
   private determineRole(creep: Creep): Id<Role> {
-    if (creep.body.find(b => b.type === CLAIM)) {
-      return ClaimerRole.id;
-    }
-    if (creep.body.find(b => b.type === ATTACK || b.type === RANGED_ATTACK)) {
-      return DefenderRole.id;
-    }
-    if (creep.body.find(b => b.type === WORK) && !creep.body.find(b => b.type === CARRY)) {
-      return HarvesterRole.id;
-    }
-    return WorkerRole.id;
+    return Roles.find(role => role.identifyRole(creep))?.id ?? WorkerRole.id;
   }
 
   private parseTaskCoordinate(coordinate: string): Coordinate | undefined {
