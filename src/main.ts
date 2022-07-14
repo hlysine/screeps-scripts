@@ -1,5 +1,6 @@
 import "./utils/prototypes/ArrayProto";
 import "./utils/prototypes/CreepProto";
+import "./utils/prototypes/MineralProto";
 import "./utils/prototypes/RoomPositionProto";
 import "./utils/prototypes/RoomProto";
 import "./utils/prototypes/Traveler";

@@ -45,6 +45,7 @@ class ContainerConstructionManager extends Manager {
     const minerals = room.find(FIND_MINERALS);
     if (minerals.length > 0) {
       for (const mineral of minerals) {
+        if (!mineral.getExtractor()) continue;
         const items = room.lookAtArea(mineral.pos.y - 1, mineral.pos.x - 1, mineral.pos.y + 1, mineral.pos.x + 1, true);
         if (items.find(x => x.structure && x.structure.structureType === STRUCTURE_CONTAINER)) continue;
         const spots = items.filter(x => x.terrain && x.terrain !== "wall");
