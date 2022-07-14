@@ -277,7 +277,7 @@ export class Traveler {
       const cpuUsed = Game.cpu.getUsed() - cpu;
       state.cpu = _.round(cpuUsed + state.cpu);
       if (state.cpu > REPORT_CPU_THRESHOLD) {
-        // see note at end of file for more info on this
+        // see note for more info on this
         console.log(
           `TRAVELER: heavy cpu use: ${creep.name}, cpu: ${
             state.cpu

@@ -8,7 +8,14 @@ export function help(manager: Manager): string {
 }
 
 export default abstract class Manager {
-  public abstract loop(): void;
+  protected abstract loop(): void;
+
+  public run(): number {
+    const cpu = Game.cpu.getUsed();
+    this.loop();
+    return Game.cpu.getUsed() - cpu;
+  }
+
   public help(): string {
     return help(this);
   }

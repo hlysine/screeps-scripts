@@ -49,7 +49,7 @@ class ResourceManager extends Manager {
   private roomCache?: RoomHarvestCache;
   private resourceInfo: ResourceMap<RoomResourceInfo> = {};
   private globalSpotsCache?: RoomResourceInfo;
-  public visualization = false;
+  public visualization = true;
   private cacheTicks = CACHE_TICKS;
 
   /**
@@ -258,7 +258,7 @@ class ResourceManager extends Manager {
     }
   }
 
-  public loop(): void {
+  protected override loop(): void {
     this.cacheTicks--;
     if (this.cacheTicks <= 0) {
       this.cacheTicks = CACHE_TICKS;

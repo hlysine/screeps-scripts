@@ -114,7 +114,7 @@ class CreepTaskManager extends Manager {
     }
   }
 
-  public loop(): void {
+  protected override loop(): void {
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
       const role = this.getRole(creep);

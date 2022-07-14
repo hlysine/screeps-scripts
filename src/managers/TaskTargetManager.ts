@@ -27,7 +27,7 @@ class TaskTargetManager extends Manager {
     creep.memory.targetId = targetId;
   }
 
-  public loop(): void {
+  protected override loop(): void {
     this.taskTargets = {};
     for (const creepName in Game.creeps) {
       const creep = Game.creeps[creepName];

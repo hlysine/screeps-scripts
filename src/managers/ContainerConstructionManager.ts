@@ -62,7 +62,7 @@ class ContainerConstructionManager extends Manager {
     return count;
   }
 
-  public loop(): void {
+  protected override loop(): void {
     for (const roomName in Game.rooms) {
       const room = Game.rooms[roomName];
       if (!room.controller) continue;

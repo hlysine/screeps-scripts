@@ -35,6 +35,8 @@ class CreepSpawnManager extends Manager {
 
   public creeepsCount: SpawnRoleCount = {};
 
+  public visualization = true;
+
   private countCreepCapacity(): number {
     return Object.values(Game.creeps).reduce((sum, creep) => {
       return sum + creep.store.getCapacity(RESOURCE_ENERGY);
@@ -81,7 +83,24 @@ class CreepSpawnManager extends Manager {
     return creeepsCount;
   }
 
-  public loop(): void {
+  private showReport(roomName: string, report: string): void {
+    if (!this.visualization) {
+      console.log(report);
+    } else {
+      const visual = new RoomVisual(roomName);
+      let offsetY = 0;
+      for (const line of report.split("\n")) {
+        visual.text(line, 0, offsetY, {
+          color: "white",
+          align: "left",
+          font: 0.5
+        });
+        offsetY += 1;
+      }
+    }
+  }
+
+  protected override loop(): void {
     const creeps = Object.values(Game.creeps);
     Object.values(Game.spawns).forEach(spawn => {
       this.creeepsCount[spawn.name] = this.countCreepsByRole(creeps, spawn.name);
@@ -107,7 +126,7 @@ class CreepSpawnManager extends Manager {
           opacity: 0.8
         });
         report += `  Spawning ${spawningCreep.name}`;
-        console.log(report);
+        this.showReport(spawn.room.name, report);
         return;
       }
 
@@ -127,7 +146,6 @@ class CreepSpawnManager extends Manager {
             const result = spawn.spawnCreep(bodyParts, newName, {
               memory: { role: role.id, debug: false, origin: spawn.name }
             });
-            console.log(`Spawning new creep: ${newName}\nResult: ${result}`);
             if (result === OK) {
               this.creeepsCount[spawn.name][role.id] = count + 1;
               blockSpawn = true;
@@ -161,11 +179,10 @@ class CreepSpawnManager extends Manager {
             opacity: 0.8
           });
           spawn.renewCreep(creepWithMinLifetime);
-          console.log(`Renewing ${creepWithMinLifetime.name}`);
         }
       }
 
-      console.log(report);
+      this.showReport(spawn.room.name, report);
     });
   }
 }

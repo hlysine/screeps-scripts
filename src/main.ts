@@ -74,12 +74,17 @@ export const loop = ErrorMapper.wrapLoop(() => {
       delete Memory.creeps[name];
     }
   }
+
+  let report = "CPU Report: \n";
   for (const name in managers) {
-    managers[name as keyof typeof managers].loop();
+    const cpu = managers[name as keyof typeof managers].run();
+    report += `  ${name}: ${cpu.toFixed(4)}\n`;
   }
+  console.log(report);
+
   if (Game.cpu.bucket === 10000) {
     Game.cpu.generatePixel?.(); // this function does not exist on private servers
     console.log("Generated pixel");
   }
-  console.log("CPU usage:", Game.cpu.getUsed().toFixed(2));
+  console.log("Total CPU usage:", Game.cpu.getUsed().toFixed(2));
 });

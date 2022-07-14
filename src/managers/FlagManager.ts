@@ -18,7 +18,7 @@ class FlagManager extends Manager {
     return this.flagMap[roomName] ?? [];
   }
 
-  public loop(): void {
+  protected override loop(): void {
     this.flags = Object.values(Game.flags);
     const roomCoords = Object.values(Game.rooms)
       .filter(room => room.controller?.my && room.controller.level > 2 && room.find(FIND_MY_SPAWNS).length > 0)

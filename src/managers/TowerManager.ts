@@ -84,7 +84,7 @@ class TowerManager extends Manager {
     }
   }
 
-  public loop(): void {
+  protected override loop(): void {
     for (const name in Game.structures) {
       const structure = Game.structures[name];
       if (structure instanceof StructureTower) {
