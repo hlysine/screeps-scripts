@@ -28,6 +28,21 @@ interface SpawnRoleCount {
   [key: string]: RoleCountMap;
 }
 
+interface RoleReport {
+  id: string;
+  count: number;
+  energyCost: number;
+  targetCount: number;
+  priority: number;
+}
+
+interface SpawnReport {
+  spawnName: string;
+  roomName: string;
+  spawningName: string;
+  roles: RoleReport[];
+}
+
 class CreepSpawnManager extends Manager {
   public spawns: SpawnInfo[] | undefined;
 
@@ -83,20 +98,62 @@ class CreepSpawnManager extends Manager {
     return creeepsCount;
   }
 
-  private showReport(roomName: string, report: string): void {
+  private showReport(reports: SpawnReport[]): void {
     if (!this.visualization) {
-      console.log(report);
+      let text = "";
+      reports.forEach(report => {
+        text += `${report.spawnName} in ${report.roomName}:\n`;
+        if (report.spawningName) {
+          text += `  ${report.spawningName} is spawning\n`;
+        } else {
+          report.roles.forEach(role => {
+            text += `  ${role.id.padEnd(20, " ")} ${role.count}/${role.targetCount} (${role.energyCost
+              .toString()
+              .padStart(4, " ")} energy ${role.priority.toString().padStart(3, " ")} priority)\n`;
+          });
+        }
+      });
+      console.log(text);
     } else {
-      const visual = new RoomVisual(roomName);
-      let offsetY = 0;
-      for (const line of report.split("\n")) {
-        visual.text(line, 0, offsetY, {
-          color: "white",
+      reports.forEach(report => {
+        const visual = new RoomVisual(report.roomName);
+        visual.text(report.spawnName, 0, 0.2, {
           align: "left",
-          font: 0.5
+          color: "white",
+          opacity: 1,
+          font: 1,
+          backgroundColor: "#ffffff33",
+          stroke: "transparent"
         });
-        offsetY += 1;
-      }
+        if (report.spawningName) {
+          visual.text("Spawning " + report.spawningName, 1, 1.7, {
+            align: "left",
+            color: "#bbbbbb",
+            opacity: 1,
+            backgroundColor: "#ffffff33",
+            font: "0.7 monospace"
+          });
+        } else {
+          let y = 1.7;
+          report.roles.forEach(role => {
+            visual.text(
+              `${role.id.padEnd(20, " ")} ${role.count}/${role.targetCount} (${role.energyCost
+                .toString()
+                .padStart(4, " ")} energy ${role.priority.toString().padStart(3, " ")} priority)`,
+              1,
+              y,
+              {
+                align: "left",
+                color: "#bbbbbb",
+                opacity: 1,
+                backgroundColor: "#ffffff33",
+                font: "0.6 monospace"
+              }
+            );
+            y += 1.25;
+          });
+        }
+      });
     }
   }
 
@@ -112,78 +169,92 @@ class CreepSpawnManager extends Manager {
       this.spawns = this.getSpawns();
     }
 
-    this.spawns.forEach(spawnInfo => {
-      const { spawnId, roles } = spawnInfo;
-      const spawn = Game.getObjectById(spawnId);
-      if (spawn === null) return;
+    const reports: SpawnReport[] = this.spawns
+      .map(spawnInfo => {
+        const { spawnId, roles } = spawnInfo;
+        const spawn = Game.getObjectById(spawnId);
+        if (spawn === null) return undefined;
 
-      let report = `Spawn info: ${spawn.name}\n`;
+        const report: SpawnReport = {
+          spawnName: spawn.name,
+          roomName: spawn.pos.roomName,
+          spawningName: "",
+          roles: []
+        };
 
-      if (spawn.spawning) {
-        const spawningCreep = Game.creeps[spawn.spawning.name];
-        spawn.room.visual.text("🛠️" + spawningCreep.name, spawn.pos.x + 1, spawn.pos.y, {
-          align: "left",
-          opacity: 0.8
-        });
-        report += `  Spawning ${spawningCreep.name}`;
-        this.showReport(spawn.room.name, report);
-        return;
-      }
-
-      let blockSpawn = false;
-
-      for (const role of Roles.slice().sort((a, b) => roles[b.id].spawnPriority - roles[a.id].spawnPriority)) {
-        const {
-          limit,
-          creepInfo: { bodyParts, energyCost },
-          spawnPriority
-        } = roles[role.id];
-        const count = this.creeepsCount[spawn.name][role.id] || 0;
-        report += `  ${role.id}: ${count}/${limit} (${energyCost} energy ${spawnPriority} priority)\n`;
-        if (!blockSpawn && count < limit) {
-          if (spawn.room.energyAvailable >= energyCost) {
-            const newName = `${spawn.name}-${role.id}-${Game.time}`;
-            const result = spawn.spawnCreep(bodyParts, newName, {
-              memory: { role: role.id, debug: false, origin: spawn.name }
-            });
-            if (result === OK) {
-              this.creeepsCount[spawn.name][role.id] = count + 1;
-              blockSpawn = true;
-            }
-          } else {
-            blockSpawn = true;
-          }
-        }
-      }
-
-      if (!blockSpawn) {
-        const nearbyCreeps = spawn.room.lookForAtArea(
-          LOOK_CREEPS,
-          spawn.pos.y - 1,
-          spawn.pos.x - 1,
-          spawn.pos.y + 1,
-          spawn.pos.x + 1,
-          true
-        );
-        // find creep with min lifetime
-        let creepWithMinLifetime: Creep | undefined;
-        for (const creep of nearbyCreeps) {
-          if (!creep.creep.ticksToLive) break;
-          if (creep.creep.ticksToLive < (creepWithMinLifetime?.ticksToLive ?? Number.POSITIVE_INFINITY)) {
-            creepWithMinLifetime = creep.creep;
-          }
-        }
-        if (creepWithMinLifetime && creepWithMinLifetime.ticksToLive && creepWithMinLifetime.ticksToLive < 1000) {
-          spawn.room.visual.text("🔨" + creepWithMinLifetime.name, spawn.pos.x + 1, spawn.pos.y, {
+        if (spawn.spawning) {
+          const spawningCreep = Game.creeps[spawn.spawning.name];
+          spawn.room.visual.text("🛠️" + spawningCreep.name, spawn.pos.x + 1, spawn.pos.y, {
             align: "left",
             opacity: 0.8
           });
-          spawn.renewCreep(creepWithMinLifetime);
+          report.spawningName = spawningCreep.name;
+          return report;
         }
-      }
 
-      this.showReport(spawn.room.name, report);
-    });
+        let blockSpawn = false;
+
+        for (const role of Roles.slice().sort((a, b) => roles[b.id].spawnPriority - roles[a.id].spawnPriority)) {
+          const {
+            limit,
+            creepInfo: { bodyParts, energyCost },
+            spawnPriority
+          } = roles[role.id];
+          const count = this.creeepsCount[spawn.name][role.id] || 0;
+          report.roles.push({
+            id: role.id,
+            count,
+            energyCost,
+            targetCount: limit,
+            priority: spawnPriority
+          });
+          if (!blockSpawn && count < limit) {
+            if (spawn.room.energyAvailable >= energyCost) {
+              const newName = `${spawn.name}-${role.id}-${Game.time}`;
+              const result = spawn.spawnCreep(bodyParts, newName, {
+                memory: { role: role.id, debug: false, origin: spawn.name }
+              });
+              if (result === OK) {
+                this.creeepsCount[spawn.name][role.id] = count + 1;
+                blockSpawn = true;
+              }
+            } else {
+              blockSpawn = true;
+            }
+          }
+        }
+
+        if (!blockSpawn) {
+          const nearbyCreeps = spawn.room.lookForAtArea(
+            LOOK_CREEPS,
+            spawn.pos.y - 1,
+            spawn.pos.x - 1,
+            spawn.pos.y + 1,
+            spawn.pos.x + 1,
+            true
+          );
+          // find creep with min lifetime
+          let creepWithMinLifetime: Creep | undefined;
+          for (const creep of nearbyCreeps) {
+            if (!creep.creep.ticksToLive) break;
+            if (creep.creep.ticksToLive < (creepWithMinLifetime?.ticksToLive ?? Number.POSITIVE_INFINITY)) {
+              creepWithMinLifetime = creep.creep;
+            }
+          }
+          if (creepWithMinLifetime && creepWithMinLifetime.ticksToLive && creepWithMinLifetime.ticksToLive < 1000) {
+            spawn.room.visual.text("🔨" + creepWithMinLifetime.name, spawn.pos.x + 1, spawn.pos.y, {
+              align: "left",
+              opacity: 0.8
+            });
+            spawn.renewCreep(creepWithMinLifetime);
+          }
+        }
+
+        return report;
+      })
+      .filter(r => !!r) as SpawnReport[];
+
+    this.showReport(reports);
   }
 }
 

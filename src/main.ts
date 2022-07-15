@@ -66,7 +66,7 @@ global.managers = managers;
 // When compiling TS to JS and bundling with rollup, the line numbers and file names in error messages change
 // This utility uses source maps to get the line numbers and file names of the original, TS source code
 export const loop = ErrorMapper.wrapLoop(() => {
-  console.log(`Current game tick is ${Game.time}`);
+  console.log(`\n===== Current game tick is ${Game.time} =====\n`);
 
   // Automatically delete memory of missing creeps
   for (const name in Memory.creeps) {
@@ -75,10 +75,10 @@ export const loop = ErrorMapper.wrapLoop(() => {
     }
   }
 
-  let report = "CPU Report: \n";
+  let report = "              ===== CPU REPORT =====\n";
   for (const name in managers) {
     const cpu = managers[name as keyof typeof managers].run();
-    report += `  ${name}: ${cpu.toFixed(4)}\n`;
+    report += `  ${name.padStart(25, " ")}: ${cpu.toFixed(4)}\n`;
   }
   console.log(report);
 
