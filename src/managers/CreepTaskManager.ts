@@ -13,6 +13,8 @@ interface Coordinate {
 }
 
 class CreepTaskManager extends Manager {
+  public visualization = false;
+
   private determineRole(creep: Creep): Id<Role> {
     return Roles.find(role => role.identifyRole(creep))?.id ?? WorkerRole.id;
   }
@@ -114,75 +116,86 @@ class CreepTaskManager extends Manager {
     }
   }
 
+  private processCreep(creep: Creep): void {
+    const role = this.getRole(creep);
+    const ctx: TaskContext = {
+      status: TaskStatus.InProgress,
+      data: undefined
+    };
+
+    let stopExecution = false;
+    let debugReport = `${creep.name} is ${role}\n`;
+    let lastTask = this.getTask(creep);
+
+    for (let i = 0; i < RoleMap[role].tasks.length; i++) {
+      const tier = RoleMap[role].tasks[i];
+      const tasks = tier.slice();
+      if (lastTask) {
+        if (lastTask.tier === i) {
+          if (!creep.memory.isBackground) {
+            // add the in-progress task to the front
+            // tasks.splice(tasks.indexOf(creep.memory.task), 1);
+            tasks.unshift(RoleMap[role].tasks[i][lastTask.priority]);
+          }
+        }
+      }
+      for (const task of tasks) {
+        const priority = RoleMap[role].tasks[i].indexOf(task);
+        let savedData = false;
+        if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
+          ctx.data = creep.memory.data ?? task.data(creep);
+          savedData = true;
+        } else {
+          ctx.data = task.data(creep);
+        }
+        this.executeTask(creep, task, ctx);
+        if (creep.memory.debug) {
+          if (ctx.note)
+            debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"}) (${ctx.note})\n`;
+          else debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"})\n`;
+        }
+        if (ctx.status === TaskStatus.Complete) {
+          if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
+            this.clearTask(creep);
+            lastTask = undefined;
+          }
+        } else if (ctx.status === TaskStatus.InProgress || ctx.status === TaskStatus.Background) {
+          if (!this.isCoordinateEqual(lastTask, { tier: i, priority })) {
+            creep.memory.task = `${i},${priority}`;
+            creep.memory.taskId = task.id;
+            creep.say(task.displayName);
+          }
+          creep.memory.isBackground = ctx.status === TaskStatus.Background;
+          creep.memory.data = ctx.data;
+          stopExecution = true;
+          break;
+        }
+      }
+      if (stopExecution) break;
+    }
+
+    if (creep.memory.debug) {
+      logger.log(debugReport);
+      creep.room.visual.circle(creep.pos, {
+        radius: 0.5,
+        stroke: "red",
+        strokeWidth: 0.1
+      });
+    }
+  }
+
   protected override loop(): void {
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
-      const role = this.getRole(creep);
-      const ctx: TaskContext = {
-        status: TaskStatus.InProgress,
-        data: undefined
-      };
-
-      let stopExecution = false;
-      let debugReport = `${creep.name} is ${role}\n`;
-      let lastTask = this.getTask(creep);
-
-      for (let i = 0; i < RoleMap[role].tasks.length; i++) {
-        const tier = RoleMap[role].tasks[i];
-        const tasks = tier.slice();
-        if (lastTask) {
-          if (lastTask.tier === i) {
-            if (!creep.memory.isBackground) {
-              // add the in-progress task to the front
-              // tasks.splice(tasks.indexOf(creep.memory.task), 1);
-              tasks.unshift(RoleMap[role].tasks[i][lastTask.priority]);
-            }
-          }
-        }
-        for (const task of tasks) {
-          const priority = RoleMap[role].tasks[i].indexOf(task);
-          let savedData = false;
-          if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
-            ctx.data = creep.memory.data ?? task.data(creep);
-            savedData = true;
-          } else {
-            ctx.data = task.data(creep);
-          }
-          this.executeTask(creep, task, ctx);
-          if (creep.memory.debug) {
-            if (ctx.note)
-              debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"}) (${
-                ctx.note
-              })\n`;
-            else debugReport += `  ${task.id}: ${ctx.status} (${savedData ? "use last data" : "new data"})\n`;
-          }
-          if (ctx.status === TaskStatus.Complete) {
-            if (this.isCoordinateEqual(lastTask, { tier: i, priority })) {
-              this.clearTask(creep);
-              lastTask = undefined;
-            }
-          } else if (ctx.status === TaskStatus.InProgress || ctx.status === TaskStatus.Background) {
-            if (!this.isCoordinateEqual(lastTask, { tier: i, priority })) {
-              creep.memory.task = `${i},${priority}`;
-              creep.memory.taskId = task.id;
-              creep.say(task.displayName);
-            }
-            creep.memory.isBackground = ctx.status === TaskStatus.Background;
-            creep.memory.data = ctx.data;
-            stopExecution = true;
-            break;
-          }
-        }
-        if (stopExecution) break;
-      }
-
-      if (creep.memory.debug) {
-        logger.log(debugReport);
-        creep.room.visual.circle(creep.pos, {
-          radius: 0.5,
-          stroke: "red",
-          strokeWidth: 0.1
-        });
+      const cpu = Game.cpu.getUsed();
+      this.processCreep(creep);
+      const cpuUsed = Game.cpu.getUsed() - cpu;
+      if (cpuUsed >= 1 || this.visualization) {
+        console.log(
+          `${cpuUsed >= 1 ? "#" : " "} ${creep.name.padEnd(40, " ")} used ${cpuUsed
+            .toFixed(4)
+            .padStart(7)} CPU at ${creep.pos.toString()}`
+        );
       }
     }
   }
