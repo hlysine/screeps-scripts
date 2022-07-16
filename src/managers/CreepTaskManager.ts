@@ -185,18 +185,20 @@ class CreepTaskManager extends Manager {
   }
 
   protected override loop(): void {
+    let cpuReport = "\n";
     for (const name in Game.creeps) {
       const creep = Game.creeps[name];
       const cpu = Game.cpu.getUsed();
       this.processCreep(creep);
       const cpuUsed = Game.cpu.getUsed() - cpu;
       if (cpuUsed >= 1 || this.visualization) {
-        console.log(
-          `${cpuUsed >= 1 ? "#" : " "} ${creep.name.padEnd(40, " ")} used ${cpuUsed
-            .toFixed(4)
-            .padStart(7)} CPU at ${creep.pos.toString()}`
-        );
+        cpuReport += `${cpuUsed >= 1 ? "#" : " "} ${creep.name.padEnd(40, " ")} used ${cpuUsed
+          .toFixed(4)
+          .padStart(7)} CPU at ${creep.pos.toString()}\n`;
       }
+    }
+    if (cpuReport.length > 1) {
+      logger.log(cpuReport);
     }
   }
 }
