@@ -39,6 +39,7 @@ interface RoleReport {
 interface SpawnReport {
   spawnName: string;
   roomName: string;
+  energyCapacity: number;
   spawningName: string;
   roles: RoleReport[];
 }
@@ -102,7 +103,7 @@ class CreepSpawnManager extends Manager {
     if (!this.visualization) {
       let text = "";
       reports.forEach(report => {
-        text += `${report.spawnName} in ${report.roomName}:\n`;
+        text += `${report.spawnName} in ${report.roomName} (${report.energyCapacity}):\n`;
         if (report.spawningName) {
           text += `  ${report.spawningName} is spawning\n`;
         } else {
@@ -117,7 +118,7 @@ class CreepSpawnManager extends Manager {
     } else {
       reports.forEach(report => {
         const visual = new RoomVisual(report.roomName);
-        visual.text(report.spawnName, 0, 0.2, {
+        visual.text(`${report.spawnName} in ${report.roomName} (${report.energyCapacity}):\n`, 0, 0.2, {
           align: "left",
           color: "white",
           opacity: 1,
@@ -178,6 +179,7 @@ class CreepSpawnManager extends Manager {
         const report: SpawnReport = {
           spawnName: spawn.name,
           roomName: spawn.pos.roomName,
+          energyCapacity: spawn.room.energyCapacityAvailable,
           spawningName: "",
           roles: []
         };
