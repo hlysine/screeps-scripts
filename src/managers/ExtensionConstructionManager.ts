@@ -113,6 +113,19 @@ class ExtensionConstructionManager extends Manager {
       );
     }
 
+    if (
+      room
+        .lookForAtArea(LOOK_STRUCTURES, targetPos.y - 2, targetPos.x - 2, targetPos.y + 2, targetPos.x + 2, true)
+        .find(
+          s =>
+            s.structure.structureType === STRUCTURE_SPAWN &&
+            Math.abs(s.structure.pos.x - targetPos.x) !== Math.abs(s.structure.pos.y - targetPos.y) // allow diagonal placement
+        )
+    ) {
+      logger.log(`Cannot build extension at ${targetPos.toString()} because it is too close to a spawn`);
+      return 0;
+    }
+
     const offsets = [
       [0, 0],
       [-1, -1],
