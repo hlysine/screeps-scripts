@@ -9,7 +9,7 @@ const UrgentUpgradeTask = makeTask({
   steps: [
     (creep, ctx, next) => {
       if (creep.room.controller && creep.room.controller.my) {
-        if (creep.room.controller.ticksToDowngrade < 1000) {
+        if (creep.room.controller.ticksToDowngrade < 5000) {
           next();
           return;
         }
