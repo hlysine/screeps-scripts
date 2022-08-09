@@ -36,7 +36,7 @@ const WorkerRole: Role = {
         RepairTask(structure => {
           if (!isRoomMine(structure.room)) return false;
           if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
-            return structure.hits < 100000;
+            return structure.hits < 1000000;
           else return structure.hits < structure.hitsMax * 0.3;
         }),
         inHomeRoom

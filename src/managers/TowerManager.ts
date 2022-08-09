@@ -31,7 +31,7 @@ class TowerManager extends Manager {
         .find(FIND_MY_STRUCTURES, {
           filter: struct => {
             if (struct.structureType === STRUCTURE_RAMPART) {
-              return struct.hits < 100000;
+              return struct.hits < 1000000;
             } else {
               return struct.hits < struct.hitsMax && struct.hits > 0;
             }
@@ -50,7 +50,7 @@ class TowerManager extends Manager {
         .find(FIND_STRUCTURES, {
           filter: struct => {
             if (struct.structureType === STRUCTURE_WALL) {
-              return struct.hits < 10000;
+              return struct.hits < 5000000;
             } else if (struct.structureType === STRUCTURE_ROAD || struct.structureType === STRUCTURE_CONTAINER) {
               return struct.hits < struct.hitsMax * 0.5;
             }
