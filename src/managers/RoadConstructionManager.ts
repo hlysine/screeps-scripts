@@ -35,15 +35,15 @@ interface Spot {
 /**
  * How long to idle for before beginning the first construction cycle.
  */
-const InitialIdleTicks = 200;
+const InitialIdleTicks = 400;
 /**
  * How long each survey lasts for.
  */
-const MaxSurveyTicks = 1000;
+const MaxSurveyTicks = 2500;
 /**
  * A tile should have a fatigue of at least this percentage of maximum to be considered for construction.
  */
-const BuildThreshold = 0.8;
+const BuildThreshold = 0.85;
 /**
  * The maximum number of roads to build for the seeding phase.
  */
@@ -51,7 +51,7 @@ const SeedQuota = 50;
 /**
  * The maximum number of roads to build per cycle of surveying.
  */
-const ConstructQuota = 25;
+const ConstructQuota = 15;
 /**
  * The maximum number of roads allowed for a room is equal to the combined path length times this number.
  */

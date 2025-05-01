@@ -1,6 +1,11 @@
 import Task, { TaskStatus, makeTask } from "./Task";
 import UpgradeTask from "./UpgradeTask";
 
+/**
+ * Upgrade controller when ticks to downgrade is less than this value.
+ */
+const UrgentUpgradeThreshold = 500;
+
 const UrgentUpgradeTask = makeTask({
   id: "urgent_upgrade" as Id<Task>,
   displayName: "Urgent upgrade",
@@ -9,7 +14,7 @@ const UrgentUpgradeTask = makeTask({
   steps: [
     (creep, ctx, next) => {
       if (creep.room.controller && creep.room.controller.my) {
-        if (creep.room.controller.ticksToDowngrade < 5000) {
+        if (creep.room.controller.ticksToDowngrade < UrgentUpgradeThreshold) {
           next();
           return;
         }
