@@ -33,9 +33,9 @@ interface Spot {
   cost: number;
 }
 /**
- * The minimum level of the room to start constructing roads.
+ * Number to ticks to wait before the first round of construction.
  */
-const RoomLevelThreshold = 3;
+const InitialIdleTicks = 4000;
 /**
  * Number of ticks to wait if there are more roads to build.
  */
@@ -213,13 +213,13 @@ class RoadConstructionManager extends Manager {
       if (!room.controller) continue;
       if (!room.controller.my) continue;
 
-      if (room.controller.level < RoomLevelThreshold) continue;
+      if (room.controller.level < 2) continue;
 
       if (room.memory.roads === undefined) {
         room.memory.roads = {
           cost: new PathFinder.CostMatrix().serialize(),
           surveyTicks: MaxSurveyTicks,
-          idleTicks: BuildIdleTicks,
+          idleTicks: InitialIdleTicks,
           roomLevel: 0,
           maxRoads: this.getMaxRoads(room)
         };
