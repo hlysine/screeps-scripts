@@ -35,9 +35,15 @@ const WorkerRole: Role = {
       PrependTask(
         RepairTask(structure => {
           if (!isRoomMine(structure.room)) return false;
-          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART)
-            return structure.hits < 1000000;
-          else return structure.hits < structure.hitsMax * 0.3;
+          if (structure.structureType === STRUCTURE_WALL || structure.structureType === STRUCTURE_RAMPART) {
+            if (structure.room.controller?.level ?? 0 < 8) {
+              return (
+                structure.hits < Math.min(structure.hitsMax, Math.pow(10, (structure.room.controller?.level ?? 5) - 2))
+              );
+            } else {
+              return structure.hits < structure.hitsMax;
+            }
+          } else return structure.hits < structure.hitsMax * 0.3;
         }),
         inHomeRoom
       ),

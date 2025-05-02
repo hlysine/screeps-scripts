@@ -185,6 +185,11 @@ class ExtensionConstructionManager extends Manager {
         };
       }
 
+      if (room.controller.level < 2) {
+        room.memory.extensions.idleTicks = 0;
+        continue;
+      }
+
       if (room.memory.extensions.idleTicks === undefined) {
         room.memory.extensions.idleTicks = LongIdleTicks;
       }

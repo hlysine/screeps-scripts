@@ -177,6 +177,8 @@ export default function HarvestTask(filter: (resourceType: ResourceConstant) => 
                 ctx.data.targetMemorized = true;
                 ctx.status = TaskStatus.InProgress;
                 ctx.note = "moving to reserved target";
+                reservedTarget.creep.memory.taskId = undefined;
+                reservedTarget.creep.memory.task = undefined;
                 return;
               } else {
                 creep.cancelOrder("move");

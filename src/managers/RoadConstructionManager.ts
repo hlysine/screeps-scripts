@@ -33,9 +33,17 @@ interface Spot {
   cost: number;
 }
 /**
- * How long to idle for before beginning the first construction cycle.
+ * The minimum level of the room to start constructing roads.
  */
-const InitialIdleTicks = 400;
+const RoomLevelThreshold = 3;
+/**
+ * Number of ticks to wait if there are more roads to build.
+ */
+const BuildIdleTicks = 400;
+/**
+ * Number of ticks to wait if there are no more roads to build.
+ */
+const LongIdleTicks = 20000;
 /**
  * How long each survey lasts for.
  */
@@ -205,13 +213,13 @@ class RoadConstructionManager extends Manager {
       if (!room.controller) continue;
       if (!room.controller.my) continue;
 
-      if (room.controller.level < 2) continue;
+      if (room.controller.level < RoomLevelThreshold) continue;
 
       if (room.memory.roads === undefined) {
         room.memory.roads = {
           cost: new PathFinder.CostMatrix().serialize(),
           surveyTicks: MaxSurveyTicks,
-          idleTicks: InitialIdleTicks,
+          idleTicks: BuildIdleTicks,
           roomLevel: 0,
           maxRoads: this.getMaxRoads(room)
         };
@@ -222,7 +230,7 @@ class RoadConstructionManager extends Manager {
       }
 
       if (room.memory.roads.idleTicks === undefined) {
-        room.memory.roads.idleTicks = InitialIdleTicks;
+        room.memory.roads.idleTicks = BuildIdleTicks;
       }
 
       if (room.memory.roads.idleTicks > 0) {
@@ -265,9 +273,9 @@ class RoadConstructionManager extends Manager {
         room.memory.roads.cost = undefined;
         room.memory.roads.surveyTicks = MaxSurveyTicks;
         if (roadCount + buildCount >= room.memory.roads.maxRoads) {
-          room.memory.roads.idleTicks = 20000;
+          room.memory.roads.idleTicks = LongIdleTicks;
         } else {
-          room.memory.roads.idleTicks = 400;
+          room.memory.roads.idleTicks = BuildIdleTicks;
         }
         logger.log(
           `Construction for ${room.name} complete, ${roadCount}+${buildCount}/${room.memory.roads.maxRoads}, idling for ${room.memory.roads.idleTicks} ticks`

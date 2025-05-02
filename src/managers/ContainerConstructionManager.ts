@@ -74,17 +74,17 @@ class ContainerConstructionManager extends Manager {
         };
       }
 
+      if (room.controller.level < 2) {
+        room.memory.containers.idleTicks = 0;
+        continue;
+      }
+
       if (room.memory.containers.idleTicks === undefined) {
         room.memory.containers.idleTicks = IdleTicks;
       }
 
       if (room.memory.containers.idleTicks > 0) {
         room.memory.containers.idleTicks--;
-        continue;
-      }
-
-      if (room.controller.level < 2) {
-        room.memory.containers.idleTicks = IdleTicks;
         continue;
       }
 
