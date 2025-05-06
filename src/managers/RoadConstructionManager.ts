@@ -149,10 +149,6 @@ class RoadConstructionManager extends Manager {
       return 0;
     }
     const spawn = spawns[0];
-    if (room.controller) {
-      const result = PathFinder.search(spawn.pos, { pos: room.controller.pos, range: 1 }, pathFinderOpts);
-      if (getPathError(result, room.controller.pos)) paths.push(...result.path);
-    }
     const sources: (Source | Mineral)[] = room.find(FIND_SOURCES);
     if ((room.controller?.level ?? 0) >= 6) {
       sources.push(...room.find(FIND_MINERALS));
@@ -160,6 +156,17 @@ class RoadConstructionManager extends Manager {
     for (const source of sources) {
       const result = PathFinder.search(spawn.pos, { pos: source.pos, range: 1 }, pathFinderOpts);
       if (getPathError(result, source.pos)) paths.push(...result.path);
+    }
+    if (room.controller) {
+      const closestSource = room.controller.pos.findClosestByPath(sources);
+      if (closestSource) {
+        const controllerResult = PathFinder.search(
+          closestSource.pos,
+          { pos: room.controller.pos, range: 1 },
+          pathFinderOpts
+        );
+        if (getPathError(controllerResult, room.controller.pos)) paths.push(...controllerResult.path);
+      }
     }
 
     let buildCount = 0;
