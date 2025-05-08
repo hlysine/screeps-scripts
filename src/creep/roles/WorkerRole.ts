@@ -87,7 +87,7 @@ const WorkerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      return Math.max(4, Math.min(8, room.controller.level * 2 + 2));
+      return Math.max(4, Math.min(10, room.controller.level * 2 + 2));
     }
     return 0;
   },
