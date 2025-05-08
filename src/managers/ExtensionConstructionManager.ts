@@ -95,7 +95,7 @@ class ExtensionConstructionManager extends Manager {
 
       const path = PathFinder.search(
         origin.pos,
-        avoid.map(s => ({ pos: s.pos, range: s instanceof Source ? 3 : 2 })),
+        avoid.map(s => ({ pos: s.pos, range: 3 })),
         pathFinderOpts
       ).path;
 
