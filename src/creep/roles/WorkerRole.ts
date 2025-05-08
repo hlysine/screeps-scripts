@@ -25,6 +25,14 @@ const WorkerRole: Role = {
         inHomeRoom
       ),
       PrependTask(
+        TransferEnergyTask(
+          structure =>
+            structure.my &&
+            (structure.structureType === STRUCTURE_SPAWN || structure.structureType === STRUCTURE_EXTENSION)
+        ),
+        inHomeRoom
+      ),
+      PrependTask(
         TransferEnergyTask(structure => structure.my),
         inHomeRoom
       ),
