@@ -49,7 +49,7 @@ class TowerManager extends Manager {
         .find(FIND_STRUCTURES, {
           filter: struct => {
             if (struct.structureType === STRUCTURE_WALL || struct.structureType === STRUCTURE_RAMPART) {
-              return struct.hits < Math.min(struct.hitsMax, Math.pow(10, struct.room.controller?.level ?? 5));
+              return struct.hits < Math.min(struct.hitsMax, Math.pow(10, struct.room.controller?.level ?? 5) + 1);
             } else if (struct.structureType === STRUCTURE_ROAD || struct.structureType === STRUCTURE_CONTAINER) {
               return struct.hits < struct.hitsMax * 0.5;
             }
