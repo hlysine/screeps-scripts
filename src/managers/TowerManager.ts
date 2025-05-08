@@ -30,11 +30,10 @@ class TowerManager extends Manager {
       const target = structure.room
         .find(FIND_MY_STRUCTURES, {
           filter: struct => {
-            if (struct.structureType === STRUCTURE_RAMPART) {
-              return struct.hits < 1000000;
-            } else {
+            if (struct.structureType !== STRUCTURE_RAMPART) {
               return struct.hits < struct.hitsMax && struct.hits > 0;
             }
+            return false;
           }
         })
         .minBy(struct => struct.hits);
@@ -49,8 +48,8 @@ class TowerManager extends Manager {
       const target = structure.room
         .find(FIND_STRUCTURES, {
           filter: struct => {
-            if (struct.structureType === STRUCTURE_WALL) {
-              return struct.hits < 5000000;
+            if (struct.structureType === STRUCTURE_WALL || struct.structureType === STRUCTURE_RAMPART) {
+              return struct.hits < Math.min(struct.hitsMax, Math.pow(10, (struct.room.controller?.level ?? 5) - 2));
             } else if (struct.structureType === STRUCTURE_ROAD || struct.structureType === STRUCTURE_CONTAINER) {
               return struct.hits < struct.hitsMax * 0.5;
             }
