@@ -87,10 +87,7 @@ const WorkerRole: Role = {
 
   getCreepLimit(room: Room): number {
     if (room.controller) {
-      const containerCount = room.find(FIND_STRUCTURES, {
-        filter: s => s.structureType === STRUCTURE_CONTAINER
-      }).length;
-      return Math.max(4, Math.min(8 - containerCount, room.controller.level * 2 + 2 - containerCount));
+      return Math.max(4, Math.min(8, room.controller.level * 2 + 2));
     }
     return 0;
   },
