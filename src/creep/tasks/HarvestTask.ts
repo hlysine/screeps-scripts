@@ -5,6 +5,7 @@ import Task, { makeTask, TaskStatus } from "./Task";
 import { isRoomRestricted } from "utils/StructureUtils";
 import TaskTargetManager from "managers/TaskTargetManager";
 import { isHarvestSuccess, isMoveSuccess } from "utils/ReturnCodeUtils";
+import CreepTaskManager from "managers/CreepTaskManager";
 
 export const HarvestTaskId = "harvest" as Id<Task>;
 
@@ -177,8 +178,8 @@ export default function HarvestTask(filter: (resourceType: ResourceConstant) => 
                 ctx.data.targetMemorized = true;
                 ctx.status = TaskStatus.InProgress;
                 ctx.note = "moving to reserved target";
-                reservedTarget.creep.memory.taskId = undefined;
-                reservedTarget.creep.memory.task = undefined;
+                if (reservedTarget.creep.memory.taskId)
+                  CreepTaskManager.terminateTask(reservedTarget.creep, reservedTarget.creep.memory.taskId);
                 return;
               } else {
                 creep.cancelOrder("move");
